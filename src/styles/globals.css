@@ -24,3 +24,23 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+input {
+  background: transparent;
+  color: var(--foreground);
+  border: 1px solid var(--input-border);
+  padding: 0.5rem;
+  border-radius: 0.375rem;
+}
+
+/* 初期（ライトモード） */
+:root {
+  --input-border: #ccc;
+}
+
+/* ダークモード */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --input-border: #555;
+  }
+}
