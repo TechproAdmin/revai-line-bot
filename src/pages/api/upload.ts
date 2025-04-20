@@ -1,10 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import formidable, { Fields, Files } from "formidable";
 import fs from "fs/promises";
-import { PDFDocument } from "pdf-lib";
-import path from "path";
-import os from "os";
-import pdfImgConvert from "pdf-img-convert"; // pdf-img-convertをインストールする必要があります
+import apiRoot from "@/utils/api";
 
 // Next.jsのデフォルトのbodyParserを無効にする
 export const config = {
@@ -12,6 +9,7 @@ export const config = {
     bodyParser: false,
   },
 };
+
 
 // formidableでリクエストをパースする関数
 const parseForm = (
@@ -33,6 +31,7 @@ const parseForm = (
     });
   });
 };
+
 
 export default async function handler(
   req: NextApiRequest,
@@ -60,19 +59,6 @@ export default async function handler(
     }
     console.log("Received userId:", userId);
 
-    // 画像形式を取得（デフォルトはjpg）
-    const formatField = fields.format;
-    const format = Array.isArray(formatField)
-      ? formatField[0]
-      : formatField || "jpg";
-    const validFormats = ["jpg", "png"];
-
-    if (!validFormats.includes(format.toLowerCase())) {
-      return res.status(400).json({
-        message: `Invalid format. Supported formats: ${validFormats.join(", ")}`,
-      });
-    }
-
     // ファイル情報を取得
     const fileField = files.file;
     const uploadedFile = Array.isArray(fileField) ? fileField[0] : fileField;
@@ -96,69 +82,20 @@ export default async function handler(
       return res.status(400).json({ message: "Uploaded file must be a PDF." });
     }
 
-    // PDFファイルを読み込んでページ数を取得
-    const originalPdfBytes = await fs.readFile(tempFilePath);
-    const originalPdfDoc = await PDFDocument.load(originalPdfBytes);
-    const totalPages = originalPdfDoc.getPageCount();
-
-    console.log(`PDF has ${totalPages} pages.`);
-
-    // 処理結果を保存するためのパス
-    const outputDir = os.tmpdir(); // システムの一時ディレクトリを使用
-    const savedFiles = [];
-
-    // PDFをページごとに分割
-    const pdfPages = [];
-    for (let i = 0; i < totalPages; i++) {
-      const newPdf = await PDFDocument.create();
-      const [copiedPage] = await newPdf.copyPages(originalPdfDoc, [i]);
-      newPdf.addPage(copiedPage);
-
-      const pageBytes = await newPdf.save();
-      const pagePath = path.join(outputDir, `temp_page_${i}.pdf`);
-      await fs.writeFile(pagePath, pageBytes);
-      pdfPages.push(pagePath);
-    }
-
-    // 各ページをPDFから画像に変換して保存
-    for (let i = 0; i < pdfPages.length; i++) {
-      const pageNumber = i + 1;
-      const outputFilename = `user_${userId}_page_${pageNumber}.${format}`;
-      const outputPath = path.join(outputDir, outputFilename);
-
-      // PDF-to-Image変換（DPI設定で画質を調整可能）
-      const options = {
-        width: 1700, // 出力画像の幅（ピクセル）
-        height: 2200, // 出力画像の高さ（ピクセル）
-        quality: 100, // 画質（0-100）
-        format: format.toUpperCase(), // JPG or PNG
-      };
-
-      // PDFを画像に変換
-      const pdfImgPaths = await pdfImgConvert.convert(pdfPages[i], options);
-
-      if (pdfImgPaths && pdfImgPaths.length > 0) {
-        // 変換された画像データをファイルに保存
-        await fs.writeFile(outputPath, pdfImgPaths[0]);
-        console.log(`Saved page ${pageNumber} as ${format} to ${outputPath}`);
-        savedFiles.push(outputFilename);
-
-        // 一時PDFファイルを削除
-        await fs.unlink(pdfPages[i]);
-      }
-    }
+    // PDFを直接OpenAIに送信して分析
+    console.log("Analyzing PDF with OpenAI...");
+    const propertyData = await apiRoot.analyzePdfWithOpenAI(tempFilePath);
+    console.log("Analysis result:", propertyData);
 
     // 成功レスポンス
     res.status(200).json({
-      message: "PDF successfully converted to images!",
+      message: "PDF successfully analyzed!",
       userId: userId,
-      format: format,
       filename: uploadedFile.originalFilename,
-      pages: totalPages,
-      savedFiles: savedFiles,
+      data: propertyData,
     });
   } catch (error) {
-    console.error("Error handling file upload or conversion:", error);
+    console.error("Error handling file upload or analysis:", error);
 
     // エラーの種類に応じたレスポンス
     if (

@@ -12,8 +12,7 @@
     "@line/liff": "2.25.1",
     "formidable": "^3.5.2",
     "next": "15.2.4",
-    "pdf-img-convert": "^2.0.0",
-    "pdf-lib": "^1.17.1",
+    "openai": "^4.95.1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },

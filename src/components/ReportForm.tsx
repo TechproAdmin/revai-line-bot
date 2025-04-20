@@ -1,5 +1,6 @@
 // components/ReportForm.tsx
 import { useState, useEffect } from "react";
+import { ReportDataType } from "@/components/types";
 
 export type FormDataType = {
   purchase_date?: string;
@@ -20,6 +21,7 @@ export type FormDataType = {
   interest_rate?: string;
   loan_type?: string;
   expected_rate_of_return?: string;
+  expected_sale_year?: string;
   expected_sale_price?: string;
   sale_expenses?: string;
   owner_type?: string;
@@ -27,21 +29,22 @@ export type FormDataType = {
 };
 
 interface ReportFormProps {
-  initialData?: Partial<FormDataType>;
-  onSuccess: (data: any) => void;
+  formValues?: Partial<FormDataType>;
+  onSuccess: (data: ReportDataType) => void;
 }
 
-export function ReportForm({ initialData = {}, onSuccess }: ReportFormProps) {
+export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
   const [formData, setFormData] = useState<FormDataType>({
     vacancy_rate: 0.05,
     loan_term_years: 35,
     rent_decline_rate: 0.01,
-    ...initialData,
+    ...formValues,
   });
 
   useEffect(() => {
-    setFormData((prev) => ({ ...prev, ...initialData }));
-  }, [initialData]);
+    console.log("formValues:", formValues);
+    setFormData((prev) => ({ ...prev, ...formValues }));
+  }, [formValues]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -65,7 +68,7 @@ export function ReportForm({ initialData = {}, onSuccess }: ReportFormProps) {
       const result = await res.json();
       console.log("送信結果:", result);
       if (result.data) {
-        onSuccess(result.data);
+        onSuccess(result.data as ReportDataType);
       } else {
         console.error(
           "レスポンスに data プロパティが含まれていません。",
@@ -134,6 +137,7 @@ export function ReportForm({ initialData = {}, onSuccess }: ReportFormProps) {
           name: "expected_rate_of_return",
           type: "number",
         },
+        { label: "想定売却時期", name: "expected_sale_year", type: "date" },
         { label: "想定売却価格", name: "expected_sale_price", type: "number" },
         { label: "売却諸費用", name: "sale_expenses", type: "number" },
         { label: "オーナー種別", name: "owner_type", type: "text" },

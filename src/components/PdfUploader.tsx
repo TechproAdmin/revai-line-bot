@@ -1,14 +1,10 @@
 import React, { useState, useRef } from "react";
 import { Liff } from "@line/liff";
+import { PdfExtractionResult } from "@/components/types";
 
 interface PdfUploaderProps {
   liff: Liff;
-  // アップロード成功時に、サーバーから返却されたデータを引数に取るコールバック
-  onUploadSuccess?: (data: {
-    name: string;
-    date: string;
-    amount: string;
-  }) => void;
+  onUploadSuccess: (data: PdfExtractionResult) => void;
 }
 
 export function PdfUploader({ liff, onUploadSuccess }: PdfUploaderProps) {
@@ -22,7 +18,6 @@ export function PdfUploader({ liff, onUploadSuccess }: PdfUploaderProps) {
   const [message, setMessage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // ファイル選択ハンドラー
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (!files || files.length === 0) {
@@ -45,7 +40,6 @@ export function PdfUploader({ liff, onUploadSuccess }: PdfUploaderProps) {
     }
   };
 
-  // アップロード処理
   const handleUpload = async () => {
     if (!selectedFile) {
       setMessage("アップロードするファイルを選択してください");
@@ -78,22 +72,23 @@ export function PdfUploader({ liff, onUploadSuccess }: PdfUploaderProps) {
       });
 
       const result = await response.json();
-      console.log(result);
+      console.log("アップロード完了：", result);
 
-      if (result.data && onUploadSuccess) {
-        onUploadSuccess({
-          name: result.data.name || "",
-          date: result.data.date || "",
-          amount: result.data.amount || "",
-        });
-      }
+      onUploadSuccess({
+        total_price: result.data.total_price,
+        land_price: result.data.land_price,
+        building_price: result.data.building_price,
+        building_age: result.data.building_age,
+        structure: result.data.structure,
+        gross_yield: result.data.gross_yield,
+        current_yield: result.data.current_yield,
+      })
 
       setMessage("ファイルのアップロードに成功しました");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("アップロード中にエラーが発生しました", error);
       setMessage(
-        `アップロード中にエラーが発生しました: ${
-          error instanceof Error ? error.message : String(error)
+        `アップロード中にエラーが発生しました: ${error instanceof Error ? error.message : String(error)
         }`
       );
     } finally {
@@ -115,13 +110,12 @@ export function PdfUploader({ liff, onUploadSuccess }: PdfUploaderProps) {
     <div className="pdf-uploader">
       {message && (
         <div
-          className={`mb-4 p-3 rounded-lg ${
-            message.includes("成功")
-              ? "bg-green-50 text-green-700"
-              : message.includes("失敗") || message.includes("エラー")
-                ? "bg-red-50 text-red-700"
-                : "bg-blue-50 text-blue-700"
-          }`}
+          className={`mb-4 p-3 rounded-lg ${message.includes("成功")
+            ? "bg-green-50 text-green-700"
+            : message.includes("失敗") || message.includes("エラー")
+              ? "bg-red-50 text-red-700"
+              : "bg-blue-50 text-blue-700"
+            }`}
         >
           {message}
         </div>

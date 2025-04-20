@@ -1,11 +1,12 @@
 import { NextApiRequest, NextApiResponse } from "next";
+import apiRoot from "@/utils/api";
 
-export default function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === "POST") {
-    console.log("Received data:", req.body); // 本番ではDB保存などへ
+    const report = await apiRoot.calcReport(req.body);
     return res
       .status(200)
-      .json({ data: { name: "test", date: "2023/01/01", amount: "10" } });
+      .json({ data: report });
   }
   res.status(405).json({ message: "Method Not Allowed" });
 }

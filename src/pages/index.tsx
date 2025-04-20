@@ -3,7 +3,8 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Liff } from "@line/liff";
 import { ReportForm } from "@/components/ReportForm";
 import { PdfUploader } from "@/components/PdfUploader";
-import { Report } from "@/components/Report"; // Report コンポーネントを追加
+import { Report } from "@/components/Report";
+import { ReportDataType, PdfExtractionResult } from "@/components/types";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,19 +24,8 @@ interface HomeProps {
 export default function Home({ liff, liffError }: HomeProps) {
   const [message, setMessage] = useState<string | null>(null);
   const [isLiffReady, setIsLiffReady] = useState<boolean>(false);
-  const [formValues, setFormValues] = useState({
-    name: "",
-    date: "",
-    amount: "",
-  });
-  const [initialData, setInitialData] = useState({});
-  // reportData にフォーム送信結果（サーバーから返ってくるレポートデータ）を保持
-  const [reportData, setReportData] = useState<null | {
-    name?: string;
-    date?: string;
-    amount?: string;
-    [key: string]: any;
-  }>(null);
+  const [formValues, setFormValues] = useState({});
+  const [reportData, setReportData] = useState<ReportDataType | null>(null);
 
   // LIFF の初期化チェック
   useEffect(() => {
@@ -48,26 +38,20 @@ export default function Home({ liff, liffError }: HomeProps) {
   }, [liff, liffError]);
 
   // PDFアップロード成功時のコールバック
-  const handleUploadSuccess = (data: {
-    name: string;
-    date: string;
-    amount: string;
-  }) => {
-    // PDFアップロードで取得した値を初期値として設定
+  const handleUploadSuccess = (data: PdfExtractionResult) => {
     setFormValues({
-      name: data.name || "",
-      date: data.date || "",
-      amount: data.amount || "",
-    });
-    setInitialData({
-      name: data.name || "",
-      date: data.date || "",
-      amount: data.amount || "",
+      total_price: data.total_price || "",
+      land_price: data.land_price || "",
+      building_price: data.building_price || "",
+      building_age: data.building_age || "",
+      structure: data.structure || "",
+      gross_yield: data.gross_yield || "",
+      current_yield: data.current_yield || "",
     });
   };
 
   // ReportForm 送信成功時のコールバック
-  const handleReportFormSuccess = (data: any) => {
+  const handleReportFormSuccess = (data: ReportDataType) => {
     setReportData(data);
   };
 
@@ -92,13 +76,12 @@ export default function Home({ liff, liffError }: HomeProps) {
         )}
         {message && (
           <div
-            className={`mb-4 p-3 rounded-lg ${
-              message.includes("成功")
-                ? "bg-green-50 text-green-700"
-                : message.includes("失敗") || message.includes("エラー")
-                  ? "bg-red-50 text-red-700"
-                  : "bg-blue-50 text-blue-700"
-            }`}
+            className={`mb-4 p-3 rounded-lg ${message.includes("成功")
+              ? "bg-green-50 text-green-700"
+              : message.includes("失敗") || message.includes("エラー")
+                ? "bg-red-50 text-red-700"
+                : "bg-blue-50 text-blue-700"
+              }`}
           >
             {message}
           </div>
@@ -126,7 +109,7 @@ export default function Home({ liff, liffError }: HomeProps) {
               </div>
             )}
             <ReportForm
-              initialData={initialData}
+              formValues={formValues}
               onSuccess={handleReportFormSuccess}
             />
           </>
