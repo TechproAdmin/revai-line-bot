@@ -24,11 +24,11 @@ lint:
 
 # Docker環境をビルドして起動
 docker-up:
-	docker-compose up -d
+	docker compose up -d
 
 # Docker環境を停止
 docker-down:
-	docker-compose down
+	docker compose down
 
 # Ngrokトンネルを起動
 ngrok:
