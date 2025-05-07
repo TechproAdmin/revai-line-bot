@@ -7,31 +7,41 @@ const openai = new OpenAI({
     apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
 });
 
-// PDFをOpenAIに直接送信して分析する関数
-async function analyzePdfWithOpenAI(pdfPath: string): Promise<PdfExtractionResult> {
+// PDFから変換された画像をOpenAIに送信して分析する関数
+async function analyzePdfWithOpenAI(imagePaths: string[]): Promise<PdfExtractionResult> {
     try {
-        // PDFファイルを読み込む
-        const pdfBuffer = await fs.readFile(pdfPath);
-        const pdfBase64 = pdfBuffer.toString("base64");
+        if (imagePaths.length === 0) {
+            throw new Error("No images provided for analysis");
+        }
 
-        // OpenAI APIにリクエストを送信
+        console.log(`Analyzing ${imagePaths.length} images with OpenAI...`);
+
+        // 画像をBase64エンコードしてメッセージに変換
+        const imageContents = await Promise.all(
+            imagePaths.map(async (imagePath) => {
+                const imageBuffer = await fs.readFile(imagePath);
+                const imageBase64 = imageBuffer.toString("base64");
+                return {
+                    type: "image_url",
+                    image_url: {
+                        url: `data:image/png;base64,${imageBase64}`,
+                    },
+                };
+            })
+        );
+
         const response = await openai.chat.completions.create({
             model: "gpt-4o-mini",
             messages: [
                 {
                     role: "system",
-                    content: "あなたは不動産資料から情報を抽出する専門家です。PDFから以下の情報を抽出してください：物件価格(総計)、物件価格(土地)、物件価格(建物)、築年数、建物構造、表面利回り、現況利回り。見つからない情報はnullとしてください。JSON形式で返答してください。"
+                    content: "あなたは不動産資料から情報を抽出する専門家です。画像から以下の情報を抽出してください：\n- 物件価格(総計) → total_price\n- 物件価格(土地) → land_price\n- 物件価格(建物) → building_price\n- 築年数 → building_age\n- 建物構造 → structure\n- 表面利回り → gross_yield\n- 現況利回り → current_yield\n\n見つからない情報はnullとしてください。必ず以下のJSON形式で返答してください：\n{\n  \"total_price\": (値),\n  \"land_price\": (値),\n  \"building_price\": (値),\n  \"building_age\": (値),\n  \"structure\": (値),\n  \"gross_yield\": (値),\n  \"current_yield\": (値)\n}"
                 },
                 {
                     role: "user",
                     content: [
-                        { type: "text", text: "この不動産資料から情報を抽出してください。" },
-                        {
-                            type: "image_url",
-                            image_url: {
-                                url: `data:application/pdf;base64,${pdfBase64}`,
-                            },
-                        },
+                        { type: "text", text: "この不動産資料から情報を抽出してください。複数の画像は同じPDFの連続したページです。" },
+                        ...imageContents,
                     ],
                 },
             ],
@@ -66,7 +76,7 @@ async function analyzePdfWithOpenAI(pdfPath: string): Promise<PdfExtractionResul
             };
         }
     } catch (error) {
-        console.error("Error analyzing PDF with OpenAI:", error);
+        console.error("Error analyzing images with OpenAI:", error);
         return {
             total_price: null,
             land_price: null,
@@ -80,7 +90,7 @@ async function analyzePdfWithOpenAI(pdfPath: string): Promise<PdfExtractionResul
 }
 
 // モック関数（テスト用）
-async function analyzePdfWithOpenAIMock(pdfPath: string): Promise<PdfExtractionResult> {
+async function analyzePdfWithOpenAIMock(imagePaths: string[]): Promise<PdfExtractionResult> {
     return {
         total_price: "35000000",
         land_price: "18000000",
@@ -498,7 +508,7 @@ async function calcReportMock(pdfPath: string): Promise<RealEstateAnalysisRes> {
 }
 
 const apiRoot = {
-    analyzePdfWithOpenAI: analyzePdfWithOpenAIMock,
+    analyzePdfWithOpenAI: analyzePdfWithOpenAI,
     calcReport: calcReportMock
 };
 

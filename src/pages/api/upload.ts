@@ -1,7 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import formidable, { Fields, Files } from "formidable";
 import fs from "fs/promises";
+import fsSync from 'fs';
+import path from "path";
 import apiRoot from "@/utils/api";
+import os from "os";
+import { pdf2img } from '@pdfme/converter';
+
 
 // Next.jsのデフォルトのbodyParserを無効にする
 export const config = {
@@ -9,7 +14,6 @@ export const config = {
     bodyParser: false,
   },
 };
-
 
 // formidableでリクエストをパースする関数
 const parseForm = (
@@ -32,6 +36,52 @@ const parseForm = (
   });
 };
 
+async function convertPdfToImages(pdfPath: string): Promise<string[]> {
+  const tempDir = path.join(os.tmpdir(), `pdf-images-${Date.now()}`);
+  await fs.mkdir(tempDir, { recursive: true });
+
+  try {
+    console.log(`Converting PDF to images using @pdfme/converter...`);
+
+    // SyncでPDFファイルを読み込み、ArrayBufferを取得
+    const pdf = fsSync.readFileSync(pdfPath);
+    const pdfArrayBuffer = pdf.buffer.slice(pdf.byteOffset, pdf.byteOffset + pdf.byteLength);
+
+    // 画像に変換（ここではすべてのページを対象）
+    const images = await pdf2img(pdfArrayBuffer, {
+      imageType: 'png',
+      // ページ範囲の指定も可能: range: { start: 1, end: 3 }
+    });
+
+    const imagePaths: string[] = [];
+
+    // 各ページの画像をファイルとして保存
+    for (let i = 0; i < images.length; i++) {
+      const outputPath = path.join(tempDir, `page-${i + 1}.png`);
+      await fs.writeFile(outputPath, Buffer.from(images[i]));
+      imagePaths.push(outputPath);
+      console.log(`Converted page ${i + 1} to image: ${outputPath}`);
+    }
+
+    return imagePaths;
+  } catch (error) {
+    console.error("Error converting PDF to images:", error);
+    throw error;
+  }
+}
+
+
+// 一時ファイルを削除する関数
+async function cleanupFiles(filePaths: string[]): Promise<void> {
+  for (const filePath of filePaths) {
+    try {
+      await fs.unlink(filePath);
+      console.log(`Successfully deleted: ${filePath}`);
+    } catch (error) {
+      console.error(`Error deleting file ${filePath}:`, error);
+    }
+  }
+}
 
 export default async function handler(
   req: NextApiRequest,
@@ -45,6 +95,7 @@ export default async function handler(
   }
 
   let tempFilePath: string | undefined;
+  let imageFiles: string[] = [];
 
   try {
     // formidableでリクエストをパース
@@ -82,9 +133,14 @@ export default async function handler(
       return res.status(400).json({ message: "Uploaded file must be a PDF." });
     }
 
-    // PDFを直接OpenAIに送信して分析
-    console.log("Analyzing PDF with OpenAI...");
-    const propertyData = await apiRoot.analyzePdfWithOpenAI(tempFilePath);
+    // PDFを画像に変換
+    console.log("Converting PDF to images...");
+    imageFiles = await convertPdfToImages(tempFilePath);
+    console.log(`PDF converted to ${imageFiles.length} images`);
+
+    // PDFの画像をOpenAIに送信して分析
+    console.log("Analyzing PDF images with OpenAI...");
+    const propertyData = await apiRoot.analyzePdfWithOpenAI(imageFiles);
     console.log("Analysis result:", propertyData);
 
     // 成功レスポンス
@@ -123,6 +179,11 @@ export default async function handler(
           cleanupError
         );
       }
+    }
+
+    // 変換した画像ファイルのクリーンアップ
+    if (imageFiles.length > 0) {
+      await cleanupFiles(imageFiles);
     }
   }
 }
