@@ -1,6 +1,6 @@
 // components/ReportForm.tsx
 import { useState, useEffect } from "react";
-import { ReportDataType } from "@/components/types";
+import { RealEstateAnalysisRes, ReportDataType } from "@/components/types";
 
 export type FormDataType = {
   purchase_date?: string;
@@ -30,7 +30,7 @@ export type FormDataType = {
 
 interface ReportFormProps {
   formValues?: Partial<FormDataType>;
-  onSuccess: (data: ReportDataType) => void;
+  onSuccess: (data: RealEstateAnalysisRes) => void;
 }
 
 export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
@@ -68,7 +68,7 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
       const result = await res.json();
       console.log("送信結果:", result);
       if (result.data) {
-        onSuccess(result.data as ReportDataType);
+        onSuccess(result.data as RealEstateAnalysisRes);
       } else {
         console.error(
           "レスポンスに data プロパティが含まれていません。",

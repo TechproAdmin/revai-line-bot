@@ -4,7 +4,7 @@ import { Liff } from "@line/liff";
 import { ReportForm } from "@/components/ReportForm";
 import { PdfUploader } from "@/components/PdfUploader";
 import { Report } from "@/components/Report";
-import { ReportDataType, PdfExtractionResult } from "@/components/types";
+import { RealEstateAnalysisRes, PdfExtractionResult } from "@/components/types";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,7 +25,7 @@ export default function Home({ liff, liffError }: HomeProps) {
   const [message, setMessage] = useState<string | null>(null);
   const [isLiffReady, setIsLiffReady] = useState<boolean>(false);
   const [formValues, setFormValues] = useState({});
-  const [reportData, setReportData] = useState<ReportDataType | null>(null);
+  const [reportData, setReportData] = useState<RealEstateAnalysisRes | null>(null);
 
   // LIFF の初期化チェック
   useEffect(() => {
@@ -51,7 +51,7 @@ export default function Home({ liff, liffError }: HomeProps) {
   };
 
   // ReportForm 送信成功時のコールバック
-  const handleReportFormSuccess = (data: ReportDataType) => {
+  const handleReportFormSuccess = (data: RealEstateAnalysisRes) => {
     setReportData(data);
   };
 

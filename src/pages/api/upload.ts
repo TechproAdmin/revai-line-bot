@@ -1,12 +1,11 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import formidable, { Fields, Files } from "formidable";
 import fs from "fs/promises";
-import fsSync from 'fs';
+import fsSync from "fs";
 import path from "path";
 import apiRoot from "@/utils/api";
 import os from "os";
-import { pdf2img } from '@pdfme/converter';
-
+import { pdf2img } from "@pdfme/converter";
 
 // Next.jsのデフォルトのbodyParserを無効にする
 export const config = {
@@ -45,11 +44,14 @@ async function convertPdfToImages(pdfPath: string): Promise<string[]> {
 
     // SyncでPDFファイルを読み込み、ArrayBufferを取得
     const pdf = fsSync.readFileSync(pdfPath);
-    const pdfArrayBuffer = pdf.buffer.slice(pdf.byteOffset, pdf.byteOffset + pdf.byteLength);
+    const pdfArrayBuffer = pdf.buffer.slice(
+      pdf.byteOffset,
+      pdf.byteOffset + pdf.byteLength
+    ) as ArrayBuffer;
 
     // 画像に変換（ここではすべてのページを対象）
     const images = await pdf2img(pdfArrayBuffer, {
-      imageType: 'png',
+      imageType: "png",
       // ページ範囲の指定も可能: range: { start: 1, end: 3 }
     });
 
@@ -69,7 +71,6 @@ async function convertPdfToImages(pdfPath: string): Promise<string[]> {
     throw error;
   }
 }
-
 
 // 一時ファイルを削除する関数
 async function cleanupFiles(filePaths: string[]): Promise<void> {
