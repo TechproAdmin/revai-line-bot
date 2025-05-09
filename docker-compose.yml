@@ -12,7 +12,7 @@ services:
     command: npm run dev
     environment:
       - NEXT_PUBLIC_LIFF_ID=${NEXT_PUBLIC_LIFF_ID}
-      - NODE_ENV=${NODE_ENV:-development}    
+      - APP_ENV=${APP_ENV:-development}
     networks:
       - liff-network
 

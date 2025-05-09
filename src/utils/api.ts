@@ -6,6 +6,7 @@ import {
   RealEstateAnalysisRes,
 } from "@/components/types";
 import axios from "axios";
+import { ChatCompletionContentPart } from "openai/src/resources/chat/completions/completions.js";
 
 const openai = new OpenAI({
   apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
@@ -23,7 +24,7 @@ async function analyzePdfWithOpenAI(
     console.log(`Analyzing ${imagePaths.length} images with OpenAI...`);
 
     // 画像をBase64エンコードしてメッセージに変換
-    const imageContents = await Promise.all(
+    const imageContents: Array<ChatCompletionContentPart> = await Promise.all(
       imagePaths.map(async (imagePath) => {
         const imageBuffer = await fs.readFile(imagePath);
         const imageBase64 = imageBuffer.toString("base64");
@@ -36,7 +37,6 @@ async function analyzePdfWithOpenAI(
       })
     );
 
-    // @ts-ignore
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
@@ -120,6 +120,7 @@ async function calcReport(
   data: RealEstateAnalysisReq
 ): Promise<RealEstateAnalysisRes> {
   try {
+    console.log("report req: ", data, typeof data);
     const response = await axios.post<RealEstateAnalysisRes>(
       "https://realestate-valuation-api-a6mebisk7q-an.a.run.app/analyze",
       data,
@@ -276,10 +277,10 @@ async function calcReportMock(pdfPath: string): Promise<RealEstateAnalysisRes> {
 
 const apiRoot = {
   analyzePdfWithOpenAI:
-    process.env.NODE_ENV === "production"
+    process.env.APP_ENV === "production"
       ? analyzePdfWithOpenAI
       : analyzePdfWithOpenAIMock,
   calcReport:
-    process.env.NODE_ENV === "production" ? calcReport : calcReportMock,
+    process.env.APP_ENV === "production" ? calcReport : calcReportMock,
 };
 export default apiRoot;

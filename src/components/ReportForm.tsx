@@ -38,15 +38,58 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
     vacancy_rate: 0.05,
     loan_term_years: 35,
     rent_decline_rate: 0.01,
+    owner_type: "個人",
     ...formValues,
   });
+
+  // 依存する値が変更されたときに初期値を計算する
+  useEffect(() => {
+    const updatedValues: Partial<FormDataType> = {};
+
+    // 物件価格が入力されている場合の依存計算
+    if (formData.total_price) {
+      const totalPrice = parseFloat(formData.total_price);
+
+      // 購入諸費用 (物件価格の8%)
+      if (!formValues.purchase_expenses) {
+        updatedValues.purchase_expenses = (totalPrice * 0.08).toString();
+      }
+
+      // 自己資金 (物件価格の10% + 購入諸費用)
+      if (!formValues.own_capital) {
+        const purchaseExpenses = parseFloat(updatedValues.purchase_expenses || formData.purchase_expenses || '0');
+        updatedValues.own_capital = (totalPrice * 0.1 + purchaseExpenses).toString();
+      }
+
+      // 借入金額 (物件価格の90%)
+      if (!formValues.loan_amount) {
+        updatedValues.loan_amount = (totalPrice * 0.9).toString();
+      }
+    }
+
+    // 想定売却価格がある場合
+    if (formData.expected_sale_price) {
+      // 売却諸費用 (想定売却価格の4%)
+      if (!formValues.sale_expenses) {
+        const expectedSalePrice = parseFloat(formData.expected_sale_price);
+        updatedValues.sale_expenses = (expectedSalePrice * 0.04).toString();
+      }
+    }
+
+    // 更新する値がある場合のみ state を更新
+    if (Object.keys(updatedValues).length > 0) {
+      setFormData(prev => ({ ...prev, ...updatedValues }));
+    }
+  }, [formData.total_price, formData.expected_sale_price, formValues]);
 
   useEffect(() => {
     console.log("formValues:", formValues);
     setFormData((prev) => ({ ...prev, ...formValues }));
   }, [formValues]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
@@ -80,6 +123,62 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
     }
   };
 
+  // フォームフィールドを描画する関数
+  const renderFormField = (field: {
+    label: string;
+    name: string;
+    type: string;
+    required?: boolean;
+    step?: string;
+    options?: string[];
+  }) => {
+    // owner_type フィールドの場合はセレクト要素を表示
+    if (field.name === "owner_type") {
+      return (
+        <div key={field.name} className="flex flex-col">
+          <label
+            htmlFor={field.name}
+            className="mb-1 font-medium text-gray-700"
+          >
+            {field.label}
+            {field.required && <span className="text-red-500 ml-1">*</span>}
+          </label>
+          <select
+            id={field.name}
+            name={field.name}
+            value={formData[field.name as keyof FormDataType] ?? ""}
+            onChange={handleChange}
+            className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required={field.required}
+          >
+            <option value="個人">個人</option>
+            <option value="法人">法人</option>
+          </select>
+        </div>
+      );
+    }
+
+    // その他のフィールドは通常の入力要素を表示
+    return (
+      <div key={field.name} className="flex flex-col">
+        <label htmlFor={field.name} className="mb-1 font-medium text-gray-700">
+          {field.label}
+          {field.required && <span className="text-red-500 ml-1">*</span>}
+        </label>
+        <input
+          type={field.type}
+          id={field.name}
+          name={field.name}
+          value={formData[field.name as keyof FormDataType] ?? ""}
+          onChange={handleChange}
+          className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required={field.required}
+          step={field.step}
+        />
+      </div>
+    );
+  };
+
   return (
     <form
       onSubmit={handleSubmit}
@@ -98,13 +197,47 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
           type: "number",
           required: true,
         },
-        { label: "物件価格（土地）", name: "land_price", type: "number" },
-        { label: "物件価格（建物）", name: "building_price", type: "number" },
-        { label: "購入諸費用", name: "purchase_expenses", type: "number" },
-        { label: "築年数", name: "building_age", type: "number" },
-        { label: "建物構造", name: "structure", type: "text" },
-        { label: "表面利回り", name: "gross_yield", type: "number" },
-        { label: "現況利回り", name: "current_yield", type: "number" },
+        {
+          label: "物件価格（土地）",
+          name: "land_price",
+          type: "number",
+          required: true
+        },
+        {
+          label: "物件価格（建物）",
+          name: "building_price",
+          type: "number",
+          required: true
+        },
+        {
+          label: "購入諸費用",
+          name: "purchase_expenses",
+          type: "number"
+        },
+        {
+          label: "築年数",
+          name: "building_age",
+          type: "number",
+          required: true
+        },
+        {
+          label: "建物構造",
+          name: "structure",
+          type: "text",
+          required: true
+        },
+        {
+          label: "表面利回り",
+          name: "gross_yield",
+          type: "number",
+          required: true
+        },
+        {
+          label: "現況利回り",
+          name: "current_yield",
+          type: "number",
+          required: true
+        },
         {
           label: "空室率",
           name: "vacancy_rate",
@@ -112,54 +245,80 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
           step: "0.01",
         },
         {
-          label: "家賃下落率",
+          label: "家賃下落率/年",
           name: "rent_decline_rate",
           type: "number",
           step: "0.01",
         },
         {
-          label: "年間運営費",
+          label: "年間運営経費",
           name: "annual_operating_expenses",
           type: "number",
         },
-        { label: "自己資金", name: "own_capital", type: "number" },
-        { label: "借入額", name: "loan_amount", type: "number" },
-        { label: "借入期間", name: "loan_term_years", type: "number" },
+        {
+          label: "自己資金",
+          name: "own_capital",
+          type: "number"
+        },
+        {
+          label: "借入金額",
+          name: "loan_amount",
+          type: "number"
+        },
+        {
+          label: "借入期間",
+          name: "loan_term_years",
+          type: "number",
+        },
         {
           label: "ローン金利",
           name: "interest_rate",
           type: "number",
           step: "0.01",
+          required: true,
         },
-        { label: "ローンタイプ", name: "loan_type", type: "text" },
+        {
+          label: "ローンタイプ",
+          name: "loan_type",
+          type: "text",
+          required: true,
+        },
         {
           label: "期待利回り",
           name: "expected_rate_of_return",
           type: "number",
+          required: true,
         },
-        { label: "想定売却時期", name: "expected_sale_year", type: "date" },
-        { label: "想定売却価格", name: "expected_sale_price", type: "number" },
-        { label: "売却諸費用", name: "sale_expenses", type: "number" },
-        { label: "オーナー種別", name: "owner_type", type: "text" },
-        { label: "年収", name: "annual_income", type: "number" },
-      ].map((field) => (
-        <div key={field.name} className="flex flex-col">
-          <label
-            htmlFor={field.name}
-            className="mb-1 font-medium text-gray-700"
-          >
-            {field.label}
-          </label>
-          <input
-            {...field}
-            id={field.name}
-            name={field.name}
-            value={formData[field.name as keyof FormDataType] ?? ""}
-            onChange={handleChange}
-            className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
-      ))}
+        {
+          label: "売却想定時期",
+          name: "expected_sale_year",
+          type: "date",
+          required: true,
+        },
+        {
+          label: "売却想定価格",
+          name: "expected_sale_price",
+          type: "number",
+          required: true,
+        },
+        {
+          label: "売却諸費用",
+          name: "sale_expenses",
+          type: "number"
+        },
+        {
+          label: "個人／法人",
+          name: "owner_type",
+          type: "select",
+          required: true,
+        },
+        {
+          label: "年収",
+          name: "annual_income",
+          type: "number",
+          required: true,
+        },
+      ].map(renderFormField)}
 
       <button
         type="submit"
