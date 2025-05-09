@@ -61,14 +61,6 @@ export default function Home({ liff, liffError }: HomeProps) {
         <h1 className="text-2xl font-bold text-center mb-6">
           不動産投資レポート作成
         </h1>
-        <div>
-          <p>
-            こちらは不動産投資に有用なレポートを作成するアプリです。下記の項目を全て入力し「送信」ボタンを押してください。レポート画面が表示されます。レポートは「ダウンロード」ボタンを押すとダウンロードが可能です。
-          </p>
-          <p>
-            また、物件概要書PDFファイルをアップロードするとレポート作成に必要なデータをPDFファイルから抜き出して自動で入力してくれます。
-          </p>
-        </div>
         {liffError && (
           <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg">
             LIFFの初期化に失敗しました: {liffError}
@@ -88,25 +80,26 @@ export default function Home({ liff, liffError }: HomeProps) {
         )}
 
         {reportData ? (
-          // reportData がある場合は Report コンポーネントだけを表示
-          <Report data={reportData} />
+          <>
+            <div className="mb-4 p-3">
+              <p>
+                レポートを作成しました。レポートをダウンロードするには下記のボタンを押してください。
+              </p>
+            </div>
+            <Report data={reportData} />
+          </>
         ) : (
           <>
-            {/* reportData が未定の場合は、PDFアップロードと ReportForm を表示 */}
+            <div>
+              <p>
+                こちらは不動産投資に有用なレポートを作成するアプリです。下記の項目を全て入力し「送信」ボタンを押してください。レポート画面が表示されます。レポートは「ダウンロード」ボタンを押すとダウンロードが可能です。
+              </p>
+              <p>
+                また、物件概要書PDFファイルをアップロードするとレポート作成に必要なデータをPDFファイルから抜き出して自動で入力してくれます。
+              </p>
+            </div>
             {isLiffReady && liff && (
               <PdfUploader liff={liff} onUploadSuccess={handleUploadSuccess} />
-            )}
-            {isLiffReady && liff && (
-              <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-600">
-                  プラットフォーム: {liff.getOS()}
-                </p>
-                {liff.isLoggedIn() && (
-                  <p className="text-sm text-gray-600">
-                    ログイン状態: ログイン済み
-                  </p>
-                )}
-              </div>
             )}
             <ReportForm
               formValues={formValues}

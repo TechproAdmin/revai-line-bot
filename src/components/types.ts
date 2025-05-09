@@ -1,34 +1,4 @@
 // @/components/types.ts
-export type ReportDataType = {
-    name?: string;
-    date?: string;
-    amount?: string;
-    purchase_date?: string;
-    total_price?: string;
-    land_price?: string;
-    building_price?: string;
-    purchase_expenses?: string;
-    building_age?: string;
-    structure?: string;
-    gross_yield?: string;
-    current_yield?: string;
-    vacancy_rate?: number;
-    rent_decline_rate?: number;
-    annual_operating_expenses?: string;
-    own_capital?: string;
-    loan_amount?: string;
-    loan_term_years?: number;
-    interest_rate?: string;
-    loan_type?: string;
-    expected_rate_of_return?: string;
-    expected_sale_year?: string;
-    expected_sale_price?: string;
-    sale_expenses?: string;
-    owner_type?: string;
-    annual_income?: string;
-};
-
-
 export type PdfExtractionResult = {
     total_price: string | null;
     land_price: string | null;

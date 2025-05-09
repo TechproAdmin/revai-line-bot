@@ -100,16 +100,7 @@ export default async function handler(
 
   try {
     // formidableでリクエストをパース
-    const { fields, files } = await parseForm(req);
-
-    // userIdを取得
-    const userIdField = fields.userId;
-    const userId = Array.isArray(userIdField) ? userIdField[0] : userIdField;
-
-    if (!userId) {
-      return res.status(400).json({ message: "userId is required." });
-    }
-    console.log("Received userId:", userId);
+    const files = (await parseForm(req)).files;
 
     // ファイル情報を取得
     const fileField = files.file;
@@ -147,7 +138,6 @@ export default async function handler(
     // 成功レスポンス
     res.status(200).json({
       message: "PDF successfully analyzed!",
-      userId: userId,
       filename: uploadedFile.originalFilename,
       data: propertyData,
     });

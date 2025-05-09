@@ -1,6 +1,6 @@
 // components/ReportForm.tsx
 import { useState, useEffect } from "react";
-import { RealEstateAnalysisRes, ReportDataType } from "@/components/types";
+import { RealEstateAnalysisRes } from "@/components/types";
 
 export type FormDataType = {
   purchase_date?: string;
@@ -28,12 +28,44 @@ export type FormDataType = {
   annual_income?: string;
 };
 
+
 interface ReportFormProps {
   formValues?: Partial<FormDataType>;
   onSuccess: (data: RealEstateAnalysisRes) => void;
 }
 
 export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
+  const _dummyData: FormDataType = {
+    purchase_date: "2025-01-01",
+    total_price: "100000000",
+    land_price: "40000000",
+    building_price: "60000000",
+    purchase_expenses: "8000000",
+    building_age: "10",
+    structure: "重量鉄骨造(S)",
+    gross_yield: "0.08",
+    current_yield: "0.08",
+    vacancy_rate: 0.05,
+    rent_decline_rate: 0.01,
+    annual_operating_expenses: "560000",
+    own_capital: "18000000",
+    loan_amount: "90000000",
+    loan_term_years: 35,
+    interest_rate: "0.025",
+    loan_type: "元利均等",
+    expected_rate_of_return: "0.03",
+    expected_sale_year: "2055-01-01",
+    expected_sale_price: "60000000",
+    sale_expenses: "2400000",
+    owner_type: "個人",
+    annual_income: "10000000"
+  };
+
+  const _applyTestData = () => {
+    // テストデータを適用します
+    setFormData({ ..._dummyData });
+  };
+
   const [formData, setFormData] = useState<FormDataType>({
     vacancy_rate: 0.05,
     loan_term_years: 35,
@@ -320,12 +352,24 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
         },
       ].map(renderFormField)}
 
+
+      {process.env.NODE_ENV === 'development' && (
+        <button
+          type="button"
+          onClick={_applyTestData}
+          className="w-full bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg transition"
+        >
+          テストデータを入力
+        </button>
+      )}
+
       <button
         type="submit"
         className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition"
       >
         送信
       </button>
+
     </form>
   );
 }

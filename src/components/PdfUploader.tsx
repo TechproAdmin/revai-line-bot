@@ -58,14 +58,6 @@ export function PdfUploader({ liff, onUploadSuccess }: PdfUploaderProps) {
       const formData = new FormData();
       formData.append("file", selectedFile);
 
-      // LIFF ログイン済みの場合、IDトークンからユーザー情報を付加
-      if (liff && liff.isLoggedIn()) {
-        const idToken = liff.getDecodedIDToken();
-        if (idToken && idToken.sub) {
-          formData.append("userId", idToken.sub);
-        }
-      }
-
       const response = await fetch("/api/upload", {
         method: "POST",
         body: formData,
