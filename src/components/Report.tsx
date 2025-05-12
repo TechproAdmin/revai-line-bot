@@ -247,111 +247,175 @@ export function Report({ data }: ReportProps) {
   };
 
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">不動産投資分析レポート</h1>
-        <button
-          id="download-button"
-          onClick={handleDownloadPDF}
-          style={{
-            backgroundColor: '#3b82f6',
-            color: '#ffffff',
-            padding: '0.5rem 1rem',
-            borderRadius: '0.5rem',
-            fontWeight: '500',
-            display: 'flex',
-            alignItems: 'center',
-            border: 'none',
-            cursor: 'pointer'
-          }}
-          className="hover:bg-blue-600 transition-colors"
-        >
-          <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-          PDFをダウンロード
-        </button>
-      </div>
+    <div style={{ overflow: 'auto', width: '100%' }}>
+      <div
+        ref={reportRef}
+        style={{
+          width: '100%',
+          maxWidth: '794px',
+          margin: '0 auto',
+          backgroundColor: '#ffffff',
+          padding: '24px'
+        }}
+      >
+        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
+          <h2 style={{
+            fontSize: '24px',
+            fontWeight: 'bold',
+            color: '#1F2937',
+            marginBottom: '16px'
+          }}>
+            不動産投資分析レポート
+          </h2>
 
-      <div ref={reportRef} className="max-w-5xl mx-auto p-8 bg-white print:bg-white" style={{ width: '794px' }}>
-        <h2 className="text-3xl font-bold mb-8 text-center text-gray-800" style={{ color: '#1F2937' }}>
-          不動産投資分析レポート
-        </h2>
+          <button
+            id="download-button"
+            onClick={handleDownloadPDF}
+            style={{
+              backgroundColor: '#3b82f6',
+              color: '#ffffff',
+              padding: '8px 16px',
+              borderRadius: '6px',
+              fontWeight: '500',
+              display: 'inline-flex',
+              alignItems: 'center',
+              border: 'none',
+              cursor: 'pointer',
+              transition: 'background-color 0.2s ease',
+            }}
+            onMouseOver={(e) => {
+              e.currentTarget.style.backgroundColor = '#2563eb';
+            }}
+            onMouseOut={(e) => {
+              e.currentTarget.style.backgroundColor = '#3b82f6';
+            }}
+          >
+            <svg style={{ width: '20px', height: '20px', marginRight: '8px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            PDFをダウンロード
+          </button>
+        </div>
 
         {/* サマリーセクション */}
-        <div className="grid grid-cols-3 gap-6 mb-8" style={{ pageBreakInside: 'avoid' }}>
-          <div className="bg-white border border-gray-200 rounded-lg p-6" style={{ backgroundColor: '#ffffff', borderColor: '#e5e7eb' }}>
-            <h3 className="text-lg font-semibold mb-4 text-gray-700" style={{ color: '#374151' }}>投資概要</h3>
-            <div className="space-y-3">
-              <p className="flex justify-between">
-                <span className="font-medium text-gray-600" style={{ color: '#4B5563' }}>投資回収期間:</span>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))',
+          gap: '16px',
+          marginBottom: '32px'
+        }}>
+          <div style={{
+            backgroundColor: '#ffffff',
+            border: '1px solid #e5e7eb',
+            borderRadius: '8px',
+            padding: '20px'
+          }}>
+            <h3 style={{
+              fontSize: '16px',
+              fontWeight: '600',
+              marginBottom: '16px',
+              color: '#374151'
+            }}>投資概要</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#4B5563' }}>投資回収期間:</span>
                 <span style={{ color: '#000000', fontWeight: '600' }}>{data.payback_period}年</span>
-              </p>
-              <p className="flex justify-between">
-                <span className="font-medium text-gray-600" style={{ color: '#4B5563' }}>DSCR:</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#4B5563' }}>DSCR:</span>
                 <span style={{ color: '#000000', fontWeight: '600' }}>{data.debt_service_coverage_ratio.toFixed(2)}</span>
-              </p>
-              <p className="flex justify-between">
-                <span className="font-medium text-gray-600" style={{ color: '#4B5563' }}>LTV比率:</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#4B5563' }}>LTV比率:</span>
                 <span style={{ color: '#000000', fontWeight: '600' }}>{(data.loan_to_value * 100).toFixed(0)}%</span>
-              </p>
-              <p className="flex justify-between">
-                <span className="font-medium text-gray-600" style={{ color: '#4B5563' }}>総利益:</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#4B5563' }}>総利益:</span>
                 <span style={{ color: '#000000', fontWeight: '600' }}>{formatAmount(data.total_pl)}</span>
-              </p>
+              </div>
             </div>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-lg p-6" style={{ backgroundColor: '#ffffff', borderColor: '#e5e7eb' }}>
-            <h3 className="text-lg font-semibold mb-4 text-gray-700" style={{ color: '#374151' }}>収益指標</h3>
-            <div className="space-y-3">
-              <p className="flex justify-between">
-                <span className="font-medium text-gray-600" style={{ color: '#4B5563' }}>NOI利回り:</span>
+          <div style={{
+            backgroundColor: '#ffffff',
+            border: '1px solid #e5e7eb',
+            borderRadius: '8px',
+            padding: '20px'
+          }}>
+            <h3 style={{
+              fontSize: '16px',
+              fontWeight: '600',
+              marginBottom: '16px',
+              color: '#374151'
+            }}>収益指標</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#4B5563' }}>NOI利回り:</span>
                 <span style={{ color: '#000000', fontWeight: '600' }}>{formatPercent(data.noi_yield * 100)}</span>
-              </p>
-              <p className="flex justify-between">
-                <span className="font-medium text-gray-600" style={{ color: '#4B5563' }}>CCリターン:</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#4B5563' }}>CCリターン:</span>
                 <span style={{ color: '#000000', fontWeight: '600' }}>{formatPercent(data.cash_on_cash_return * 100)}</span>
-              </p>
-              <p className="flex justify-between">
-                <span className="font-medium text-gray-600" style={{ color: '#4B5563' }}>IRR:</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#4B5563' }}>IRR:</span>
                 <span style={{ color: '#000000', fontWeight: '600' }}>{formatPercent(data.internal_rate_of_return * 100)}</span>
-              </p>
-              <p className="flex justify-between">
-                <span className="font-medium text-gray-600" style={{ color: '#4B5563' }}>ROI:</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#4B5563' }}>ROI:</span>
                 <span style={{ color: '#000000', fontWeight: '600' }}>{formatPercent(data.return_on_investment * 100)}</span>
-              </p>
+              </div>
             </div>
           </div>
 
-          <div className="bg-white border border-gray-200 rounded-lg p-6" style={{ backgroundColor: '#ffffff', borderColor: '#e5e7eb' }}>
-            <h3 className="text-lg font-semibold mb-4 text-gray-700" style={{ color: '#374151' }}>初期投資</h3>
-            <div className="space-y-3">
-              <p className="flex justify-between">
-                <span className="font-medium text-gray-600" style={{ color: '#4B5563' }}>初期投資額:</span>
+          <div style={{
+            backgroundColor: '#ffffff',
+            border: '1px solid #e5e7eb',
+            borderRadius: '8px',
+            padding: '20px'
+          }}>
+            <h3 style={{
+              fontSize: '16px',
+              fontWeight: '600',
+              marginBottom: '16px',
+              color: '#374151'
+            }}>初期投資</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#4B5563' }}>初期投資額:</span>
                 <span style={{ color: '#000000', fontWeight: '600' }}>{formatAmount(Math.abs(data.befor_tax_cash_flow[0]))}</span>
-              </p>
-              <p className="flex justify-between">
-                <span className="font-medium text-gray-600" style={{ color: '#4B5563' }}>ローン残高:</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#4B5563' }}>ローン残高:</span>
                 <span style={{ color: '#000000', fontWeight: '600' }}>{formatAmount(data.loan_balance[0])}</span>
-              </p>
-              <p className="flex justify-between">
-                <span className="font-medium text-gray-600" style={{ color: '#4B5563' }}>年間賃料:</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#4B5563' }}>年間賃料:</span>
                 <span style={{ color: '#000000', fontWeight: '600' }}>{formatAmount(data.annual_rent_income[1])}</span>
-              </p>
-              <p className="flex justify-between">
-                <span className="font-medium text-gray-600" style={{ color: '#4B5563' }}>NOI(1年目):</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: '#4B5563' }}>NOI(1年目):</span>
                 <span style={{ color: '#000000', fontWeight: '600' }}>{formatAmount(data.net_operating_income[1])}</span>
-              </p>
+              </div>
             </div>
           </div>
         </div>
 
         {/* グラフセクション */}
-        <div className="space-y-8">
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           {/* 収入と支出のグラフ */}
-          <div className="bg-white border border-gray-200 rounded-lg p-6" style={{ pageBreakInside: 'avoid' }}>
-            <h3 className="text-lg font-semibold mb-4 text-gray-700">
+          <div style={{
+            backgroundColor: '#ffffff',
+            border: '1px solid #e5e7eb',
+            borderRadius: '8px',
+            padding: '20px'
+          }}>
+            <h3 style={{
+              fontSize: '18px',
+              fontWeight: '600',
+              marginBottom: '12px',
+              color: '#374151'
+            }}>
               年間収入と支出
             </h3>
             <div style={{ height: '300px', width: '100%' }}>
@@ -374,8 +438,18 @@ export function Report({ data }: ReportProps) {
           </div>
 
           {/* キャッシュフローのグラフ */}
-          <div className="bg-white border border-gray-200 rounded-lg p-6" style={{ pageBreakBefore: 'auto', pageBreakInside: 'avoid' }}>
-            <h3 className="text-lg font-semibold mb-4 text-gray-700">
+          <div style={{
+            backgroundColor: '#ffffff',
+            border: '1px solid #e5e7eb',
+            borderRadius: '8px',
+            padding: '20px'
+          }}>
+            <h3 style={{
+              fontSize: '18px',
+              fontWeight: '600',
+              marginBottom: '12px',
+              color: '#374151'
+            }}>
               キャッシュフロー
             </h3>
             <div style={{ height: '300px', width: '100%' }}>
@@ -402,8 +476,18 @@ export function Report({ data }: ReportProps) {
           </div>
 
           {/* 累積キャッシュフローのグラフ */}
-          <div className="bg-white border border-gray-200 rounded-lg p-6" style={{ pageBreakBefore: 'auto', pageBreakInside: 'avoid' }}>
-            <h3 className="text-lg font-semibold mb-4 text-gray-700">
+          <div style={{
+            backgroundColor: '#ffffff',
+            border: '1px solid #e5e7eb',
+            borderRadius: '8px',
+            padding: '20px'
+          }}>
+            <h3 style={{
+              fontSize: '18px',
+              fontWeight: '600',
+              marginBottom: '12px',
+              color: '#374151'
+            }}>
               累積キャッシュフロー
             </h3>
             <div style={{ height: '300px', width: '100%' }}>
@@ -431,8 +515,18 @@ export function Report({ data }: ReportProps) {
           </div>
 
           {/* ローン返済内訳のグラフ */}
-          <div className="bg-white border border-gray-200 rounded-lg p-6" style={{ pageBreakBefore: 'auto', pageBreakInside: 'avoid' }}>
-            <h3 className="text-lg font-semibold mb-4 text-gray-700">
+          <div style={{
+            backgroundColor: '#ffffff',
+            border: '1px solid #e5e7eb',
+            borderRadius: '8px',
+            padding: '20px'
+          }}>
+            <h3 style={{
+              fontSize: '18px',
+              fontWeight: '600',
+              marginBottom: '12px',
+              color: '#374151'
+            }}>
               ローン返済内訳
             </h3>
             <div style={{ height: '300px', width: '100%' }}>
@@ -476,8 +570,18 @@ export function Report({ data }: ReportProps) {
           </div>
 
           {/* ローン残高の推移 */}
-          <div className="bg-white border border-gray-200 rounded-lg p-6" style={{ pageBreakBefore: 'auto', pageBreakInside: 'avoid' }}>
-            <h3 className="text-lg font-semibold mb-4 text-gray-700">
+          <div style={{
+            backgroundColor: '#ffffff',
+            border: '1px solid #e5e7eb',
+            borderRadius: '8px',
+            padding: '20px'
+          }}>
+            <h3 style={{
+              fontSize: '18px',
+              fontWeight: '600',
+              marginBottom: '12px',
+              color: '#374151'
+            }}>
               ローン残高の推移
             </h3>
             <div style={{ height: '300px', width: '100%' }}>
@@ -504,8 +608,18 @@ export function Report({ data }: ReportProps) {
           </div>
 
           {/* 投資収益性指標の円グラフ */}
-          <div className="bg-white border border-gray-200 rounded-lg p-6" style={{ pageBreakBefore: 'auto', pageBreakInside: 'avoid' }}>
-            <h3 className="text-lg font-semibold mb-4 text-gray-700">
+          <div style={{
+            backgroundColor: '#ffffff',
+            border: '1px solid #e5e7eb',
+            borderRadius: '8px',
+            padding: '20px'
+          }}>
+            <h3 style={{
+              fontSize: '18px',
+              fontWeight: '600',
+              marginBottom: '12px',
+              color: '#374151'
+            }}>
               投資収益性指標
             </h3>
             <div style={{ height: '350px', width: '100%' }}>

@@ -85,8 +85,8 @@ export default function Home({ liff, liffError }: HomeProps) {
               <p>
                 レポートを作成しました。レポートをダウンロードするには下記のボタンを押してください。
               </p>
+              <Report data={reportData} />
             </div>
-            <Report data={reportData} />
           </>
         ) : (
           <>
