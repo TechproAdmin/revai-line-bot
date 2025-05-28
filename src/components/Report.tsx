@@ -177,7 +177,7 @@ export function Report({ data }: ReportProps) {
       }
 
       // PDFを保存
-      pdf.save("不動産投資分析レポート.pdf");
+      pdf.save("収益性分析レポート.pdf");
 
       // ボタンの状態をリセット
       if (button) {
@@ -197,54 +197,53 @@ export function Report({ data }: ReportProps) {
     }
   };
 
-  // 年次データのフォーマット
-  const yearlyData = data.annual_rent_income.map((value, index) => {
-    return {
-      year: index,
-      rent: value,
-      noi: data.net_operating_income[index],
-      loanPayment: data.annual_loan_repayment[index],
-      cashFlow: data.befor_tax_cash_flow[index],
-      principalPayment: data.annual_principal_payment[index],
-      interestPayment: data.annual_interest_payment[index],
-      loanBalance: data.loan_balance[index],
-    };
-  });
-
-  // キャッシュフロー累積データ
-  const cumulativeCashFlowData = data.cumulative_cash_flow.map(
-    (value, index) => {
-      return {
-        year: index,
-        cumulativeCashFlow: value,
-      };
-    }
-  );
-
-  // 投資リターン指標のためのデータ
-  const returnMetrics = [
-    { name: "NOI利回り", value: data.noi_yield * 100 },
-    {
-      name: "キャッシュオンキャッシュリターン",
-      value: data.cash_on_cash_return * 100,
-    },
-    { name: "IRR", value: data.internal_rate_of_return * 100 },
-    { name: "売却時利回り", value: data.sale_gross_yield * 100 },
-    { name: "ROI", value: data.return_on_investment * 100 },
-  ];
-
-  // パイチャート用のカラー
-  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#8884D8"];
+  // 金額をフォーマットする関数（万円単位）
+  const formatAmount = (amount: number) => {
+    return `¥${(amount / 10000).toFixed(0)}`;
+  };
 
   // 金額をフォーマットする関数（百万円単位）
-  const formatAmount = (amount: number) => {
-    return `${(amount / 1000000).toFixed(2)}M`;
+  const formatAmountM = (amount: number) => {
+    return `¥${(amount / 1000000).toFixed(1)}`;
   };
 
   // パーセントをフォーマットする関数
   const formatPercent = (percent: number) => {
-    return `${percent.toFixed(2)}%`;
+    return `${(percent * 100).toFixed(2)}%`;
   };
+
+  // 年数をフォーマットする関数
+  const formatYears = (years: number) => {
+    return `${years.toFixed(2)}年`;
+  };
+
+  // 年次データのフォーマット（最初の20年間）
+  const yearlyData = data.annual_rent_income.slice(1, 21).map((value, index) => {
+    const year = index + 1;
+    return {
+      year: `${year}年目`,
+      rent: (value / 10000).toFixed(2),
+      expense: 0.56, // 運営経費は固定
+      noi: (data.net_operating_income[year] / 10000).toFixed(2),
+      loanPayment: (data.annual_loan_repayment[year] / 10000).toFixed(2),
+      btcf: (data.befor_tax_cash_flow[year] / 10000).toFixed(2),
+      atcf: (data.after_tax_cash_flow[year] / 10000).toFixed(2),
+    };
+  });
+
+  // 21-40年目のデータ
+  const yearlyDataLater = data.annual_rent_income.slice(21, 41).map((value, index) => {
+    const year = index + 21;
+    return {
+      year: `${year}年目`,
+      rent: (value / 10000).toFixed(2),
+      expense: 0.56,
+      noi: (data.net_operating_income[year] / 10000).toFixed(2),
+      loanPayment: year <= 35 ? (data.annual_loan_repayment[year] / 10000).toFixed(2) : "0.00",
+      btcf: (data.befor_tax_cash_flow[year] / 10000).toFixed(2),
+      atcf: (data.after_tax_cash_flow[year] / 10000).toFixed(2),
+    };
+  });
 
   return (
     <div style={{ overflow: 'auto', width: '100%' }}>
@@ -252,404 +251,451 @@ export function Report({ data }: ReportProps) {
         ref={reportRef}
         style={{
           width: '100%',
-          maxWidth: '794px',
+          maxWidth: '1000px',
           margin: '0 auto',
           backgroundColor: '#ffffff',
-          padding: '24px'
+          padding: '20px',
+          fontFamily: 'Arial, sans-serif',
+          fontSize: '12px'
         }}
       >
-        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <h2 style={{
-            fontSize: '24px',
-            fontWeight: 'bold',
-            color: '#1F2937',
-            marginBottom: '16px'
-          }}>
-            不動産投資分析レポート
-          </h2>
-
-          <button
-            id="download-button"
-            onClick={handleDownloadPDF}
-            style={{
-              backgroundColor: '#3b82f6',
-              color: '#ffffff',
-              padding: '8px 16px',
-              borderRadius: '6px',
-              fontWeight: '500',
-              display: 'inline-flex',
-              alignItems: 'center',
-              border: 'none',
-              cursor: 'pointer',
-              transition: 'background-color 0.2s ease',
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.backgroundColor = '#2563eb';
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.backgroundColor = '#3b82f6';
-            }}
-          >
-            <svg style={{ width: '20px', height: '20px', marginRight: '8px' }} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            PDFをダウンロード
-          </button>
-        </div>
-
-        {/* サマリーセクション */}
+        {/* ヘッダー */}
         <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(230px, 1fr))',
-          gap: '16px',
-          marginBottom: '32px'
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '20px',
+          borderBottom: '2px solid #333',
+          paddingBottom: '10px'
         }}>
-          <div style={{
-            backgroundColor: '#ffffff',
-            border: '1px solid #e5e7eb',
-            borderRadius: '8px',
-            padding: '20px'
+          <h1 style={{
+            fontSize: '18px',
+            fontWeight: 'bold',
+            color: '#333',
+            margin: 0
           }}>
-            <h3 style={{
-              fontSize: '16px',
-              fontWeight: '600',
-              marginBottom: '16px',
-              color: '#374151'
-            }}>投資概要</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#4B5563' }}>投資回収期間:</span>
-                <span style={{ color: '#000000', fontWeight: '600' }}>{data.payback_period}年</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#4B5563' }}>DSCR:</span>
-                <span style={{ color: '#000000', fontWeight: '600' }}>{data.debt_service_coverage_ratio.toFixed(2)}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#4B5563' }}>LTV比率:</span>
-                <span style={{ color: '#000000', fontWeight: '600' }}>{(data.loan_to_value * 100).toFixed(0)}%</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#4B5563' }}>総利益:</span>
-                <span style={{ color: '#000000', fontWeight: '600' }}>{formatAmount(data.total_pl)}</span>
-              </div>
-            </div>
-          </div>
-
+            収益性分析レポート【○○マンション】
+          </h1>
           <div style={{
-            backgroundColor: '#ffffff',
-            border: '1px solid #e5e7eb',
-            borderRadius: '8px',
-            padding: '20px'
+            backgroundColor: '#a5b4fc',
+            padding: '5px 15px',
+            color: '#333',
+            fontWeight: 'bold'
           }}>
-            <h3 style={{
-              fontSize: '16px',
-              fontWeight: '600',
-              marginBottom: '16px',
-              color: '#374151'
-            }}>収益指標</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#4B5563' }}>NOI利回り:</span>
-                <span style={{ color: '#000000', fontWeight: '600' }}>{formatPercent(data.noi_yield * 100)}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#4B5563' }}>CCリターン:</span>
-                <span style={{ color: '#000000', fontWeight: '600' }}>{formatPercent(data.cash_on_cash_return * 100)}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#4B5563' }}>IRR:</span>
-                <span style={{ color: '#000000', fontWeight: '600' }}>{formatPercent(data.internal_rate_of_return * 100)}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#4B5563' }}>ROI:</span>
-                <span style={{ color: '#000000', fontWeight: '600' }}>{formatPercent(data.return_on_investment * 100)}</span>
-              </div>
-            </div>
-          </div>
-
-          <div style={{
-            backgroundColor: '#ffffff',
-            border: '1px solid #e5e7eb',
-            borderRadius: '8px',
-            padding: '20px'
-          }}>
-            <h3 style={{
-              fontSize: '16px',
-              fontWeight: '600',
-              marginBottom: '16px',
-              color: '#374151'
-            }}>初期投資</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#4B5563' }}>初期投資額:</span>
-                <span style={{ color: '#000000', fontWeight: '600' }}>{formatAmount(Math.abs(data.befor_tax_cash_flow[0]))}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#4B5563' }}>ローン残高:</span>
-                <span style={{ color: '#000000', fontWeight: '600' }}>{formatAmount(data.loan_balance[0])}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#4B5563' }}>年間賃料:</span>
-                <span style={{ color: '#000000', fontWeight: '600' }}>{formatAmount(data.annual_rent_income[1])}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#4B5563' }}>NOI(1年目):</span>
-                <span style={{ color: '#000000', fontWeight: '600' }}>{formatAmount(data.net_operating_income[1])}</span>
-              </div>
-            </div>
+            ロゴ
           </div>
         </div>
 
-        {/* グラフセクション */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-          {/* 収入と支出のグラフ */}
-          <div style={{
-            backgroundColor: '#ffffff',
-            border: '1px solid #e5e7eb',
-            borderRadius: '8px',
-            padding: '20px'
-          }}>
-            <h3 style={{
-              fontSize: '18px',
-              fontWeight: '600',
-              marginBottom: '12px',
-              color: '#374151'
+        <button
+          id="download-button"
+          onClick={handleDownloadPDF}
+          style={{
+            backgroundColor: '#3b82f6',
+            color: '#ffffff',
+            padding: '8px 16px',
+            borderRadius: '6px',
+            fontWeight: '500',
+            display: 'inline-flex',
+            alignItems: 'center',
+            border: 'none',
+            cursor: 'pointer',
+            marginBottom: '20px',
+            transition: 'background-color 0.2s ease',
+          }}
+        >
+          PDFをダウンロード
+        </button>
+
+        {/* 条件と分析結果のセクション */}
+        <div style={{ display: 'flex', gap: '20px', marginBottom: '30px' }}>
+          {/* 条件 */}
+          <div style={{ flex: 1 }}>
+            <div style={{
+              backgroundColor: '#333',
+              color: 'white',
+              padding: '8px',
+              fontWeight: 'bold',
+              marginBottom: '2px'
             }}>
-              年間収入と支出
+              ■ 条件
+            </div>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px' }}>
+              <tbody>
+                <tr>
+                  <td style={{ backgroundColor: '#e8f4fd', padding: '6px', border: '1px solid #ccc' }}>購入金額</td>
+                  <td style={{ padding: '6px', border: '1px solid #ccc', textAlign: 'right' }}>¥100,000,000</td>
+                </tr>
+                <tr>
+                  <td style={{ backgroundColor: '#e8f4fd', padding: '6px', border: '1px solid #ccc' }}>購入諸費用</td>
+                  <td style={{ padding: '6px', border: '1px solid #ccc', textAlign: 'right' }}>¥8,000,000</td>
+                </tr>
+                <tr>
+                  <td style={{ backgroundColor: '#e8f4fd', padding: '6px', border: '1px solid #ccc' }}>建物築年数</td>
+                  <td style={{ padding: '6px', border: '1px solid #ccc', textAlign: 'right' }}>10年</td>
+                </tr>
+                <tr>
+                  <td style={{ backgroundColor: '#e8f4fd', padding: '6px', border: '1px solid #ccc' }}>建物構造</td>
+                  <td style={{ padding: '6px', border: '1px solid #ccc', textAlign: 'right' }}>重量鉄骨造(S)</td>
+                </tr>
+                <tr>
+                  <td style={{ backgroundColor: '#e8f4fd', padding: '6px', border: '1px solid #ccc' }}>空室率</td>
+                  <td style={{ padding: '6px', border: '1px solid #ccc', textAlign: 'right' }}>5.00%</td>
+                </tr>
+                <tr>
+                  <td style={{ backgroundColor: '#e8f4fd', padding: '6px', border: '1px solid #ccc' }}>賃料下落率/年</td>
+                  <td style={{ padding: '6px', border: '1px solid #ccc', textAlign: 'right' }}>1.00%</td>
+                </tr>
+                <tr>
+                  <td style={{ backgroundColor: '#e8f4fd', padding: '6px', border: '1px solid #ccc' }}>年間運営経費</td>
+                  <td style={{ padding: '6px', border: '1px solid #ccc', textAlign: 'right' }}>¥560,000</td>
+                </tr>
+                <tr>
+                  <td style={{ backgroundColor: '#e8f4fd', padding: '6px', border: '1px solid #ccc' }}>自己資金</td>
+                  <td style={{ padding: '6px', border: '1px solid #ccc', textAlign: 'right' }}>¥18,000,000</td>
+                </tr>
+                <tr>
+                  <td style={{ backgroundColor: '#e8f4fd', padding: '6px', border: '1px solid #ccc' }}>借入金額</td>
+                  <td style={{ padding: '6px', border: '1px solid #ccc', textAlign: 'right' }}>¥90,000,000</td>
+                </tr>
+                <tr>
+                  <td style={{ backgroundColor: '#e8f4fd', padding: '6px', border: '1px solid #ccc' }}>ローン期間</td>
+                  <td style={{ padding: '6px', border: '1px solid #ccc', textAlign: 'right' }}>35年</td>
+                </tr>
+                <tr>
+                  <td style={{ backgroundColor: '#e8f4fd', padding: '6px', border: '1px solid #ccc' }}>投資期間</td>
+                  <td style={{ padding: '6px', border: '1px solid #ccc', textAlign: 'right' }}>40年</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          {/* 分析結果 */}
+          <div style={{ flex: 1 }}>
+            <div style={{
+              backgroundColor: '#333',
+              color: 'white',
+              padding: '8px',
+              fontWeight: 'bold',
+              marginBottom: '2px'
+            }}>
+              ■ 分析結果
+            </div>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '11px' }}>
+              <tbody>
+                <tr>
+                  <td style={{ backgroundColor: '#e8f4fd', padding: '6px', border: '1px solid #ccc' }}>純収益（NOI）</td>
+                  <td style={{ padding: '6px', border: '1px solid #ccc', textAlign: 'right' }}>{formatAmountM(data.net_operating_income[1])}</td>
+                  <td style={{ padding: '6px', border: '1px solid #ccc', fontSize: '10px', color: '#666' }}>経費差引後の年間収益</td>
+                </tr>
+                <tr>
+                  <td style={{ backgroundColor: '#e8f4fd', padding: '6px', border: '1px solid #ccc' }}>実質利回り（NOI利回り）</td>
+                  <td style={{ padding: '6px', border: '1px solid #ccc', textAlign: 'right' }}>{formatPercent(data.noi_yield)}</td>
+                  <td style={{ padding: '6px', border: '1px solid #ccc', fontSize: '10px', color: '#666' }}>純収益÷購入価格</td>
+                </tr>
+                <tr>
+                  <td style={{ backgroundColor: '#e8f4fd', padding: '6px', border: '1px solid #ccc' }}>総収益率（FCR）</td>
+                  <td style={{ padding: '6px', border: '1px solid #ccc', textAlign: 'right' }}>{formatPercent(data.free_clearly_return)}</td>
+                  <td style={{ padding: '6px', border: '1px solid #ccc', fontSize: '10px', color: '#666' }}>総収益÷物件価格</td>
+                </tr>
+                <tr>
+                  <td style={{ backgroundColor: '#e8f4fd', padding: '6px', border: '1px solid #ccc' }}>自己資金配当率（CCR）</td>
+                  <td style={{ padding: '6px', border: '1px solid #ccc', textAlign: 'right' }}>{formatPercent(data.cash_on_cash_return)}</td>
+                  <td style={{ padding: '6px', border: '1px solid #ccc', fontSize: '10px', color: '#666' }}>純収益÷自己資金</td>
+                </tr>
+                <tr>
+                  <td style={{ backgroundColor: '#e8f4fd', padding: '6px', border: '1px solid #ccc' }}>全期間利回り(内部収益率、IRR)</td>
+                  <td style={{ padding: '6px', border: '1px solid #ccc', textAlign: 'right' }}>{formatPercent(data.internal_rate_of_return)}</td>
+                  <td style={{ padding: '6px', border: '1px solid #ccc', fontSize: '10px', color: '#666' }}>投資全体の年平均利回り</td>
+                </tr>
+                <tr>
+                  <td style={{ backgroundColor: '#e8f4fd', padding: '6px', border: '1px solid #ccc' }}>自己資金回収期間（PB）</td>
+                  <td style={{ padding: '6px', border: '1px solid #ccc', textAlign: 'right' }}>{formatYears(data.payback_period)}</td>
+                  <td style={{ padding: '6px', border: '1px solid #ccc', fontSize: '10px', color: '#666' }}>自己資金が回収される年数</td>
+                </tr>
+                <tr>
+                  <td style={{ backgroundColor: '#e8f4fd', padding: '6px', border: '1px solid #ccc' }}>売却時表面利回り</td>
+                  <td style={{ padding: '6px', border: '1px solid #ccc', textAlign: 'right' }}>{formatPercent(data.sale_gross_yield)}</td>
+                  <td style={{ padding: '6px', border: '1px solid #ccc', fontSize: '10px', color: '#666' }}>売却価格に対する賃料割合</td>
+                </tr>
+                <tr>
+                  <td style={{ backgroundColor: '#e8f4fd', padding: '6px', border: '1px solid #ccc' }}>投資収益率（ROI）</td>
+                  <td style={{ padding: '6px', border: '1px solid #ccc', textAlign: 'right' }}>{formatPercent(data.return_on_investment)}</td>
+                  <td style={{ padding: '6px', border: '1px solid #ccc', fontSize: '10px', color: '#666' }}>利益÷投資額</td>
+                </tr>
+                <tr>
+                  <td style={{ backgroundColor: '#e8f4fd', padding: '6px', border: '1px solid #ccc' }}>返済余裕率（DSCR）</td>
+                  <td style={{ padding: '6px', border: '1px solid #ccc', textAlign: 'right' }}>{data.debt_service_coverage_ratio.toFixed(2)}</td>
+                  <td style={{ padding: '6px', border: '1px solid #ccc', fontSize: '10px', color: '#666' }}>NOI÷年間返済額</td>
+                </tr>
+                <tr>
+                  <td style={{ backgroundColor: '#e8f4fd', padding: '6px', border: '1px solid #ccc' }}>融資比率（LTV）</td>
+                  <td style={{ padding: '6px', border: '1px solid #ccc', textAlign: 'right' }}>{formatPercent(data.loan_to_value)}</td>
+                  <td style={{ padding: '6px', border: '1px solid #ccc', fontSize: '10px', color: '#666' }}>融資額÷物件価格</td>
+                </tr>
+                <tr>
+                  <td style={{ backgroundColor: '#e8f4fd', padding: '6px', border: '1px solid #ccc' }}>デッドクロスの発生時期</td>
+                  <td style={{ padding: '6px', border: '1px solid #ccc', textAlign: 'right' }}>{data.dead_cross_year > 0 ? `${data.dead_cross_year}年目` : '発生しない'}</td>
+                  <td style={{ padding: '6px', border: '1px solid #ccc', fontSize: '10px', color: '#666' }}>損益が赤字転落する時期</td>
+                </tr>
+                <tr>
+                  <td style={{ backgroundColor: '#e8f4fd', padding: '6px', border: '1px solid #ccc' }}>全期間収支</td>
+                  <td style={{ padding: '6px', border: '1px solid #ccc', textAlign: 'right' }}>{formatAmountM(data.total_pl)}</td>
+                  <td style={{ padding: '6px', border: '1px solid #ccc', fontSize: '10px', color: '#666' }}>投資期間中の合計利益</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* シミュレーション */}
+        <div style={{ marginBottom: '30px' }}>
+          <div style={{
+            backgroundColor: '#333',
+            color: 'white',
+            padding: '8px',
+            fontWeight: 'bold',
+            marginBottom: '2px'
+          }}>
+            ■ シミュレーション
+          </div>
+
+          {/* 1-20年目のテーブル */}
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10px', marginBottom: '10px' }}>
+            <thead>
+              <tr style={{ backgroundColor: '#f0f0f0' }}>
+                <th style={{ padding: '6px', border: '1px solid #ccc', textAlign: 'center' }}>項目名</th>
+                {Array.from({ length: 20 }, (_, i) => (
+                  <th key={i} style={{ padding: '6px', border: '1px solid #ccc', textAlign: 'center', minWidth: '35px' }}>
+                    {i + 1}年目
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style={{ backgroundColor: '#e8f4fd', padding: '4px', border: '1px solid #ccc' }}>年間賃料収入</td>
+                {yearlyData.map((item, index) => (
+                  <td key={index} style={{ padding: '4px', border: '1px solid #ccc', textAlign: 'right' }}>
+                    {item.rent}
+                  </td>
+                ))}
+              </tr>
+              <tr>
+                <td style={{ backgroundColor: '#e8f4fd', padding: '4px', border: '1px solid #ccc' }}>年間運営経費</td>
+                {yearlyData.map((_, index) => (
+                  <td key={index} style={{ padding: '4px', border: '1px solid #ccc', textAlign: 'right' }}>
+                    0.56
+                  </td>
+                ))}
+              </tr>
+              <tr>
+                <td style={{ backgroundColor: '#e8f4fd', padding: '4px', border: '1px solid #ccc' }}>純収益（NOI）</td>
+                {yearlyData.map((item, index) => (
+                  <td key={index} style={{ padding: '4px', border: '1px solid #ccc', textAlign: 'right' }}>
+                    {item.noi}
+                  </td>
+                ))}
+              </tr>
+              <tr>
+                <td style={{ backgroundColor: '#e8f4fd', padding: '4px', border: '1px solid #ccc' }}>年間ローン返済額</td>
+                {yearlyData.map((item, index) => (
+                  <td key={index} style={{ padding: '4px', border: '1px solid #ccc', textAlign: 'right' }}>
+                    {item.loanPayment}
+                  </td>
+                ))}
+              </tr>
+              <tr>
+                <td style={{ backgroundColor: '#e8f4fd', padding: '4px', border: '1px solid #ccc' }}>税引き前キャッシュフロー（BTCF）</td>
+                {yearlyData.map((item, index) => (
+                  <td key={index} style={{ padding: '4px', border: '1px solid #ccc', textAlign: 'right' }}>
+                    {item.btcf}
+                  </td>
+                ))}
+              </tr>
+              <tr>
+                <td style={{ backgroundColor: '#e8f4fd', padding: '4px', border: '1px solid #ccc' }}>税引き後キャッシュフロー（ATCF）</td>
+                {yearlyData.map((item, index) => (
+                  <td key={index} style={{ padding: '4px', border: '1px solid #ccc', textAlign: 'right' }}>
+                    {item.atcf}
+                  </td>
+                ))}
+              </tr>
+            </tbody>
+          </table>
+
+          <div style={{ fontSize: '10px', color: '#666', marginBottom: '10px' }}>※単位：万円</div>
+
+          {/* 21-40年目のテーブル */}
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10px', marginBottom: '10px' }}>
+            <thead>
+              <tr style={{ backgroundColor: '#f0f0f0' }}>
+                <th style={{ padding: '6px', border: '1px solid #ccc', textAlign: 'center' }}>項目名</th>
+                {Array.from({ length: 20 }, (_, i) => (
+                  <th key={i} style={{ padding: '6px', border: '1px solid #ccc', textAlign: 'center', minWidth: '35px' }}>
+                    {i + 21}年目
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style={{ backgroundColor: '#e8f4fd', padding: '4px', border: '1px solid #ccc' }}>年間賃料収入</td>
+                {yearlyDataLater.map((item, index) => (
+                  <td key={index} style={{ padding: '4px', border: '1px solid #ccc', textAlign: 'right' }}>
+                    {item.rent}
+                  </td>
+                ))}
+              </tr>
+              <tr>
+                <td style={{ backgroundColor: '#e8f4fd', padding: '4px', border: '1px solid #ccc' }}>年間運営経費</td>
+                {yearlyDataLater.map((_, index) => (
+                  <td key={index} style={{ padding: '4px', border: '1px solid #ccc', textAlign: 'right' }}>
+                    0.56
+                  </td>
+                ))}
+              </tr>
+              <tr>
+                <td style={{ backgroundColor: '#e8f4fd', padding: '4px', border: '1px solid #ccc' }}>純収益（NOI）</td>
+                {yearlyDataLater.map((item, index) => (
+                  <td key={index} style={{ padding: '4px', border: '1px solid #ccc', textAlign: 'right' }}>
+                    {item.noi}
+                  </td>
+                ))}
+              </tr>
+              <tr>
+                <td style={{ backgroundColor: '#e8f4fd', padding: '4px', border: '1px solid #ccc' }}>年間ローン返済額</td>
+                {yearlyDataLater.map((item, index) => (
+                  <td key={index} style={{ padding: '4px', border: '1px solid #ccc', textAlign: 'right' }}>
+                    {item.loanPayment}
+                  </td>
+                ))}
+              </tr>
+              <tr>
+                <td style={{ backgroundColor: '#e8f4fd', padding: '4px', border: '1px solid #ccc' }}>税引き前キャッシュフロー（BTCF）</td>
+                {yearlyDataLater.map((item, index) => (
+                  <td key={index} style={{ padding: '4px', border: '1px solid #ccc', textAlign: 'right' }}>
+                    {item.btcf}
+                  </td>
+                ))}
+              </tr>
+              <tr>
+                <td style={{ backgroundColor: '#e8f4fd', padding: '4px', border: '1px solid #ccc' }}>税引き後キャッシュフロー（ATCF）</td>
+                {yearlyDataLater.map((item, index) => (
+                  <td key={index} style={{ padding: '4px', border: '1px solid #ccc', textAlign: 'right' }}>
+                    {item.atcf}
+                  </td>
+                ))}
+              </tr>
+            </tbody>
+          </table>
+
+          <div style={{ fontSize: '10px', color: '#666', marginBottom: '20px' }}>※単位：万円</div>
+        </div>
+
+        {/* チャートセクション */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', marginTop: '30px' }}>
+          {/* キャッシュフローグラフ */}
+          <div style={{ flex: '1 1 300px', minWidth: '300px' }}>
+            <h3 style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '10px', color: '#333' }}>
+              キャッシュフロー
             </h3>
-            <div style={{ height: '300px', width: '100%' }}>
+            <div style={{ fontSize: '10px', color: '#666', marginBottom: '5px' }}>
+              税引き前CF（青線）、税引き後CF（赤線）、CF累積
+            </div>
+            <div style={{ height: '200px', width: '100%' }}>
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={yearlyData.filter((_, i) => i > 0)}
-                  margin={{ top: 20, right: 30, left: 40, bottom: 5 }}
+                <LineChart
+                  data={data.befor_tax_cash_flow.slice(1, 21).map((value, index) => ({
+                    year: index + 1,
+                    btcf: value / 10000,
+                    atcf: data.after_tax_cash_flow[index + 1] / 10000,
+                    cumulative: data.cumulative_cash_flow[index + 1] / 10000
+                  }))}
+                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="year" />
-                  <YAxis tickFormatter={formatAmount} />
-                  <Tooltip formatter={(value) => formatAmount(value as number)} />
+                  <XAxis dataKey="year" tick={{ fontSize: 10 }} />
+                  <YAxis tick={{ fontSize: 10 }} />
+                  <Tooltip formatter={(value) => [`${(value as number).toFixed(0)}万円`]} />
                   <Legend />
-                  <Bar dataKey="rent" name="賃料収入" fill="#82ca9d" />
-                  <Bar dataKey="noi" name="NOI" fill="#8884d8" />
-                  <Bar dataKey="loanPayment" name="ローン返済" fill="#ffc658" />
+                  <Line type="monotone" dataKey="btcf" stroke="#0088FE" name="税引前CF" strokeWidth={2} />
+                  <Line type="monotone" dataKey="atcf" stroke="#FF0000" name="税引後CF" strokeWidth={2} />
+                  <Line type="monotone" dataKey="cumulative" stroke="#00C49F" name="CF累積" strokeWidth={2} />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+
+          {/* デッドクロスグラフ */}
+          <div style={{ flex: '1 1 300px', minWidth: '300px' }}>
+            <h3 style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '10px', color: '#333' }}>
+              デッドクロス
+            </h3>
+            <div style={{ fontSize: '10px', color: '#666', marginBottom: '5px' }}>
+              元本返済額と減価償却費
+            </div>
+            <div style={{ height: '200px', width: '100%' }}>
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart
+                  data={data.annual_principal_payment.slice(1, 21).map((value, index) => ({
+                    year: index + 1,
+                    principal: value / 10000,
+                    depreciation: data.depreciation_expense[index + 1] / 10000
+                  }))}
+                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="year" tick={{ fontSize: 10 }} />
+                  <YAxis tick={{ fontSize: 10 }} />
+                  <Tooltip formatter={(value) => [`${(value as number).toFixed(0)}万円`]} />
+                  <Legend />
+                  <Bar dataKey="principal" fill="#FF8042" name="元本返済額" />
+                  <Bar dataKey="depreciation" fill="#82ca9d" name="減価償却費" />
                 </BarChart>
               </ResponsiveContainer>
             </div>
           </div>
 
-          {/* キャッシュフローのグラフ */}
-          <div style={{
-            backgroundColor: '#ffffff',
-            border: '1px solid #e5e7eb',
-            borderRadius: '8px',
-            padding: '20px'
-          }}>
-            <h3 style={{
-              fontSize: '18px',
-              fontWeight: '600',
-              marginBottom: '12px',
-              color: '#374151'
-            }}>
-              キャッシュフロー
+          {/* ローン残高グラフ */}
+          <div style={{ flex: '1 1 300px', minWidth: '300px' }}>
+            <h3 style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '10px', color: '#333' }}>
+              ローン
             </h3>
-            <div style={{ height: '300px', width: '100%' }}>
+            <div style={{ fontSize: '10px', color: '#666', marginBottom: '5px' }}>
+              元金残高（青線）、元利合計（赤線）、ローン残高
+            </div>
+            <div style={{ height: '200px', width: '100%' }}>
               <ResponsiveContainer width="100%" height="100%">
                 <LineChart
-                  data={yearlyData}
-                  margin={{ top: 20, right: 30, left: 40, bottom: 5 }}
+                  data={data.loan_balance.slice(0, 21).map((value, index) => ({
+                    year: index,
+                    balance: value / 10000,
+                    principal: index > 0 ? data.annual_principal_payment[index] / 10000 : 0,
+                    interest: index > 0 ? data.annual_interest_payment[index] / 10000 : 0
+                  }))}
+                  margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
                 >
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="year" />
-                  <YAxis tickFormatter={formatAmount} />
-                  <Tooltip formatter={(value) => formatAmount(value as number)} />
+                  <XAxis dataKey="year" tick={{ fontSize: 10 }} />
+                  <YAxis tick={{ fontSize: 10 }} />
+                  <Tooltip formatter={(value) => [`${(value as number).toFixed(0)}万円`]} />
                   <Legend />
-                  <Line
-                    type="monotone"
-                    dataKey="cashFlow"
-                    name="税引前キャッシュフロー"
-                    stroke="#ff7300"
-                    activeDot={{ r: 8 }}
-                  />
+                  <Line type="monotone" dataKey="balance" stroke="#0088FE" name="ローン残高" strokeWidth={2} />
+                  <Line type="monotone" dataKey="principal" stroke="#FF0000" name="元本返済" strokeWidth={2} />
+                  <Line type="monotone" dataKey="interest" stroke="#00C49F" name="利息支払" strokeWidth={2} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
           </div>
+        </div>
 
-          {/* 累積キャッシュフローのグラフ */}
-          <div style={{
-            backgroundColor: '#ffffff',
-            border: '1px solid #e5e7eb',
-            borderRadius: '8px',
-            padding: '20px'
-          }}>
-            <h3 style={{
-              fontSize: '18px',
-              fontWeight: '600',
-              marginBottom: '12px',
-              color: '#374151'
-            }}>
-              累積キャッシュフロー
-            </h3>
-            <div style={{ height: '300px', width: '100%' }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart
-                  data={cumulativeCashFlowData}
-                  margin={{ top: 20, right: 30, left: 40, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="year" />
-                  <YAxis tickFormatter={formatAmount} />
-                  <Tooltip formatter={(value) => formatAmount(value as number)} />
-                  <Legend />
-                  <Area
-                    type="monotone"
-                    dataKey="cumulativeCashFlow"
-                    name="累積キャッシュフロー"
-                    stroke="#8884d8"
-                    fill="#8884d8"
-                    fillOpacity={0.3}
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          {/* ローン返済内訳のグラフ */}
-          <div style={{
-            backgroundColor: '#ffffff',
-            border: '1px solid #e5e7eb',
-            borderRadius: '8px',
-            padding: '20px'
-          }}>
-            <h3 style={{
-              fontSize: '18px',
-              fontWeight: '600',
-              marginBottom: '12px',
-              color: '#374151'
-            }}>
-              ローン返済内訳
-            </h3>
-            <div style={{ height: '300px', width: '100%' }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart
-                  data={yearlyData.filter((_, i) => i > 0)}
-                  margin={{ top: 20, right: 30, left: 40, bottom: 5 }}
-                  stackOffset="expand"
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="year" />
-                  <YAxis
-                    tickFormatter={(value) => `${(value * 100).toFixed(0)}%`}
-                  />
-                  <Tooltip
-                    formatter={(value, name) => [
-                      `${formatAmount(value as number)}`,
-                      name,
-                    ]}
-                  />
-                  <Legend />
-                  <Area
-                    type="monotone"
-                    dataKey="principalPayment"
-                    name="元本返済"
-                    stackId="1"
-                    stroke="#8884d8"
-                    fill="#8884d8"
-                  />
-                  <Area
-                    type="monotone"
-                    dataKey="interestPayment"
-                    name="利息支払"
-                    stackId="1"
-                    stroke="#82ca9d"
-                    fill="#82ca9d"
-                  />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          {/* ローン残高の推移 */}
-          <div style={{
-            backgroundColor: '#ffffff',
-            border: '1px solid #e5e7eb',
-            borderRadius: '8px',
-            padding: '20px'
-          }}>
-            <h3 style={{
-              fontSize: '18px',
-              fontWeight: '600',
-              marginBottom: '12px',
-              color: '#374151'
-            }}>
-              ローン残高の推移
-            </h3>
-            <div style={{ height: '300px', width: '100%' }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <LineChart
-                  data={yearlyData}
-                  margin={{ top: 20, right: 30, left: 40, bottom: 5 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="year" />
-                  <YAxis tickFormatter={formatAmount} />
-                  <Tooltip formatter={(value) => formatAmount(value as number)} />
-                  <Legend />
-                  <Line
-                    type="monotone"
-                    dataKey="loanBalance"
-                    name="ローン残高"
-                    stroke="#8884d8"
-                    dot={{ r: 3 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-
-          {/* 投資収益性指標の円グラフ */}
-          <div style={{
-            backgroundColor: '#ffffff',
-            border: '1px solid #e5e7eb',
-            borderRadius: '8px',
-            padding: '20px'
-          }}>
-            <h3 style={{
-              fontSize: '18px',
-              fontWeight: '600',
-              marginBottom: '12px',
-              color: '#374151'
-            }}>
-              投資収益性指標
-            </h3>
-            <div style={{ height: '350px', width: '100%' }}>
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={returnMetrics}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={true}
-                    outerRadius={100}
-                    fill="#8884d8"
-                    dataKey="value"
-                    nameKey="name"
-                    label={({ name, value }) => `${name}: ${value.toFixed(2)}%`}
-                  >
-                    {returnMetrics.map((entry, index) => (
-                      <Cell
-                        key={`cell-${index}`}
-                        fill={COLORS[index % COLORS.length]}
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip
-                    formatter={(value) => `${(value as number).toFixed(2)}%`}
-                  />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
+        {/* 収益指標サマリー */}
+        <div style={{ marginTop: '30px', padding: '15px', backgroundColor: '#f8f9fa', border: '1px solid #dee2e6' }}>
+          <h3 style={{ fontSize: '14px', fontWeight: 'bold', marginBottom: '10px', color: '#333' }}>
+            全期間利回り（内部収益率、IRR）
+          </h3>
+          <div style={{ fontSize: '24px', fontWeight: 'bold', color: '#0088FE', textAlign: 'center' }}>
+            {formatPercent(data.internal_rate_of_return)}
           </div>
         </div>
       </div>
