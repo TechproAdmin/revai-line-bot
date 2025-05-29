@@ -256,7 +256,7 @@ export function Report({ data }: ReportProps) {
             color: '#333',
             margin: 0
           }}>
-            収益性分析レポート【○○マンション】
+            収益性分析レポート
           </h1>
           <div style={{
             backgroundColor: '#a5b4fc',
