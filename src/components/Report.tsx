@@ -74,6 +74,11 @@ export function Report({ data }: ReportProps) {
           const allElements = clonedDoc.querySelectorAll('*');
           allElements.forEach(el => {
             if (el instanceof HTMLElement) {
+              // PDF生成時はhidden属性を削除
+              if (el.hasAttribute('hidden')) {
+                el.removeAttribute('hidden');
+              }
+
               const computedStyle = window.getComputedStyle(el);
 
               ['color', 'background-color', 'border-color', 'outline-color', 'text-decoration-color'].forEach(prop => {
@@ -291,7 +296,7 @@ export function Report({ data }: ReportProps) {
         {/* 条件と分析結果のセクション */}
         <div style={{ display: 'flex', gap: '15px', marginBottom: '20px' }}>
           {/* 条件 */}
-          <div style={{ flex: 1 }}>
+          <div style={{ flex: 1 }} hidden>
             <div style={{
               backgroundColor: '#333',
               color: 'white',
@@ -430,7 +435,7 @@ export function Report({ data }: ReportProps) {
         </div>
 
         {/* シミュレーション */}
-        <div style={{ marginBottom: '20px' }}>
+        <div style={{ marginBottom: '20px' }} hidden>
           <div style={{
             backgroundColor: '#333',
             color: 'white',

@@ -31,7 +31,6 @@ export default function Home({ liff, liffError }: HomeProps) {
   useEffect(() => {
     if (liff && !liffError) {
       setIsLiffReady(true);
-      console.log("LIFF ready, OS:", liff.getOS());
     } else if (liffError) {
       setMessage(`LIFF エラー: ${liffError}`);
     }
@@ -83,7 +82,7 @@ export default function Home({ liff, liffError }: HomeProps) {
           <>
             <div className="mb-4 p-3">
               <p>
-                レポートを作成しました。レポートをダウンロードするには下記のボタンを押してください。
+                レポートを作成しました。詳細なレポートを確認したい場合は、「PDFをダウンロード」ボタンを押してダウンロードできるPDFをご確認ください。
               </p>
               <Report data={reportData} />
             </div>

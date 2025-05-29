@@ -115,7 +115,6 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
   }, [formData.total_price, formData.expected_sale_price, formValues]);
 
   useEffect(() => {
-    console.log("formValues:", formValues);
     setFormData((prev) => ({ ...prev, ...formValues }));
   }, [formValues]);
 
@@ -141,7 +140,6 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
         body: JSON.stringify(formData),
       });
       const result = await res.json();
-      console.log("送信結果:", result);
       if (result.data) {
         onSuccess(result.data as RealEstateAnalysisRes);
       } else {

@@ -64,7 +64,6 @@ export function PdfUploader({ liff, onUploadSuccess }: PdfUploaderProps) {
       });
 
       const result = await response.json();
-      console.log("アップロード完了：", result);
 
       onUploadSuccess({
         total_price: result.data.total_price,

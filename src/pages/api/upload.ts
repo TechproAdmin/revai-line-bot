@@ -40,8 +40,6 @@ async function convertPdfToImages(pdfPath: string): Promise<string[]> {
   await fs.mkdir(tempDir, { recursive: true });
 
   try {
-    console.log(`Converting PDF to images using @pdfme/converter...`);
-
     // SyncでPDFファイルを読み込み、ArrayBufferを取得
     const pdf = fsSync.readFileSync(pdfPath);
     const pdfArrayBuffer = pdf.buffer.slice(
@@ -62,7 +60,6 @@ async function convertPdfToImages(pdfPath: string): Promise<string[]> {
       const outputPath = path.join(tempDir, `page-${i + 1}.png`);
       await fs.writeFile(outputPath, Buffer.from(images[i]));
       imagePaths.push(outputPath);
-      console.log(`Converted page ${i + 1} to image: ${outputPath}`);
     }
 
     return imagePaths;
@@ -77,7 +74,6 @@ async function cleanupFiles(filePaths: string[]): Promise<void> {
   for (const filePath of filePaths) {
     try {
       await fs.unlink(filePath);
-      console.log(`Successfully deleted: ${filePath}`);
     } catch (error) {
       console.error(`Error deleting file ${filePath}:`, error);
     }
@@ -113,27 +109,17 @@ export default async function handler(
     // 一時ファイルのパスを取得
     tempFilePath = uploadedFile.filepath;
 
-    // ファイル情報のログ出力
-    console.log("Uploaded file details (temporary):");
-    console.log("  Original Filename:", uploadedFile.originalFilename);
-    console.log("  Mimetype:", uploadedFile.mimetype);
-    console.log("  Size:", uploadedFile.size);
-    console.log("  Temporary Path:", tempFilePath);
-
     // PDFファイルかどうかの確認
     if (uploadedFile.mimetype !== "application/pdf") {
       return res.status(400).json({ message: "Uploaded file must be a PDF." });
     }
 
     // PDFを画像に変換
-    console.log("Converting PDF to images...");
     imageFiles = await convertPdfToImages(tempFilePath);
-    console.log(`PDF converted to ${imageFiles.length} images`);
 
     // PDFの画像をOpenAIに送信して分析
-    console.log("Analyzing PDF images with OpenAI...");
     const propertyData = await apiRoot.analyzePdfWithOpenAI(imageFiles);
-    console.log("Analysis result:", propertyData);
+
 
     // 成功レスポンス
     res.status(200).json({
@@ -163,7 +149,6 @@ export default async function handler(
     if (tempFilePath) {
       try {
         await fs.unlink(tempFilePath);
-        console.log(`Successfully deleted temporary file: ${tempFilePath}`);
       } catch (cleanupError) {
         console.error(
           `Error deleting temporary file ${tempFilePath}:`,

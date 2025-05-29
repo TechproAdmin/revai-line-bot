@@ -21,7 +21,6 @@ async function analyzePdfWithOpenAI(
       throw new Error("No images provided for analysis");
     }
 
-    console.log(`Analyzing ${imagePaths.length} images with OpenAI...`);
 
     // 画像をBase64エンコードしてメッセージに変換
     const imageContents: Array<ChatCompletionContentPart> = await Promise.all(
@@ -61,7 +60,6 @@ async function analyzePdfWithOpenAI(
 
     // レスポンスからJSONデータを取得
     const content = response.choices[0]?.message?.content || "{}";
-    console.log("OpenAI response:", content);
 
     try {
       const extractedData = JSON.parse(content) as PdfExtractionResult;
@@ -120,7 +118,6 @@ async function calcReport(
   data: RealEstateAnalysisReq
 ): Promise<RealEstateAnalysisRes> {
   try {
-    console.log("report req: ", data, typeof data);
     const response = await axios.post<RealEstateAnalysisRes>(
       "https://realestate-valuation-api-a6mebisk7q-an.a.run.app/analyze",
       data,
