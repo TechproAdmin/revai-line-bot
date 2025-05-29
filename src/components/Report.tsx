@@ -48,8 +48,6 @@ export function Report({ data }: ReportProps) {
 
       // レポートのクローンを作成してPDF専用のスタイルを適用
       const clonedReport = report.cloneNode(true) as HTMLElement;
-
-      // クローンにIDを設定
       clonedReport.id = 'pdf-report-clone';
 
       // クローンを一時的にドキュメントに追加（レンダリングのため）
@@ -71,23 +69,18 @@ export function Report({ data }: ReportProps) {
         ignoreElements: (element) => {
           return element.id === 'download-button';
         },
-        // クローン時にスタイルを修正
         onclone: (clonedDoc) => {
           // すべての要素のスタイルを修正
           const allElements = clonedDoc.querySelectorAll('*');
           allElements.forEach(el => {
             if (el instanceof HTMLElement) {
-              // 計算済みスタイルを取得
               const computedStyle = window.getComputedStyle(el);
 
-              // 色関連のプロパティをインラインスタイルとして設定
               ['color', 'background-color', 'border-color', 'outline-color', 'text-decoration-color'].forEach(prop => {
                 const value = computedStyle.getPropertyValue(prop);
                 if (value && !value.includes('oklch') && !value.includes('lab') && !value.includes('lch')) {
-                  // 通常の色値をインラインスタイルとして設定
                   el.style.setProperty(prop, value, 'important');
                 } else if (value && (value.includes('oklch') || value.includes('lab') || value.includes('lch'))) {
-                  // 問題のある色関数を検出した場合は、デフォルト値に置き換え
                   switch (prop) {
                     case 'color':
                       el.style.setProperty(prop, '#000000', 'important');
@@ -104,7 +97,6 @@ export function Report({ data }: ReportProps) {
                 }
               });
 
-              // Tailwindのクラスを削除（問題の原因となる可能性がある）
               if (el.classList) {
                 const classesToRemove: string[] = [];
                 el.classList.forEach(className => {
@@ -117,7 +109,6 @@ export function Report({ data }: ReportProps) {
             }
           });
 
-          // styleタグを無効化（グローバルスタイルが問題を起こす可能性がある）
           const styleElements = clonedDoc.querySelectorAll('style');
           styleElements.forEach(el => el.remove());
         }
@@ -126,55 +117,46 @@ export function Report({ data }: ReportProps) {
       // クローンを削除
       document.body.removeChild(clonedReport);
 
-      // PDF生成
+      // PDF生成 - コンテンツサイズに合わせたカスタムサイズ
+      const customWidth = (canvas.width / 2) + 30; // キャンバス幅の半分 + 余白
+      const customHeight = (canvas.height / 2) + 30; // キャンバス高さの半分 + 余白
+
       const pdf = new jsPDF({
-        orientation: "landscape",
+        orientation: customWidth > customHeight ? "landscape" : "portrait",
         unit: "pt",
-        format: "a4",
+        format: [customWidth, customHeight], // カスタムサイズ
       });
 
-      // A4サイズ（ポイント単位）
+      // カスタムサイズなので余白を最小限に
       const pageWidth = pdf.internal.pageSize.getWidth();
       const pageHeight = pdf.internal.pageSize.getHeight();
-      const margin = 40; // ポイント単位のマージン
+      const margin = 15;
 
-      // キャンバスの縦横比を維持しながらサイズを計算
+      // コンテンツをほぼページサイズいっぱいに表示
       const contentWidth = pageWidth - (margin * 2);
-      const scale = contentWidth / canvas.width;
+      const contentHeight = pageHeight - (margin * 2);
+
+      // カスタムサイズなのでスケールは1:1に近く
+      const scaleX = contentWidth / canvas.width;
+      const scaleY = contentHeight / canvas.height;
+      const scale = Math.min(scaleX, scaleY);
+
+      const scaledWidth = canvas.width * scale;
       const scaledHeight = canvas.height * scale;
 
-      // ページ数を計算
-      const totalPages = Math.ceil(scaledHeight / (pageHeight - margin * 2));
+      // 中央に配置
+      const x = margin + (contentWidth - scaledWidth) / 2;
+      const y = margin + (contentHeight - scaledHeight) / 2;
 
-      // 各ページにコンテンツを追加
-      for (let page = 0; page < totalPages; page++) {
-        if (page > 0) {
-          pdf.addPage();
-        }
-
-        // 切り取り位置を計算
-        const sourceY = page * (pageHeight - margin * 2) / scale;
-        const sourceHeight = Math.min(canvas.height - sourceY, (pageHeight - margin * 2) / scale);
-
-        // 切り取り用のキャンバスを作成
-        const pageCanvas = document.createElement('canvas');
-        pageCanvas.width = canvas.width;
-        pageCanvas.height = sourceHeight;
-
-        const ctx = pageCanvas.getContext('2d');
-        if (ctx) {
-          ctx.drawImage(
-            canvas,
-            0, sourceY,
-            canvas.width, sourceHeight,
-            0, 0,
-            canvas.width, sourceHeight
-          );
-
-          const pageData = pageCanvas.toDataURL('image/png');
-          pdf.addImage(pageData, 'PNG', margin, margin, contentWidth, sourceHeight * scale);
-        }
-      }
+      // PDFに画像を追加
+      pdf.addImage(
+        canvas.toDataURL('image/png'),
+        'PNG',
+        x,
+        y,
+        scaledWidth,
+        scaledHeight
+      );
 
       // PDFを保存
       pdf.save("収益性分析レポート.pdf");
