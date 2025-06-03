@@ -1,3 +1,33 @@
+PROJECT_ID := revai-456711
+REGION := asia-northeast1
+REPOSITORY := cloud-run-source-deploy
+IMAGE_NAME := realestate-linebot
+TAG := latest
+
+# Full image name
+FULL_IMAGE_NAME := $(REGION)-docker.pkg.dev/$(PROJECT_ID)/$(REPOSITORY)/$(IMAGE_NAME):$(TAG)
+
+.PHONY: gcp-auth
+gcp-auth:
+	@echo "🔐 Setting up Docker authentication..."
+	gcloud auth configure-docker $(REGION)-docker.pkg.dev
+
+.PHONY: gcp-build-tag
+gcp-build-tag:
+	@read -p "Enter tag (default: $(TAG)): " tag; \
+	tag=$${tag:-$(TAG)}; \
+	image_name="$(REGION)-docker.pkg.dev/$(PROJECT_ID)/$(REPOSITORY)/$(IMAGE_NAME):$$tag"; \
+	echo "🔨 Building Docker image with tag: $$tag"; \
+	docker build -t $$image_name .
+
+.PHONY: gcp-push-tag
+gcp-push-tag:
+	@read -p "Enter tag to push (default: $(TAG)): " tag; \
+	tag=$${tag:-$(TAG)}; \
+	image_name="$(REGION)-docker.pkg.dev/$(PROJECT_ID)/$(REPOSITORY)/$(IMAGE_NAME):$$tag"; \
+	echo "🚀 Pushing image: $$image_name"; \
+	docker push $$image_name
+
 # 依存関係をインストール
 install:
 	npm install
