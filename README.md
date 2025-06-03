@@ -83,6 +83,21 @@ make docker-up
 - `/.next` - Next.jsのビルド出力（自動生成）
 - `/node_modules` - 依存パッケージ（自動生成）
 
+## デプロイ方法
+
+0. [gcloud CLI](https://cloud.google.com/sdk/docs/install?hl=ja)をインストールする
+1. gcloud CLI を使って認証を行う
+2. docker image を作成
+3. GCP の Artifact Registry に image を push する
+4. GCP のコンソールを開き Cloud Run のリソースを編集する
+    - コンテナイメージのURLを最新のものに変更する
+
+```
+$ make gcp-auth      # 認証
+$ make gcp-build-tag # image のビルド
+$ make gcp-push-tag  # image のプッシュ
+```
+
 ## トラブルシューティング
 
 - Ngrokの接続でエラーが発生する場合は、認証トークンが正しく設定されているか確認してください。
