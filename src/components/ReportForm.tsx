@@ -188,6 +188,32 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
       );
     }
 
+    // loan_type フィールドの場合はセレクト要素を表示
+    if (field.name === "loan_type") {
+      return (
+        <div key={field.name} className="flex flex-col">
+          <label
+            htmlFor={field.name}
+            className="mb-1 font-medium text-gray-700"
+          >
+            {field.label}
+            {field.required && <span className="text-red-500 ml-1">*</span>}
+          </label>
+          <select
+            id={field.name}
+            name={field.name}
+            value={formData[field.name as keyof FormDataType] ?? ""}
+            onChange={handleChange}
+            className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required={field.required}
+          >
+            <option value="元利均等">元利均等</option>
+            <option value="元金均等">元金均等</option>
+          </select>
+        </div>
+      );
+    }
+
     // その他のフィールドは通常の入力要素を表示
     return (
       <div key={field.name} className="flex flex-col">
@@ -310,7 +336,7 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
         {
           label: "ローンタイプ",
           name: "loan_type",
-          type: "text",
+          type: "select",
           required: true,
         },
         {
