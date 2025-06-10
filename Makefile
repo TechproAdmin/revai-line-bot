@@ -10,7 +10,15 @@ FULL_IMAGE_NAME := $(REGION)-docker.pkg.dev/$(PROJECT_ID)/$(REPOSITORY)/$(IMAGE_
 .PHONY: gcp-auth
 gcp-auth:
 	@echo "🔐 Setting up Docker authentication..."
+	@echo "Current account:"
+	@gcloud config get-value account || echo "No account set"
+	@echo "Re-authenticating with Google Cloud..."
+	gcloud auth login
+	@echo "Setting project..."
+	gcloud config set project $(PROJECT_ID)
+	@echo "Configuring Docker..."
 	gcloud auth configure-docker $(REGION)-docker.pkg.dev
+	@echo "✅ Authentication setup complete"
 
 .PHONY: gcp-build-tag
 gcp-build-tag: format
