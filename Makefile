@@ -37,7 +37,7 @@ dev:
 	npm run dev
 
 # アプリケーションをビルド
-build:
+build: install
 	npm run build
 
 # ビルド済みアプリを起動
