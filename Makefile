@@ -13,7 +13,7 @@ gcp-auth:
 	gcloud auth configure-docker $(REGION)-docker.pkg.dev
 
 .PHONY: gcp-build-tag
-gcp-build-tag:
+gcp-build-tag: format
 	@read -p "Enter tag (default: $(TAG)): " tag; \
 	tag=$${tag:-$(TAG)}; \
 	image_name="$(REGION)-docker.pkg.dev/$(PROJECT_ID)/$(REPOSITORY)/$(IMAGE_NAME):$$tag"; \
@@ -37,7 +37,7 @@ dev:
 	npm run dev
 
 # アプリケーションをビルド
-build: install
+build: install format
 	npm run build
 
 # ビルド済みアプリを起動
@@ -51,6 +51,10 @@ test:
 # リントを実行
 lint:
 	npm run lint
+
+# フォーマッターを実行
+format:
+	npx @biomejs/biome check --write src styles
 
 # Docker環境をビルドして起動
 docker-up:

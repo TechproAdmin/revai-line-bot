@@ -1,6 +1,7 @@
-import React, { useState, useRef } from "react";
-import { Liff } from "@line/liff";
-import { PdfExtractionResult } from "@/components/types";
+import type { PdfExtractionResult } from "@/components/types";
+import type { Liff } from "@line/liff";
+import type React from "react";
+import { useRef, useState } from "react";
 
 interface PdfUploaderProps {
   liff: Liff;
@@ -89,8 +90,9 @@ export function PdfUploader({ liff, onUploadSuccess }: PdfUploaderProps) {
     } catch (error: unknown) {
       console.error("アップロード中にエラーが発生しました", error);
       setMessage(
-        `アップロード中にエラーが発生しました: ${error instanceof Error ? error.message : String(error)
-        }`
+        `アップロード中にエラーが発生しました: ${
+          error instanceof Error ? error.message : String(error)
+        }`,
       );
     } finally {
       setIsUploading(false);
@@ -111,12 +113,16 @@ export function PdfUploader({ liff, onUploadSuccess }: PdfUploaderProps) {
     <div className="pdf-uploader">
       {message && (
         <div
-          className={`mb-4 p-3 rounded-lg ${message.includes("成功")
-            ? "bg-green-50 text-green-700"
-            : message.includes("失敗") || message.includes("エラー") || message.includes("制限") || message.includes("処理中")
-              ? "bg-red-50 text-red-700"
-              : "bg-blue-50 text-blue-700"
-            }`}
+          className={`mb-4 p-3 rounded-lg ${
+            message.includes("成功")
+              ? "bg-green-50 text-green-700"
+              : message.includes("失敗") ||
+                  message.includes("エラー") ||
+                  message.includes("制限") ||
+                  message.includes("処理中")
+                ? "bg-red-50 text-red-700"
+                : "bg-blue-50 text-blue-700"
+          }`}
         >
           {message}
         </div>
@@ -157,6 +163,7 @@ export function PdfUploader({ liff, onUploadSuccess }: PdfUploaderProps) {
         {selectedFile && (
           <div className="flex gap-2">
             <button
+              type="button"
               className="flex-1 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg disabled:bg-gray-300"
               onClick={handleUpload}
               disabled={isUploading || selectedFile.type !== "application/pdf"}
@@ -164,6 +171,7 @@ export function PdfUploader({ liff, onUploadSuccess }: PdfUploaderProps) {
               {isUploading ? "アップロード中..." : "アップロード"}
             </button>
             <button
+              type="button"
               className="flex-1 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-lg"
               onClick={handleCancel}
               disabled={isUploading}

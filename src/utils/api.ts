@@ -1,12 +1,12 @@
-import OpenAI from "openai";
-import fs from "fs/promises";
-import {
+import fs from "node:fs/promises";
+import type {
   PdfExtractionResult,
   RealEstateAnalysisReq,
   RealEstateAnalysisRes,
 } from "@/components/types";
 import axios from "axios";
-import { ChatCompletionContentPart } from "openai/src/resources/chat/completions/completions.js";
+import OpenAI from "openai";
+import type { ChatCompletionContentPart } from "openai/src/resources/chat/completions/completions.js";
 
 const openai = new OpenAI({
   apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
@@ -14,13 +14,12 @@ const openai = new OpenAI({
 
 // PDFから変換された画像をOpenAIに送信して分析する関数
 async function analyzePdfWithOpenAI(
-  imagePaths: string[]
+  imagePaths: string[],
 ): Promise<PdfExtractionResult> {
   try {
     if (imagePaths.length === 0) {
       throw new Error("No images provided for analysis");
     }
-
 
     // 画像をBase64エンコードしてメッセージに変換
     const imageContents: Array<ChatCompletionContentPart> = await Promise.all(
@@ -33,7 +32,7 @@ async function analyzePdfWithOpenAI(
             url: `data:image/png;base64,${imageBase64}`,
           },
         };
-      })
+      }),
     );
 
     const response = await openai.chat.completions.create({
@@ -100,7 +99,7 @@ async function analyzePdfWithOpenAI(
 
 // モック関数（テスト用）
 async function analyzePdfWithOpenAIMock(
-  imagePaths: string[]
+  imagePaths: string[],
 ): Promise<PdfExtractionResult> {
   return {
     total_price: "35000000",
@@ -115,7 +114,7 @@ async function analyzePdfWithOpenAIMock(
 
 // 不動産投資APIを呼び出して分析レポートを取得する関数
 async function calcReport(
-  data: RealEstateAnalysisReq
+  data: RealEstateAnalysisReq,
 ): Promise<RealEstateAnalysisRes> {
   try {
     const response = await axios.post<RealEstateAnalysisRes>(
@@ -125,7 +124,7 @@ async function calcReport(
         headers: {
           "Content-Type": "application/json",
         },
-      }
+      },
     );
     return response.data;
   } catch (error) {

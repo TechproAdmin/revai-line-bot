@@ -1,11 +1,11 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import formidable, { Fields, Files } from "formidable";
-import fs from "fs/promises";
-import fsSync from "fs";
-import path from "path";
+import fsSync from "node:fs";
+import fs from "node:fs/promises";
+import os from "node:os";
+import path from "node:path";
 import apiRoot from "@/utils/api";
-import os from "os";
 import { pdf2img } from "@pdfme/converter";
+import formidable, { type Fields, type Files } from "formidable";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 // Next.jsのデフォルトのbodyParserを無効にする
 export const config = {
@@ -16,7 +16,7 @@ export const config = {
 
 // formidableでリクエストをパースする関数
 const parseForm = (
-  req: NextApiRequest
+  req: NextApiRequest,
 ): Promise<{ fields: Fields; files: Files }> => {
   const options: formidable.Options = {
     keepExtensions: true,
@@ -44,7 +44,7 @@ async function convertPdfToImages(pdfPath: string): Promise<string[]> {
     const pdf = fsSync.readFileSync(pdfPath);
     const pdfArrayBuffer = pdf.buffer.slice(
       pdf.byteOffset,
-      pdf.byteOffset + pdf.byteLength
+      pdf.byteOffset + pdf.byteLength,
     ) as ArrayBuffer;
 
     // 画像に変換（ここではすべてのページを対象）
@@ -82,7 +82,7 @@ async function cleanupFiles(filePaths: string[]): Promise<void> {
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   if (req.method !== "POST") {
     res.setHeader("Allow", ["POST"]);
@@ -103,7 +103,9 @@ export default async function handler(
     const uploadedFile = Array.isArray(fileField) ? fileField[0] : fileField;
 
     if (!uploadedFile) {
-      return res.status(400).json({ message: "ファイルが選択されていません。" });
+      return res
+        .status(400)
+        .json({ message: "ファイルが選択されていません。" });
     }
 
     // 一時ファイルのパスを取得
@@ -111,7 +113,9 @@ export default async function handler(
 
     // PDFファイルかどうかの確認
     if (uploadedFile.mimetype !== "application/pdf") {
-      return res.status(400).json({ message: "PDFファイルのみアップロード可能です。" });
+      return res
+        .status(400)
+        .json({ message: "PDFファイルのみアップロード可能です。" });
     }
 
     // PDFを画像に変換
@@ -119,7 +123,6 @@ export default async function handler(
 
     // PDFの画像をOpenAIに送信して分析
     const propertyData = await apiRoot.analyzePdfWithOpenAI(imageFiles);
-
 
     // 成功レスポンス
     res.status(200).json({
@@ -136,7 +139,9 @@ export default async function handler(
       error.message &&
       error.message.includes("maxFileSize")
     ) {
-      return res.status(413).json({ message: "ファイルサイズが制限を超えています。" });
+      return res
+        .status(413)
+        .json({ message: "ファイルサイズが制限を超えています。" });
     }
 
     // その他のエラー
@@ -152,7 +157,7 @@ export default async function handler(
       } catch (cleanupError) {
         console.error(
           `Error deleting temporary file ${tempFilePath}:`,
-          cleanupError
+          cleanupError,
         );
       }
     }

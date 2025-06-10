@@ -1,9 +1,9 @@
-import { NextApiRequest, NextApiResponse } from "next";
 import apiRoot from "@/utils/api";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse
+  res: NextApiResponse,
 ) {
   if (req.method === "POST") {
     try {
@@ -11,9 +11,9 @@ export default async function handler(
       return res.status(200).json({ data: report });
     } catch (error) {
       console.error("Error in report API:", error);
-      return res.status(500).json({ 
-        error: "レポート生成中にエラーが発生しました", 
-        details: error instanceof Error ? error.message : "Unknown error" 
+      return res.status(500).json({
+        error: "レポート生成中にエラーが発生しました",
+        details: error instanceof Error ? error.message : "Unknown error",
       });
     }
   }

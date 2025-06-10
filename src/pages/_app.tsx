@@ -1,8 +1,8 @@
 import "../styles/globals.css";
-import { useState, useEffect } from "react";
-import Head from "next/head";
-import type { AppProps } from "next/app";
 import liff from "@line/liff";
+import type { AppProps } from "next/app";
+import Head from "next/head";
+import { useEffect, useState } from "react";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [liffObject, setLiffObject] = useState<typeof liff | null>(null);
@@ -13,7 +13,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       try {
         if (!process.env.NEXT_PUBLIC_LIFF_ID) {
           throw new Error(
-            "LIFF ID is missing. Set NEXT_PUBLIC_LIFF_ID in your environment variables."
+            "LIFF ID is missing. Set NEXT_PUBLIC_LIFF_ID in your environment variables.",
           );
         }
 

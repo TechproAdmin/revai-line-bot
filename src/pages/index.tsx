@@ -1,10 +1,13 @@
-import { useState, useEffect } from "react";
-import { Geist, Geist_Mono } from "next/font/google";
-import { Liff } from "@line/liff";
-import { ReportForm } from "@/components/ReportForm";
 import { PdfUploader } from "@/components/PdfUploader";
 import { Report } from "@/components/Report";
-import { RealEstateAnalysisRes, PdfExtractionResult } from "@/components/types";
+import { ReportForm } from "@/components/ReportForm";
+import type {
+  PdfExtractionResult,
+  RealEstateAnalysisRes,
+} from "@/components/types";
+import type { Liff } from "@line/liff";
+import { Geist, Geist_Mono } from "next/font/google";
+import { useEffect, useState } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,7 +28,9 @@ export default function Home({ liff, liffError }: HomeProps) {
   const [message, setMessage] = useState<string | null>(null);
   const [isLiffReady, setIsLiffReady] = useState<boolean>(false);
   const [formValues, setFormValues] = useState({});
-  const [reportData, setReportData] = useState<RealEstateAnalysisRes | null>(null);
+  const [reportData, setReportData] = useState<RealEstateAnalysisRes | null>(
+    null,
+  );
 
   // LIFF の初期化チェック
   useEffect(() => {
@@ -65,6 +70,7 @@ export default function Home({ liff, liffError }: HomeProps) {
       <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-6">
         <h1 className="text-2xl font-bold text-center mb-6">
           <button
+            type="button"
             onClick={handleBackToHome}
             className="text-gray-900 hover:text-gray-700 cursor-pointer"
           >
@@ -78,12 +84,13 @@ export default function Home({ liff, liffError }: HomeProps) {
         )}
         {message && (
           <div
-            className={`mb-4 p-3 rounded-lg ${message.includes("成功")
-              ? "bg-green-50 text-green-700"
-              : message.includes("失敗") || message.includes("エラー")
-                ? "bg-red-50 text-red-700"
-                : "bg-blue-50 text-blue-700"
-              }`}
+            className={`mb-4 p-3 rounded-lg ${
+              message.includes("成功")
+                ? "bg-green-50 text-green-700"
+                : message.includes("失敗") || message.includes("エラー")
+                  ? "bg-red-50 text-red-700"
+                  : "bg-blue-50 text-blue-700"
+            }`}
           >
             {message}
           </div>

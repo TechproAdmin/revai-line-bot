@@ -1,6 +1,6 @@
+import type { RealEstateAnalysisRes } from "@/components/types";
 // components/ReportForm.tsx
-import { useState, useEffect } from "react";
-import { RealEstateAnalysisRes } from "@/components/types";
+import { useEffect, useState } from "react";
 
 export type FormDataType = {
   purchase_date?: string;
@@ -27,7 +27,6 @@ export type FormDataType = {
   owner_type?: string;
   annual_income?: string;
 };
-
 
 interface ReportFormProps {
   formValues?: Partial<FormDataType>;
@@ -61,7 +60,7 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
     expected_sale_price: "60000000",
     sale_expenses: "2400000",
     owner_type: "個人",
-    annual_income: "10000000"
+    annual_income: "10000000",
   };
 
   const _applyTestData = () => {
@@ -83,7 +82,7 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
 
     // 物件価格が入力されている場合の依存計算
     if (formData.total_price) {
-      const totalPrice = parseFloat(formData.total_price);
+      const totalPrice = Number.parseFloat(formData.total_price);
 
       // 購入諸費用 (物件価格の8%)
       if (!formValues.purchase_expenses) {
@@ -92,8 +91,13 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
 
       // 自己資金 (物件価格の10% + 購入諸費用)
       if (!formValues.own_capital) {
-        const purchaseExpenses = parseFloat(updatedValues.purchase_expenses || formData.purchase_expenses || '0');
-        updatedValues.own_capital = (totalPrice * 0.1 + purchaseExpenses).toString();
+        const purchaseExpenses = Number.parseFloat(
+          updatedValues.purchase_expenses || formData.purchase_expenses || "0",
+        );
+        updatedValues.own_capital = (
+          totalPrice * 0.1 +
+          purchaseExpenses
+        ).toString();
       }
 
       // 借入金額 (物件価格の90%)
@@ -106,23 +110,30 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
     if (formData.expected_sale_price) {
       // 売却諸費用 (想定売却価格の4%)
       if (!formValues.sale_expenses) {
-        const expectedSalePrice = parseFloat(formData.expected_sale_price);
+        const expectedSalePrice = Number.parseFloat(
+          formData.expected_sale_price,
+        );
         updatedValues.sale_expenses = (expectedSalePrice * 0.04).toString();
       }
     }
 
     // 更新する値がある場合のみ state を更新
     if (Object.keys(updatedValues).length > 0) {
-      setFormData(prev => ({ ...prev, ...updatedValues }));
+      setFormData((prev) => ({ ...prev, ...updatedValues }));
     }
-  }, [formData.total_price, formData.expected_sale_price, formValues]);
+  }, [
+    formData.total_price,
+    formData.expected_sale_price,
+    formData.purchase_expenses,
+    formValues,
+  ]);
 
   useEffect(() => {
     setFormData((prev) => ({ ...prev, ...formValues }));
   }, [formValues]);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -138,17 +149,17 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
     const numericValue = value.replace(/[^\d]/g, "");
     if (!numericValue) return "";
     // 三桁区切りを追加
-    return parseInt(numericValue).toLocaleString();
+    return Number.parseInt(numericValue).toLocaleString();
   };
 
   // 小数点を含むフィールドのリスト
   const decimalFields = [
     "gross_yield",
-    "current_yield", 
+    "current_yield",
     "vacancy_rate",
     "rent_decline_rate",
     "interest_rate",
-    "expected_rate_of_return"
+    "expected_rate_of_return",
   ];
 
   // 表示用の値を取得（三桁区切り）
@@ -167,7 +178,7 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
   // 数値フィールドの変更処理
   const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    
+
     // 小数点を含むフィールドの場合は小数点も保持
     if (decimalFields.includes(name)) {
       // 数値と小数点のみを許可
@@ -191,7 +202,7 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
     e.preventDefault();
     setError(null);
     setIsLoading(true);
-    
+
     try {
       const res = await fetch("/api/report", {
         method: "POST",
@@ -200,24 +211,28 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
         },
         body: JSON.stringify(formData),
       });
-      
+
       const result = await res.json();
-      
+
       if (!res.ok) {
         // APIエラーの場合
         setError(result.error || `APIエラー: ${res.status}`);
         return;
       }
-      
+
       if (result.data) {
         onSuccess(result.data as RealEstateAnalysisRes);
         setError(null);
       } else {
         setError("レスポンスに data プロパティが含まれていません。");
-        console.error("レスポンスに data プロパティが含まれていません。", result);
+        console.error(
+          "レスポンスに data プロパティが含まれていません。",
+          result,
+        );
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : "不明なエラーが発生しました";
+      const errorMessage =
+        error instanceof Error ? error.message : "不明なエラーが発生しました";
       setError(`送信中にエラーが発生しました: ${errorMessage}`);
       console.error("送信中にエラーが発生しました:", error);
     } finally {
@@ -329,42 +344,42 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
           label: "物件価格 土地（円）",
           name: "land_price",
           type: "number",
-          required: true
+          required: true,
         },
         {
           label: "物件価格 建物（円）",
           name: "building_price",
           type: "number",
-          required: true
+          required: true,
         },
         {
           label: "購入諸費用（円）",
           name: "purchase_expenses",
-          type: "number"
+          type: "number",
         },
         {
           label: "築年数（年）",
           name: "building_age",
           type: "number",
-          required: true
+          required: true,
         },
         {
           label: "建物構造",
           name: "structure",
           type: "text",
-          required: true
+          required: true,
         },
         {
           label: "表面利回り",
           name: "gross_yield",
           type: "number",
-          required: true
+          required: true,
         },
         {
           label: "現況利回り",
           name: "current_yield",
           type: "number",
-          required: true
+          required: true,
         },
         {
           label: "空室率",
@@ -386,12 +401,12 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
         {
           label: "自己資金（円）",
           name: "own_capital",
-          type: "number"
+          type: "number",
         },
         {
           label: "借入金額（円）",
           name: "loan_amount",
-          type: "number"
+          type: "number",
         },
         {
           label: "借入期間（年）",
@@ -432,7 +447,7 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
         {
           label: "売却諸費用（円）",
           name: "sale_expenses",
-          type: "number"
+          type: "number",
         },
         {
           label: "個人／法人",
@@ -457,7 +472,7 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
         </div>
       )}
 
-      {process.env.NODE_ENV === 'development' && (
+      {process.env.NODE_ENV === "development" && (
         <button
           type="button"
           onClick={_applyTestData}
@@ -475,7 +490,6 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
       >
         {isLoading ? "処理中..." : "送信"}
       </button>
-
     </form>
   );
 }
