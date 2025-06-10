@@ -128,6 +128,61 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
     }));
   };
 
+  // 数値を三桁区切りで表示する関数
+  const formatNumberWithCommas = (value: string | undefined) => {
+    if (!value) return "";
+    // 数値のみを抽出
+    const numericValue = value.replace(/[^\d]/g, "");
+    if (!numericValue) return "";
+    // 三桁区切りを追加
+    return parseInt(numericValue).toLocaleString();
+  };
+
+  // 小数点を含むフィールドのリスト
+  const decimalFields = [
+    "gross_yield",
+    "current_yield", 
+    "vacancy_rate",
+    "rent_decline_rate",
+    "interest_rate",
+    "expected_rate_of_return"
+  ];
+
+  // 表示用の値を取得（三桁区切り）
+  const getDisplayValue = (fieldName: string, fieldType: string) => {
+    const value = formData[fieldName as keyof FormDataType];
+    if (fieldType === "number" && typeof value === "string") {
+      // 小数点を含むフィールドは三桁区切りしない
+      if (decimalFields.includes(fieldName)) {
+        return value;
+      }
+      return formatNumberWithCommas(value);
+    }
+    return value ?? "";
+  };
+
+  // 数値フィールドの変更処理
+  const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    
+    // 小数点を含むフィールドの場合は小数点も保持
+    if (decimalFields.includes(name)) {
+      // 数値と小数点のみを許可
+      const cleanValue = value.replace(/[^\d.]/g, "");
+      setFormData((prev) => ({
+        ...prev,
+        [name]: cleanValue,
+      }));
+    } else {
+      // カンマを除去して数値のみを保存
+      const numericValue = value.replace(/[^\d]/g, "");
+      setFormData((prev) => ({
+        ...prev,
+        [name]: numericValue,
+      }));
+    }
+  };
+
   // 送信処理：API エンドポイントに POST し、結果（data プロパティ）を onSuccess 経由で親へ通知
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -222,11 +277,11 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
           {field.required && <span className="text-red-500 ml-1">*</span>}
         </label>
         <input
-          type={field.type}
+          type={field.type === "number" ? "text" : field.type}
           id={field.name}
           name={field.name}
-          value={formData[field.name as keyof FormDataType] ?? ""}
-          onChange={handleChange}
+          value={getDisplayValue(field.name, field.type)}
+          onChange={field.type === "number" ? handleNumberChange : handleChange}
           className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           required={field.required}
           step={field.step}
