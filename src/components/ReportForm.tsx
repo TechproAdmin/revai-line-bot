@@ -303,30 +303,30 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
           required: true,
         },
         {
-          label: "物件価格（総計）",
+          label: "物件価格 総計（円）",
           name: "total_price",
           type: "number",
           required: true,
         },
         {
-          label: "物件価格（土地）",
+          label: "物件価格 土地（円）",
           name: "land_price",
           type: "number",
           required: true
         },
         {
-          label: "物件価格（建物）",
+          label: "物件価格 建物（円）",
           name: "building_price",
           type: "number",
           required: true
         },
         {
-          label: "購入諸費用",
+          label: "購入諸費用（円）",
           name: "purchase_expenses",
           type: "number"
         },
         {
-          label: "築年数",
+          label: "築年数（年）",
           name: "building_age",
           type: "number",
           required: true
@@ -362,22 +362,22 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
           step: "0.01",
         },
         {
-          label: "年間運営経費",
+          label: "年間運営経費（円）",
           name: "annual_operating_expenses",
           type: "number",
         },
         {
-          label: "自己資金",
+          label: "自己資金（円）",
           name: "own_capital",
           type: "number"
         },
         {
-          label: "借入金額",
+          label: "借入金額（円）",
           name: "loan_amount",
           type: "number"
         },
         {
-          label: "借入期間",
+          label: "借入期間（年）",
           name: "loan_term_years",
           type: "number",
         },
@@ -407,13 +407,13 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
           required: true,
         },
         {
-          label: "売却想定価格",
+          label: "売却想定価格（円）",
           name: "expected_sale_price",
           type: "number",
           required: true,
         },
         {
-          label: "売却諸費用",
+          label: "売却諸費用（円）",
           name: "sale_expenses",
           type: "number"
         },
@@ -424,7 +424,7 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
           required: true,
         },
         {
-          label: "年収",
+          label: "年収（円）",
           name: "annual_income",
           type: "number",
           required: true,
