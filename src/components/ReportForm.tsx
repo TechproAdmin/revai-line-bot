@@ -35,6 +35,9 @@ interface ReportFormProps {
 }
 
 export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
+  const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
   const _dummyData: FormDataType = {
     purchase_date: "2025-01-01",
     total_price: "100000000",
@@ -186,6 +189,9 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
   // 送信処理：API エンドポイントに POST し、結果（data プロパティ）を onSuccess 経由で親へ通知
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
+    setIsLoading(true);
+    
     try {
       const res = await fetch("/api/report", {
         method: "POST",
@@ -194,17 +200,28 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
         },
         body: JSON.stringify(formData),
       });
+      
       const result = await res.json();
+      
+      if (!res.ok) {
+        // APIエラーの場合
+        setError(result.error || `APIエラー: ${res.status}`);
+        return;
+      }
+      
       if (result.data) {
         onSuccess(result.data as RealEstateAnalysisRes);
+        setError(null);
       } else {
-        console.error(
-          "レスポンスに data プロパティが含まれていません。",
-          result
-        );
+        setError("レスポンスに data プロパティが含まれていません。");
+        console.error("レスポンスに data プロパティが含まれていません。", result);
       }
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "不明なエラーが発生しました";
+      setError(`送信中にエラーが発生しました: ${errorMessage}`);
       console.error("送信中にエラーが発生しました:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -431,12 +448,21 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
         },
       ].map(renderFormField)}
 
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <div className="flex items-center">
+            <div className="text-red-600 font-medium">エラー</div>
+          </div>
+          <div className="text-red-700 text-sm mt-1">{error}</div>
+        </div>
+      )}
 
       {process.env.NODE_ENV === 'development' && (
         <button
           type="button"
           onClick={_applyTestData}
           className="w-full bg-gray-500 hover:bg-gray-600 text-white font-semibold py-2 px-4 rounded-lg transition"
+          disabled={isLoading}
         >
           テストデータを入力
         </button>
@@ -444,9 +470,10 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
 
       <button
         type="submit"
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition"
+        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition disabled:bg-blue-300 disabled:cursor-not-allowed"
+        disabled={isLoading}
       >
-        送信
+        {isLoading ? "処理中..." : "送信"}
       </button>
 
     </form>

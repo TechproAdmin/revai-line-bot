@@ -54,11 +54,22 @@ export default function Home({ liff, liffError }: HomeProps) {
     setReportData(data);
   };
 
+  // ホームに戻る処理
+  const handleBackToHome = () => {
+    setReportData(null);
+    setFormValues({});
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
       <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-6">
         <h1 className="text-2xl font-bold text-center mb-6">
-          不動産投資レポート作成
+          <button
+            onClick={handleBackToHome}
+            className="text-gray-900 hover:text-gray-700 cursor-pointer"
+          >
+            不動産投資レポート作成
+          </button>
         </h1>
         {liffError && (
           <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg">

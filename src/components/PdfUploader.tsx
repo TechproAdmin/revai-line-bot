@@ -65,17 +65,27 @@ export function PdfUploader({ liff, onUploadSuccess }: PdfUploaderProps) {
 
       const result = await response.json();
 
-      onUploadSuccess({
-        total_price: result.data.total_price,
-        land_price: result.data.land_price,
-        building_price: result.data.building_price,
-        building_age: result.data.building_age,
-        structure: result.data.structure,
-        gross_yield: result.data.gross_yield,
-        current_yield: result.data.current_yield,
-      })
+      if (!response.ok) {
+        // APIエラーの場合
+        setMessage(result.message || `アップロードエラー: ${response.status}`);
+        return;
+      }
 
-      setMessage("ファイルのアップロードに成功しました");
+      if (result.data) {
+        onUploadSuccess({
+          total_price: result.data.total_price,
+          land_price: result.data.land_price,
+          building_price: result.data.building_price,
+          building_age: result.data.building_age,
+          structure: result.data.structure,
+          gross_yield: result.data.gross_yield,
+          current_yield: result.data.current_yield,
+        });
+
+        setMessage("ファイルのアップロードに成功しました");
+      } else {
+        setMessage("アップロードは成功しましたが、データの抽出に失敗しました");
+      }
     } catch (error: unknown) {
       console.error("アップロード中にエラーが発生しました", error);
       setMessage(
@@ -103,7 +113,7 @@ export function PdfUploader({ liff, onUploadSuccess }: PdfUploaderProps) {
         <div
           className={`mb-4 p-3 rounded-lg ${message.includes("成功")
             ? "bg-green-50 text-green-700"
-            : message.includes("失敗") || message.includes("エラー")
+            : message.includes("失敗") || message.includes("エラー") || message.includes("制限") || message.includes("処理中")
               ? "bg-red-50 text-red-700"
               : "bg-blue-50 text-blue-700"
             }`}

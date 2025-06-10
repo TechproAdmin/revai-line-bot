@@ -103,7 +103,7 @@ export default async function handler(
     const uploadedFile = Array.isArray(fileField) ? fileField[0] : fileField;
 
     if (!uploadedFile) {
-      return res.status(400).json({ message: "file is required." });
+      return res.status(400).json({ message: "ファイルが選択されていません。" });
     }
 
     // 一時ファイルのパスを取得
@@ -111,7 +111,7 @@ export default async function handler(
 
     // PDFファイルかどうかの確認
     if (uploadedFile.mimetype !== "application/pdf") {
-      return res.status(400).json({ message: "Uploaded file must be a PDF." });
+      return res.status(400).json({ message: "PDFファイルのみアップロード可能です。" });
     }
 
     // PDFを画像に変換
@@ -136,12 +136,12 @@ export default async function handler(
       error.message &&
       error.message.includes("maxFileSize")
     ) {
-      return res.status(413).json({ message: "File size limit exceeded." });
+      return res.status(413).json({ message: "ファイルサイズが制限を超えています。" });
     }
 
     // その他のエラー
     return res.status(500).json({
-      message: "An error occurred while processing the file.",
+      message: "ファイルの処理中にエラーが発生しました。",
       error: error instanceof Error ? error.message : String(error),
     });
   } finally {
