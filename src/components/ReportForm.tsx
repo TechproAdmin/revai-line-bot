@@ -12,6 +12,7 @@ export type FormDataType = {
   structure?: string;
   gross_yield?: string;
   current_yield?: string;
+  full_occupancy_rental_income?: string;
   vacancy_rate?: number;
   rent_decline_rate?: number;
   annual_operating_expenses?: string;
@@ -370,25 +371,25 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
           required: true,
         },
         {
-          label: "表面利回り",
+          label: "表面利回り（％）",
           name: "gross_yield",
           type: "number",
           required: true,
         },
         {
-          label: "現況利回り",
+          label: "現況利回り（％）",
           name: "current_yield",
           type: "number",
           required: true,
         },
         {
-          label: "空室率",
+          label: "空室率（％）",
           name: "vacancy_rate",
           type: "number",
           step: "0.01",
         },
         {
-          label: "家賃下落率/年",
+          label: "家賃下落率/年（％）",
           name: "rent_decline_rate",
           type: "number",
           step: "0.01",
@@ -414,7 +415,7 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
           type: "number",
         },
         {
-          label: "ローン金利",
+          label: "ローン金利（％）",
           name: "interest_rate",
           type: "number",
           step: "0.01",
@@ -427,7 +428,7 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
           required: true,
         },
         {
-          label: "期待利回り",
+          label: "期待利回り（％）",
           name: "expected_rate_of_return",
           type: "number",
           required: true,
