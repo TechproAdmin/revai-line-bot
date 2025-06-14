@@ -110,7 +110,9 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
       if (formData.gross_yield && !formValues.annual_operating_expenses) {
         const grossYield = Number.parseFloat(formData.gross_yield);
         const fullOccupancyRentalIncome = totalPrice * grossYield;
-        updatedValues.annual_operating_expenses = Math.round(fullOccupancyRentalIncome).toString();
+        updatedValues.annual_operating_expenses = Math.round(
+          fullOccupancyRentalIncome,
+        ).toString();
       }
     }
 
