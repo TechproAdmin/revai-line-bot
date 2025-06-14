@@ -28,6 +28,11 @@ gcp-build-tag: format
 	echo "🔨 Building Docker image with tag: $$tag"; \
 	docker build -t $$image_name .
 
+.PHONY: gcp-build-latest
+gcp-build-latest: format
+	@echo "🔨 Building Docker image with tag: latest"
+	docker build -t $(FULL_IMAGE_NAME) .
+
 .PHONY: gcp-push-tag
 gcp-push-tag:
 	@read -p "Enter tag to push (default: $(TAG)): " tag; \
@@ -106,7 +111,8 @@ deploy: gcp-build-tag gcp-push-tag
 
 # 最新バージョンでデプロイ
 .PHONY: deploy-latest
-deploy-latest: gcp-build-tag
+deploy-latest: gcp-build-latest
+	@echo "📤 Pushing image to registry..."
 	@docker push $(FULL_IMAGE_NAME)
 	$(call deploy-to-cloudrun,$(FULL_IMAGE_NAME))
 
