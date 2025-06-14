@@ -1,105 +1,170 @@
-# REV.AI LINE ボット
+# 🏠 不動産投資分析 LINE Bot
 
-## 技術スタック
-- Next.js
-- React
-- TypeScript
-- Docker
-- ESLint
-- PostCSS
-- LINE Front-end Framework (LIFF)
-- OpenAI API
-- Ngrok
+Next.jsベースの不動産投資分析アプリケーション。PDF文書をアップロード・OCR処理し、AI による包括的な不動産投資分析レポートを生成します。
 
-## 前提条件
-- Node.js (推奨バージョン: 20.x以上)
-- npm または yarn
-- Docker および Docker Compose (コンテナ化して実行する場合)
+## ✨ 機能
 
-## インストール方法
+- 📄 **PDF文書アップロード**: 物件資料の自動読み取り
+- 🤖 **AI分析**: OpenAI API による不動産データ抽出
+- 📊 **投資分析**: 利回り・キャッシュフロー・リスク評価
+- 📱 **LINE連携**: LIFF Framework による簡単アクセス
+- ☁️ **クラウド対応**: Google Cloud Run でのスケーラブルな運用
 
-### 開発環境（ローカル）
+## 🚀 技術スタック
 
-1. リポジトリをクローンします：
+| カテゴリ | 技術 | 
+|----------|------|
+| **Frontend** | Next.js 15, React 19, TypeScript |
+| **Styling** | Tailwind CSS 4 |
+| **APIs** | LINE LIFF, OpenAI API |
+| **Infrastructure** | Docker, Google Cloud Run |
+| **Development** | Biome (Lint/Format), Ngrok |
+
+## 📋 前提条件
+
+- **Node.js** 20.x以上
+- **Docker & Docker Compose** 
+- **Google Cloud SDK** (デプロイ時)
+
+## ⚡ クイックスタート
+
+### 1️⃣ セットアップ
+
 ```bash
+# リポジトリをクローン
 git clone <リポジトリURL>
-cd <プロジェクトディレクトリ>
-```
+cd revai-line-bot
 
-2. 依存パッケージをインストールします：
-```bash
+# 依存関係をインストール
 make install
-```
 
-3. 環境変数を設定します：
-```bash
+# 環境変数を設定
 cp .env.local.example .env.local
-# .env.local ファイルを適切に編集してください
+# .env.local を編集
 ```
 
-### 環境変数の設定
-`.env.local`ファイルには以下の環境変数を設定する必要があります：
+### 2️⃣ 環境変数
 
-- `NEXT_PUBLIC_LIFF_ID`: LINE Front-end Framework (LIFF) のIDを設定します。LINE Developersコンソールで取得できます。
-- `NEXT_PUBLIC_OPENAI_API_KEY`: OpenAI APIを使用するためのAPIキーを設定します。OpenAIのウェブサイトから取得できます。
-- `NGROK_AUTHTOKEN`: Ngrokのトンネリングサービスを使用するための認証トークンを設定します。ローカル開発環境を公開するために使用します。
+`.env.local` ファイルに以下を設定：
 
-### Ngrok認証トークンの取得方法
+```env
+NEXT_PUBLIC_LIFF_ID=your_liff_id
+NEXT_PUBLIC_OPENAI_API_KEY=your_openai_api_key
+NGROK_AUTHTOKEN=your_ngrok_token
+APP_ENV=development  # production で本番API使用
+```
 
-1. [Ngrokの公式サイト](https://ngrok.com)にアクセスし、無料アカウントを作成します。
-2. アカウント作成後、ダッシュボードにログインします。
-3. ダッシュボードの「Getting Started」または「Setup & Installation」セクションに認証トークン（Authtoken）が表示されています。
-4. この認証トークンをコピーして以下のコマンドを実行し、Ngrokの設定ファイルに保存します：
-   ```bash
-   ngrok config add-authtoken あなたの認証トークン
-   ```
-5. または、直接`.env.local`ファイルに`NGROK_AUTHTOKEN=あなたの認証トークン`として保存します。
+### 3️⃣ 開発サーバー起動
 
-認証トークンは一度だけ表示され、セキュリティ上の理由から再表示されないため、必ず安全な場所に保管してください。
-
-### Docker を使用する場合
-
-1. Dockerイメージをビルドして起動します：
 ```bash
+# ローカル開発
+make dev
+
+# Docker環境
 make docker-up
 ```
 
-## 使用方法（Docker環境）
-
-0. **初回のみ**: [https://account.line.biz/profile](https://account.line.biz/profile) にアクセスして、LINEビジネスアカウントと自身のLINEアカウントを紐づけておきます。
-
-0. LINE Developerから**収益性分析App**にアクセスして、先ほどのビジネスアカウントに権限を付与させておきます。
-
-1. [http://localhost:4040/inspect/http](http://localhost:4040/inspect/http) にアクセスして、HTTPSのURLを取得します。
-
-2. LINE DeveloperのLIFFアプリ詳細のエンドポイントURLに、取得したURLを保存します。
-
-3. 取得したURLまたは[http://localhost:3000](http://localhost:3000)にアクセスすると、アプリが起動します。
-
-## ディレクトリ構造
-- `/src` - アプリケーションのソースコード
-- `/public` - 静的ファイル
-- `/styles` - CSSやスタイル関連ファイル
-- `/.next` - Next.jsのビルド出力（自動生成）
-- `/node_modules` - 依存パッケージ（自動生成）
-
-## デプロイ方法
-
-0. [gcloud CLI](https://cloud.google.com/sdk/docs/install?hl=ja)をインストールする
-1. gcloud CLI を使って認証を行う
-2. docker image を作成
-3. GCP の Artifact Registry に image を push する
-4. GCP のコンソールを開き Cloud Run のリソースを編集する
-    - コンテナイメージのURLを最新のものに変更する
+## 📁 プロジェクト構造
 
 ```
-$ make gcp-auth      # 認証
-$ make gcp-build-tag # image のビルド
-$ make gcp-push-tag  # image のプッシュ
+src/
+├── components/          # Reactコンポーネント
+│   ├── ReportForm.tsx   # メインフォーム（自動計算機能付き）
+│   ├── PdfUploader.tsx  # PDF処理コンポーネント
+│   ├── Report.tsx       # レポート表示
+│   └── types.ts         # TypeScript型定義
+├── pages/
+│   ├── api/
+│   │   ├── report.ts    # レポート生成API
+│   │   └── upload.ts    # PDFアップロード処理
+│   └── index.tsx        # メインページ
+└── utils/
+    └── api.ts           # API統合ロジック
 ```
 
-## トラブルシューティング
+## 🎯 主要機能詳細
 
-- Ngrokの接続でエラーが発生する場合は、認証トークンが正しく設定されているか確認してください。
-- LIFFの初期化に問題がある場合は、LIFF IDが正しく設定されているか確認してください。
-- アプリケーションが正常に動作しない場合は、コンソールログを確認して問題を特定してください。
+### 自動計算フィールド
+- **購入諸費用**: 物件価格の8%
+- **自己資金**: 物件価格の10% + 購入諸費用  
+- **借入金額**: 物件価格の90%
+- **年間運営経費**: 物件価格 × 表面利回り
+- **売却諸費用**: 想定売却価格の4%
+
+### API連携
+- **開発環境**: モックデータで高速開発
+- **本番環境**: 外部不動産評価API連携
+
+## 🔧 開発コマンド
+
+```bash
+# 基本操作
+make install         # 依存関係インストール
+make dev            # 開発サーバー起動
+make build          # プロダクションビルド
+make lint           # コード品質チェック
+
+# Docker環境
+make docker-up      # コンテナ起動
+make docker-down    # コンテナ停止
+
+# GCPデプロイ
+make deploy-latest  # 最新版をデプロイ
+make deploy         # カスタムタグでデプロイ
+make status         # サービス状態確認
+```
+
+## ☁️ デプロイ手順
+
+### Google Cloud Run 自動デプロイ
+
+1. **APIを有効化**
+   ```bash
+   gcloud services enable run.googleapis.com
+   gcloud services enable artifactregistry.googleapis.com
+   ```
+
+2. **ワンコマンドデプロイ**
+   ```bash
+   make deploy-latest
+   ```
+
+3. **デプロイ確認**
+   ```bash
+   make status
+   ```
+
+### 本番環境設定
+- **メモリ**: 1GB
+- **CPU**: 1コア  
+- **自動スケーリング**: 0-10インスタンス
+- **同時リクエスト**: 80
+- **タイムアウト**: 300秒
+
+## 🔧 LINE LIFF 設定
+
+### 開発環境
+1. Ngrok で HTTPS トンネル作成
+2. LINE Developers でエンドポイント URL を設定
+3. LIFF ID を環境変数に設定
+
+### 本番環境  
+1. Cloud Run の URL を LINE Developers に設定
+2. 本番用 LIFF ID を環境変数に設定
+
+## 🐛 トラブルシューティング
+
+| 問題 | 解決方法 |
+|------|---------|
+| Ngrok接続エラー | 認証トークンを再確認 |
+| LIFF初期化失敗 | LIFF IDが正しく設定されているか確認 |
+| API呼び出しエラー | 環境変数とAPIキーを確認 |
+| ビルドエラー | `make lint` でコード品質をチェック |
+
+## 🤝 コントリビューション
+
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open Pull Request

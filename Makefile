@@ -75,3 +75,46 @@ docker-down:
 # Ngrokトンネルを起動
 ngrok:
 	npx ngrok http 3000
+
+# Cloud Run デプロイ用の共通関数
+define deploy-to-cloudrun
+	@echo "🌐 Deploying to Cloud Run..."
+	gcloud run deploy realestate-linebot \
+		--image=$(1) \
+		--region=$(REGION) \
+		--platform=managed \
+		--allow-unauthenticated \
+		--port=3000 \
+		--memory=1Gi \
+		--cpu=1 \
+		--max-instances=10 \
+		--min-instances=0 \
+		--concurrency=80 \
+		--timeout=300 \
+		--set-env-vars="NODE_ENV=production,APP_ENV=production" \
+		--quiet
+	@echo "✅ Deployment completed successfully!"
+endef
+
+# Cloud Run に直接デプロイ
+.PHONY: deploy
+deploy: gcp-build-tag gcp-push-tag
+	@read -p "Enter tag (default: $(TAG)): " tag; \
+	tag=$${tag:-$(TAG)}; \
+	image_name="$(REGION)-docker.pkg.dev/$(PROJECT_ID)/$(REPOSITORY)/$(IMAGE_NAME):$$tag"; \
+	$(call deploy-to-cloudrun,$$image_name)
+
+# 最新バージョンでデプロイ
+.PHONY: deploy-latest
+deploy-latest: gcp-build-tag
+	@docker push $(FULL_IMAGE_NAME)
+	$(call deploy-to-cloudrun,$(FULL_IMAGE_NAME))
+
+# Cloud Run サービスの状態確認
+.PHONY: status
+status:
+	@echo "📊 Cloud Run service status..."
+	gcloud run services list --region=$(REGION)
+	@echo ""
+	@echo "📈 Service details:"
+	gcloud run services describe realestate-linebot --region=$(REGION)
