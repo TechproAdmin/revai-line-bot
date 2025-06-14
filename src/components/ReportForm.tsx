@@ -105,6 +105,13 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
       if (!formValues.loan_amount) {
         updatedValues.loan_amount = (totalPrice * 0.9).toString();
       }
+
+      // 年間運営経費の自動計算 (物件価格総計 × 表面利回り = 満室時賃料収入)
+      if (formData.gross_yield && !formValues.annual_operating_expenses) {
+        const grossYield = Number.parseFloat(formData.gross_yield);
+        const fullOccupancyRentalIncome = totalPrice * grossYield;
+        updatedValues.annual_operating_expenses = Math.round(fullOccupancyRentalIncome).toString();
+      }
     }
 
     // 想定売却価格がある場合
@@ -126,6 +133,7 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
     formData.total_price,
     formData.expected_sale_price,
     formData.purchase_expenses,
+    formData.gross_yield,
     formValues,
   ]);
 
