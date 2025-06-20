@@ -4,29 +4,29 @@ import type { RealEstateAnalysisRes } from "@/components/types";
 
 export type FormDataType = {
   purchase_date?: string;
-  total_price?: string;
-  land_price?: string;
-  building_price?: string;
-  purchase_expenses?: string;
-  building_age?: string;
+  total_price?: number;
+  land_price?: number;
+  building_price?: number;
+  purchase_expenses?: number;
+  building_age?: number;
   structure?: string;
-  gross_yield?: string;
-  current_yield?: string;
-  full_occupancy_rental_income?: string;
+  gross_yield?: number;
+  current_yield?: number;
+  full_occupancy_rental_income?: number;
   vacancy_rate?: number;
   rent_decline_rate?: number;
-  annual_operating_expenses?: string;
-  own_capital?: string;
-  loan_amount?: string;
+  annual_operating_expenses?: number;
+  own_capital?: number;
+  loan_amount?: number;
   loan_term_years?: number;
-  interest_rate?: string;
+  interest_rate?: number;
   loan_type?: string;
-  expected_rate_of_return?: string;
+  expected_rate_of_return?: number;
   expected_sale_year?: string;
-  expected_sale_price?: string;
-  sale_expenses?: string;
+  expected_sale_price?: number;
+  sale_expenses?: number;
   owner_type?: string;
-  annual_income?: string;
+  annual_income?: number;
 };
 
 interface ReportFormProps {
@@ -40,28 +40,28 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
 
   const _dummyData: FormDataType = {
     purchase_date: "2025-01-01",
-    total_price: "100000000",
-    land_price: "40000000",
-    building_price: "60000000",
-    purchase_expenses: "8000000",
-    building_age: "10",
+    total_price: 100000000,
+    land_price: 40000000,
+    building_price: 60000000,
+    purchase_expenses: 8000000,
+    building_age: 10,
     structure: "重量鉄骨造(S)",
-    gross_yield: "0.08",
-    current_yield: "0.08",
+    gross_yield: 0.08,
+    current_yield: 0.08,
     vacancy_rate: 0.05,
     rent_decline_rate: 0.01,
-    annual_operating_expenses: "560000",
-    own_capital: "18000000",
-    loan_amount: "90000000",
+    annual_operating_expenses: 560000,
+    own_capital: 18000000,
+    loan_amount: 90000000,
     loan_term_years: 35,
-    interest_rate: "0.025",
+    interest_rate: 0.025,
     loan_type: "元利均等",
-    expected_rate_of_return: "0.03",
+    expected_rate_of_return: 0.03,
     expected_sale_year: "2055-01-01",
-    expected_sale_price: "60000000",
-    sale_expenses: "2400000",
+    expected_sale_price: 60000000,
+    sale_expenses: 2400000,
     owner_type: "個人",
-    annual_income: "10000000",
+    annual_income: 10000000,
   };
 
   const _applyTestData = () => {
@@ -83,36 +83,32 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
 
     // 物件価格が入力されている場合の依存計算
     if (formData.total_price) {
-      const totalPrice = Number.parseFloat(formData.total_price);
+      const totalPrice = formData.total_price;
 
       // 購入諸費用 (物件価格の8%)
       if (!formValues.purchase_expenses) {
-        updatedValues.purchase_expenses = (totalPrice * 0.08).toString();
+        updatedValues.purchase_expenses = totalPrice * 0.08;
       }
 
       // 自己資金 (物件価格の10% + 購入諸費用)
       if (!formValues.own_capital) {
-        const purchaseExpenses = Number.parseFloat(
-          updatedValues.purchase_expenses || formData.purchase_expenses || "0",
-        );
-        updatedValues.own_capital = (
-          totalPrice * 0.1 +
-          purchaseExpenses
-        ).toString();
+        const purchaseExpenses =
+          updatedValues.purchase_expenses || formData.purchase_expenses || 0;
+        updatedValues.own_capital = totalPrice * 0.1 + purchaseExpenses;
       }
 
       // 借入金額 (物件価格の90%)
       if (!formValues.loan_amount) {
-        updatedValues.loan_amount = (totalPrice * 0.9).toString();
+        updatedValues.loan_amount = totalPrice * 0.9;
       }
 
       // 年間運営経費の自動計算 (物件価格総計 × 表面利回り = 満室時賃料収入)
       if (formData.gross_yield && !formValues.annual_operating_expenses) {
-        const grossYield = Number.parseFloat(formData.gross_yield);
+        const grossYield = formData.gross_yield;
         const fullOccupancyRentalIncome = totalPrice * grossYield;
         updatedValues.annual_operating_expenses = Math.round(
           fullOccupancyRentalIncome,
-        ).toString();
+        );
       }
     }
 
@@ -120,10 +116,8 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
     if (formData.expected_sale_price) {
       // 売却諸費用 (想定売却価格の4%)
       if (!formValues.sale_expenses) {
-        const expectedSalePrice = Number.parseFloat(
-          formData.expected_sale_price,
-        );
-        updatedValues.sale_expenses = (expectedSalePrice * 0.04).toString();
+        const expectedSalePrice = formData.expected_sale_price;
+        updatedValues.sale_expenses = expectedSalePrice * 0.04;
       }
     }
 
@@ -153,60 +147,34 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
     }));
   };
 
-  // 数値を三桁区切りで表示する関数
-  const formatNumberWithCommas = (value: string | undefined) => {
-    if (!value) return "";
-    // 数値のみを抽出
-    const numericValue = value.replace(/[^\d]/g, "");
-    if (!numericValue) return "";
-    // 三桁区切りを追加
-    return Number.parseInt(numericValue).toLocaleString();
-  };
-
-  // 小数点を含むフィールドのリスト
-  const decimalFields = [
-    "gross_yield",
-    "current_yield",
-    "vacancy_rate",
-    "rent_decline_rate",
-    "interest_rate",
-    "expected_rate_of_return",
-  ];
-
-  // 表示用の値を取得（三桁区切り）
-  const getDisplayValue = (fieldName: string, fieldType: string) => {
-    const value = formData[fieldName as keyof FormDataType];
-    if (fieldType === "number" && typeof value === "string") {
-      // 小数点を含むフィールドは三桁区切りしない
-      if (decimalFields.includes(fieldName)) {
-        return value;
-      }
-      return formatNumberWithCommas(value);
-    }
-    return value ?? "";
-  };
-
-  // 数値フィールドの変更処理
   const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-
-    // 小数点を含むフィールドの場合は小数点も保持
-    if (decimalFields.includes(name)) {
-      // 数値と小数点のみを許可
-      const cleanValue = value.replace(/[^\d.]/g, "");
-      setFormData((prev) => ({
-        ...prev,
-        [name]: cleanValue,
-      }));
-    } else {
-      // カンマを除去して数値のみを保存
-      const numericValue = value.replace(/[^\d]/g, "");
-      setFormData((prev) => ({
-        ...prev,
-        [name]: numericValue,
-      }));
-    }
+    const numericValue = value === "" ? undefined : Number(value);
+    setFormData((prev) => ({
+      ...prev,
+      [name]: numericValue,
+    }));
   };
+
+  // 三桁区切り表示用の関数
+  const formatNumberDisplay = (value: number | undefined): string => {
+    if (value === undefined || value === null) return "";
+    return value.toLocaleString();
+  };
+
+  // 大きな金額フィールド（三桁区切り表示が必要）
+  const largeNumberFields = [
+    "total_price",
+    "land_price",
+    "building_price",
+    "purchase_expenses",
+    "annual_operating_expenses",
+    "own_capital",
+    "loan_amount",
+    "expected_sale_price",
+    "sale_expenses",
+    "annual_income",
+  ];
 
   // 送信処理：API エンドポイントに POST し、結果（data プロパティ）を onSuccess 経由で親へ通知
   const handleSubmit = async (e: React.FormEvent) => {
@@ -360,6 +328,43 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
       );
     }
 
+    // 数値フィールドで三桁区切り表示が必要な場合
+    if (field.type === "number" && largeNumberFields.includes(field.name)) {
+      return (
+        <div key={field.name} className="flex flex-col">
+          <label
+            htmlFor={field.name}
+            className="mb-1 font-medium text-gray-700"
+          >
+            {field.label}
+            {field.required && <span className="text-red-500 ml-1">*</span>}
+          </label>
+          <div className="relative">
+            <input
+              type="text"
+              id={field.name}
+              name={field.name}
+              value={formatNumberDisplay(
+                formData[field.name as keyof FormDataType] as number,
+              )}
+              onChange={(e) => {
+                const cleanValue = e.target.value.replace(/[^\d]/g, "");
+                const numericValue =
+                  cleanValue === "" ? undefined : Number(cleanValue);
+                setFormData((prev) => ({
+                  ...prev,
+                  [field.name]: numericValue,
+                }));
+              }}
+              className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required={field.required}
+              placeholder="0"
+            />
+          </div>
+        </div>
+      );
+    }
+
     // その他のフィールドは通常の入力要素を表示
     return (
       <div key={field.name} className="flex flex-col">
@@ -368,10 +373,10 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
           {field.required && <span className="text-red-500 ml-1">*</span>}
         </label>
         <input
-          type={field.type === "number" ? "text" : field.type}
+          type={field.type}
           id={field.name}
           name={field.name}
-          value={getDisplayValue(field.name, field.type)}
+          value={formData[field.name as keyof FormDataType] ?? ""}
           onChange={field.type === "number" ? handleNumberChange : handleChange}
           className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           required={field.required}
