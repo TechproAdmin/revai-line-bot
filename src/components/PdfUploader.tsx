@@ -1,14 +1,18 @@
-import type { PdfExtractionResult } from "@/components/types";
 import type { Liff } from "@line/liff";
 import type React from "react";
-import { useRef, useState } from "react";
+import { useId, useRef, useState } from "react";
+import type { PdfExtractionResult } from "@/components/types";
 
 interface PdfUploaderProps {
   liff: Liff;
   onUploadSuccess: (data: PdfExtractionResult) => void;
 }
 
-export function PdfUploader({ liff, onUploadSuccess }: PdfUploaderProps) {
+export function PdfUploader({
+  liff: _liff,
+  onUploadSuccess,
+}: PdfUploaderProps) {
+  const fileUploadId = useId();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [fileInfo, setFileInfo] = useState<{
     name: string;
@@ -151,10 +155,10 @@ export function PdfUploader({ liff, onUploadSuccess }: PdfUploaderProps) {
           accept="application/pdf"
           onChange={handleFileChange}
           className="hidden"
-          id="file-upload"
+          id={fileUploadId}
         />
         <label
-          htmlFor="file-upload"
+          htmlFor={fileUploadId}
           className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg text-center cursor-pointer disabled:bg-gray-300 disabled:text-gray-500"
         >
           PDFファイルを選択

@@ -1,12 +1,12 @@
 import fs from "node:fs/promises";
+import axios from "axios";
+import OpenAI from "openai";
+import type { ChatCompletionContentPart } from "openai/src/resources/chat/completions/completions.js";
 import type {
   PdfExtractionResult,
   RealEstateAnalysisReq,
   RealEstateAnalysisRes,
 } from "@/components/types";
-import axios from "axios";
-import OpenAI from "openai";
-import type { ChatCompletionContentPart } from "openai/src/resources/chat/completions/completions.js";
 
 const openai = new OpenAI({
   apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
@@ -99,7 +99,7 @@ async function analyzePdfWithOpenAI(
 
 // モック関数（テスト用）
 async function analyzePdfWithOpenAIMock(
-  imagePaths: string[],
+  _imagePaths: string[],
 ): Promise<PdfExtractionResult> {
   return {
     total_price: "35000000",
@@ -134,7 +134,9 @@ async function calcReport(
 }
 
 // モック関数（テスト用）
-async function calcReportMock(pdfPath: string): Promise<RealEstateAnalysisRes> {
+async function calcReportMock(
+  _pdfPath: string,
+): Promise<RealEstateAnalysisRes> {
   return {
     annual_rent_income: [
       0, 8000000, 7524000, 7448760, 7374272.4, 7300529.676, 7227524.37924,

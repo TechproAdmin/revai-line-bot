@@ -1,5 +1,5 @@
-import apiRoot from "@/utils/api";
 import type { NextApiRequest, NextApiResponse } from "next";
+import apiRoot from "@/utils/api";
 
 export default async function handler(
   req: NextApiRequest,

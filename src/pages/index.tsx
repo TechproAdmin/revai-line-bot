@@ -1,3 +1,6 @@
+import type { Liff } from "@line/liff";
+import { Geist, Geist_Mono } from "next/font/google";
+import { useEffect, useState } from "react";
 import { PdfUploader } from "@/components/PdfUploader";
 import { Report } from "@/components/Report";
 import { ReportForm } from "@/components/ReportForm";
@@ -5,16 +8,13 @@ import type {
   PdfExtractionResult,
   RealEstateAnalysisRes,
 } from "@/components/types";
-import type { Liff } from "@line/liff";
-import { Geist, Geist_Mono } from "next/font/google";
-import { useEffect, useState } from "react";
 
-const geistSans = Geist({
+const _geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
+const _geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
@@ -97,14 +97,12 @@ export default function Home({ liff, liffError }: HomeProps) {
         )}
 
         {reportData ? (
-          <>
-            <div className="mb-4 p-3">
-              <p>
-                レポートを作成しました。詳細なレポートを確認したい場合は、「PDFをダウンロード」ボタンを押してダウンロードできるPDFをご確認ください。
-              </p>
-              <Report data={reportData} />
-            </div>
-          </>
+          <div className="mb-4 p-3">
+            <p>
+              レポートを作成しました。詳細なレポートを確認したい場合は、「PDFをダウンロード」ボタンを押してダウンロードできるPDFをご確認ください。
+            </p>
+            <Report data={reportData} />
+          </div>
         ) : (
           <>
             <div>

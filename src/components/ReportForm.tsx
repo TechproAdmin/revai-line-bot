@@ -1,6 +1,6 @@
-import type { RealEstateAnalysisRes } from "@/components/types";
 // components/ReportForm.tsx
 import { useEffect, useState } from "react";
+import type { RealEstateAnalysisRes } from "@/components/types";
 
 export type FormDataType = {
   purchase_date?: string;
@@ -286,6 +286,54 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
       );
     }
 
+    // structure フィールドの場合はセレクト要素を表示
+    if (field.name === "structure") {
+      return (
+        <div key={field.name} className="flex flex-col">
+          <label
+            htmlFor={field.name}
+            className="mb-1 font-medium text-gray-700"
+          >
+            {field.label}
+            {field.required && <span className="text-red-500 ml-1">*</span>}
+          </label>
+          <select
+            id={field.name}
+            name={field.name}
+            value={formData[field.name as keyof FormDataType] ?? ""}
+            onChange={handleChange}
+            className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required={field.required}
+          >
+            <option value="">選択してください</option>
+            <option value="木造(W)">木造(W)</option>
+            <option value="軽量鉄骨造">軽量鉄骨造</option>
+            <option value="重量鉄骨造(S)">重量鉄骨造(S)</option>
+            <option value="ブロック造(B)">ブロック造(B)</option>
+            <option value="鉄筋コンクリート造(RC)">
+              鉄筋コンクリート造(RC)
+            </option>
+            <option value="鉄骨鉄筋コンクリート造(SRC)">
+              鉄骨鉄筋コンクリート造(SRC)
+            </option>
+            <option value="アルミ造(AL)">アルミ造(AL)</option>
+            <option value="コンクリート充填鋼管構造(CFT)">
+              コンクリート充填鋼管構造(CFT)
+            </option>
+            <option value="コンクリートブロック造(CB)">
+              コンクリートブロック造(CB)
+            </option>
+            <option value="プレキャストコンクリート構造(PC)">
+              プレキャストコンクリート構造(PC)
+            </option>
+            <option value="鉄骨プレキャストコンクリート造(HPC)">
+              鉄骨プレキャストコンクリート造(HPC)
+            </option>
+          </select>
+        </div>
+      );
+    }
+
     // loan_type フィールドの場合はセレクト要素を表示
     if (field.name === "loan_type") {
       return (
@@ -377,7 +425,7 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
         {
           label: "建物構造",
           name: "structure",
-          type: "text",
+          type: "select",
           required: true,
         },
         {

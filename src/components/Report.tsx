@@ -1,25 +1,19 @@
-import type { RealEstateAnalysisRes } from "@/components/types";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import React, { useRef, useState, useEffect } from "react";
-
+import { useId, useRef } from "react";
 import {
-  Area,
-  AreaChart,
   Bar,
   BarChart,
   CartesianGrid,
-  Cell,
   Legend,
   Line,
   LineChart,
-  Pie,
-  PieChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
   YAxis,
 } from "recharts";
+import type { RealEstateAnalysisRes } from "@/components/types";
 
 // レポートコンポーネント
 interface ReportProps {
@@ -27,6 +21,7 @@ interface ReportProps {
 }
 
 export function Report({ data }: ReportProps) {
+  const downloadButtonId = useId();
   const reportRef = useRef<HTMLDivElement>(null);
 
   // PDF ダウンロード処理
@@ -34,7 +29,7 @@ export function Report({ data }: ReportProps) {
     if (!reportRef.current) return;
 
     // ローディング状態を表示
-    const button = document.getElementById("download-button");
+    const button = document.getElementById(downloadButtonId);
     if (button) {
       button.textContent = "PDFを準備中...";
       button.setAttribute("disabled", "true");
@@ -207,7 +202,7 @@ export function Report({ data }: ReportProps) {
   };
 
   // 金額をフォーマットする関数（万円単位）
-  const formatAmount = (amount: number) => {
+  const _formatAmount = (amount: number) => {
     return `¥${(amount / 10000).toFixed(0)}`;
   };
 
@@ -310,7 +305,7 @@ export function Report({ data }: ReportProps) {
 
         <button
           type="button"
-          id="download-button"
+          id={downloadButtonId}
           onClick={handleDownloadPDF}
           style={{
             backgroundColor: "#3b82f6",

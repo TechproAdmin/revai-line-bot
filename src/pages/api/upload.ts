@@ -2,10 +2,10 @@ import fsSync from "node:fs";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import apiRoot from "@/utils/api";
 import { pdf2img } from "@pdfme/converter";
 import formidable, { type Fields, type Files } from "formidable";
 import type { NextApiRequest, NextApiResponse } from "next";
+import apiRoot from "@/utils/api";
 
 // Next.jsのデフォルトのbodyParserを無効にする
 export const config = {
