@@ -112,12 +112,15 @@ async function analyzePdfWithOpenAIMock(
   };
 }
 
+// 外部APIのレスポンス型（conditionsを含まない）
+type ExternalApiResponse = Omit<RealEstateAnalysisRes, "conditions">;
+
 // 不動産投資APIを呼び出して分析レポートを取得する関数
 async function calcReport(
   data: RealEstateAnalysisReq,
 ): Promise<RealEstateAnalysisRes> {
   try {
-    const response = await axios.post<RealEstateAnalysisRes>(
+    const response = await axios.post<ExternalApiResponse>(
       "https://realestate-valuation-api-a6mebisk7q-an.a.run.app/analyze",
       data,
       {
@@ -126,7 +129,12 @@ async function calcReport(
         },
       },
     );
-    return response.data;
+
+    // 入力条件を追加してレスポンスを返す
+    return {
+      conditions: data,
+      ...response.data,
+    };
   } catch (error) {
     console.error("Error calling real estate analysis API:", error);
     throw error;
@@ -135,9 +143,10 @@ async function calcReport(
 
 // モック関数（テスト用）
 async function calcReportMock(
-  _pdfPath: string,
+  data: RealEstateAnalysisReq,
 ): Promise<RealEstateAnalysisRes> {
   return {
+    conditions: data,
     annual_rent_income: [
       0, 8000000, 7524000, 7448760, 7374272.4, 7300529.676, 7227524.37924,
       7155249.1354476, 7083696.644093123, 7012859.677652192, 6942731.080875671,

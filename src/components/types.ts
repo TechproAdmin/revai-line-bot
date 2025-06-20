@@ -36,6 +36,9 @@ export type RealEstateAnalysisReq = {
 };
 
 export type RealEstateAnalysisRes = {
+  // 入力条件
+  conditions: RealEstateAnalysisReq;
+  // 分析結果
   annual_rent_income: number[]; // 年ごとの年間賃料収入
   net_operating_income: number[]; // 年ごとの純収益(NOI)
   annual_loan_repayment: number[]; // 年ごとの年間ローン返済額

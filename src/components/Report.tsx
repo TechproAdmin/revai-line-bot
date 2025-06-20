@@ -221,6 +221,11 @@ export function Report({ data }: ReportProps) {
     return `${years.toFixed(2)}年`;
   };
 
+  // 金額をフォーマットする関数（円単位）
+  const formatAmount = (amount: number) => {
+    return `¥${amount.toLocaleString()}`;
+  };
+
   // 年次データのフォーマット（最初の20年間）
   const yearlyData = data.annual_rent_income
     .slice(1, 21)
@@ -229,7 +234,7 @@ export function Report({ data }: ReportProps) {
       return {
         year: `${year}年目`,
         rent: (value / 10000).toFixed(2),
-        expense: 0.56, // 運営経費は固定
+        expense: (data.conditions.annual_operating_expenses / 10000).toFixed(2),
         noi: (data.net_operating_income[year] / 10000).toFixed(2),
         loanPayment: (data.annual_loan_repayment[year] / 10000).toFixed(2),
         btcf: (data.befor_tax_cash_flow[year] / 10000).toFixed(2),
@@ -245,7 +250,7 @@ export function Report({ data }: ReportProps) {
       return {
         year: `${year}年目`,
         rent: (value / 10000).toFixed(2),
-        expense: 0.56,
+        expense: (data.conditions.annual_operating_expenses / 10000).toFixed(2),
         noi: (data.net_operating_income[year] / 10000).toFixed(2),
         loanPayment:
           year <= 35
@@ -370,7 +375,7 @@ export function Report({ data }: ReportProps) {
                       textAlign: "right",
                     }}
                   >
-                    ¥100,000,000
+                    {formatAmount(data.conditions.total_price)}
                   </td>
                 </tr>
                 <tr>
@@ -390,7 +395,7 @@ export function Report({ data }: ReportProps) {
                       textAlign: "right",
                     }}
                   >
-                    ¥8,000,000
+                    {formatAmount(data.conditions.purchase_expenses)}
                   </td>
                 </tr>
                 <tr>
@@ -410,7 +415,7 @@ export function Report({ data }: ReportProps) {
                       textAlign: "right",
                     }}
                   >
-                    10年
+                    {data.conditions.building_age}年
                   </td>
                 </tr>
                 <tr>
@@ -430,7 +435,7 @@ export function Report({ data }: ReportProps) {
                       textAlign: "right",
                     }}
                   >
-                    重量鉄骨造(S)
+                    {data.conditions.structure}
                   </td>
                 </tr>
                 <tr>
@@ -450,7 +455,7 @@ export function Report({ data }: ReportProps) {
                       textAlign: "right",
                     }}
                   >
-                    5.00%
+                    {formatPercent(data.conditions.vacancy_rate)}
                   </td>
                 </tr>
                 <tr>
@@ -470,7 +475,7 @@ export function Report({ data }: ReportProps) {
                       textAlign: "right",
                     }}
                   >
-                    1.00%
+                    {formatPercent(data.conditions.rent_decline_rate)}
                   </td>
                 </tr>
                 <tr>
@@ -490,7 +495,7 @@ export function Report({ data }: ReportProps) {
                       textAlign: "right",
                     }}
                   >
-                    ¥560,000
+                    {formatAmount(data.conditions.annual_operating_expenses)}
                   </td>
                 </tr>
                 <tr>
@@ -510,7 +515,7 @@ export function Report({ data }: ReportProps) {
                       textAlign: "right",
                     }}
                   >
-                    ¥18,000,000
+                    {formatAmount(data.conditions.own_capital)}
                   </td>
                 </tr>
                 <tr>
@@ -530,7 +535,7 @@ export function Report({ data }: ReportProps) {
                       textAlign: "right",
                     }}
                   >
-                    ¥90,000,000
+                    {formatAmount(data.conditions.loan_amount)}
                   </td>
                 </tr>
                 <tr>
@@ -550,7 +555,7 @@ export function Report({ data }: ReportProps) {
                       textAlign: "right",
                     }}
                   >
-                    35年
+                    {data.conditions.loan_term_years}年
                   </td>
                 </tr>
                 <tr>
@@ -570,7 +575,13 @@ export function Report({ data }: ReportProps) {
                       textAlign: "right",
                     }}
                   >
-                    40年
+                    {Math.floor(
+                      new Date(
+                        data.conditions.expected_sale_year,
+                      ).getFullYear() -
+                        new Date(data.conditions.purchase_date).getFullYear(),
+                    )}
+                    年
                   </td>
                 </tr>
               </tbody>
@@ -1064,7 +1075,9 @@ export function Report({ data }: ReportProps) {
                       fontSize: "8px",
                     }}
                   >
-                    0.56
+                    {(
+                      data.conditions.annual_operating_expenses / 10000
+                    ).toFixed(2)}
                   </td>
                 ))}
               </tr>
@@ -1266,7 +1279,9 @@ export function Report({ data }: ReportProps) {
                       fontSize: "8px",
                     }}
                   >
-                    0.56
+                    {(
+                      data.conditions.annual_operating_expenses / 10000
+                    ).toFixed(2)}
                   </td>
                 ))}
               </tr>
