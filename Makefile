@@ -84,9 +84,9 @@ ngrok:
 # Cloud Run デプロイ用の共通関数
 define deploy-to-cloudrun
 	@echo "🌐 Deploying to Cloud Run..."
-	@echo "📝 Loading environment variables from .env..."
-	$(eval include .env)
-	@export $(shell sed 's/=.*//' .env)
+	@echo "📝 Loading environment variables from .env.production..."
+	$(eval include .env.production)
+	@export $(shell sed 's/=.*//' .env.production)
 	gcloud run deploy realestate-linebot \
 		--image=$(1) \
 		--region=$(REGION) \

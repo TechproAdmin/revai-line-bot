@@ -118,18 +118,31 @@ make status         # サービス状態確認
 
 ### Google Cloud Run 自動デプロイ
 
-1. **APIを有効化 （初回のみ）**
+1. **本番環境変数の設定**
+   ```bash
+   # .env.production ファイルを作成・編集
+   cp .env .env.production
+   # 本番用の値に変更
+   ```
+
+   `.env.production` ファイルの例：
+   ```env
+   NEXT_PUBLIC_LIFF_ID=本番用_liff_id
+   NEXT_PUBLIC_OPENAI_API_KEY=本番用_openai_api_key
+   ```
+
+2. **APIを有効化 （初回のみ）**
    ```bash
    gcloud services enable run.googleapis.com
    gcloud services enable artifactregistry.googleapis.com
    ```
 
-2. **ワンコマンドデプロイ**
+3. **ワンコマンドデプロイ**
    ```bash
    make deploy-latest
    ```
 
-3. **デプロイ確認**
+4. **デプロイ確認**
    ```bash
    make status
    ```
