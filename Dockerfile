@@ -15,7 +15,7 @@ FROM node:20-slim AS runner
 WORKDIR /app
 
 # 本番環境向け設定
-ENV APP_ENV=production
+ENV NODE_ENV=production
 EXPOSE 3000
 
 # 必要なファイルのみをコピー

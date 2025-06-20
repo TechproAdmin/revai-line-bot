@@ -99,7 +99,9 @@ export default async function handler(
   res: NextApiResponse,
 ) {
   const startTime = Date.now();
-  let logContext = logger.apiStart("PDF_UPLOAD");
+  let logContext = logger.apiStart("PDF_UPLOAD", req);
+
+  logger.logRequest(req, logContext);
 
   if (req.method !== "POST") {
     logger.warn("Method not allowed", { ...logContext, method: req.method });
@@ -157,12 +159,15 @@ export default async function handler(
     logger.info("OpenAI analysis completed", logContext);
 
     // 成功レスポンス
-    logger.apiEnd("PDF_UPLOAD", logContext, startTime);
-    res.status(200).json({
+    const responseData = {
       message: "PDF successfully analyzed!",
       filename: uploadedFile.originalFilename,
       data: propertyData,
-    });
+    };
+    
+    logger.logResponse(res, logContext, responseData);
+    logger.apiEnd("PDF_UPLOAD", logContext, res, startTime);
+    res.status(200).json(responseData);
   } catch (error) {
     const errorInstance =
       error instanceof Error ? error : new Error(String(error));

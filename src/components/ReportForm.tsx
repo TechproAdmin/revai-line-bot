@@ -531,7 +531,6 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
         </div>
       )}
 
-      {/* フロント側でAPP_ENVだと使えないためNODE_ENVを使用 */}
       {process.env.NODE_ENV === "development" && (
         <button
           type="button"

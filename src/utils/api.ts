@@ -284,10 +284,10 @@ async function calcReportMock(
 
 const apiRoot = {
   analyzePdfWithOpenAI:
-    process.env.APP_ENV === "production"
+    process.env.NODE_ENV === "production"
       ? analyzePdfWithOpenAI
       : analyzePdfWithOpenAIMock,
   calcReport:
-    process.env.APP_ENV === "production" ? calcReport : calcReportMock,
+    process.env.NODE_ENV === "production" ? calcReport : calcReportMock,
 };
 export default apiRoot;

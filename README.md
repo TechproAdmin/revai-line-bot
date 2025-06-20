@@ -51,7 +51,7 @@ cp .env.local.example .env.local
 NEXT_PUBLIC_LIFF_ID=your_liff_id
 NEXT_PUBLIC_OPENAI_API_KEY=your_openai_api_key
 NGROK_AUTHTOKEN=your_ngrok_token
-APP_ENV=development  # production で本番API使用
+NODE_ENV=development  # production で本番API使用
 ```
 
 ### 3️⃣ 開発サーバー起動
