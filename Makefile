@@ -84,6 +84,9 @@ ngrok:
 # Cloud Run デプロイ用の共通関数
 define deploy-to-cloudrun
 	@echo "🌐 Deploying to Cloud Run..."
+	@echo "📝 Loading environment variables from .env..."
+	$(eval include .env)
+	@export $(shell sed 's/=.*//' .env)
 	gcloud run deploy realestate-linebot \
 		--image=$(1) \
 		--region=$(REGION) \
@@ -96,7 +99,7 @@ define deploy-to-cloudrun
 		--min-instances=0 \
 		--concurrency=80 \
 		--timeout=300 \
-		--set-env-vars="NODE_ENV=production,APP_ENV=production" \
+		--set-env-vars="NODE_ENV=production,NEXT_PUBLIC_LIFF_ID=$${NEXT_PUBLIC_LIFF_ID},NEXT_PUBLIC_OPENAI_API_KEY=$${NEXT_PUBLIC_OPENAI_API_KEY}" \
 		--quiet
 	@echo "✅ Deployment completed successfully!"
 endef

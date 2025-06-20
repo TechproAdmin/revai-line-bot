@@ -531,7 +531,7 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
         </div>
       )}
 
-      {process.env.NODE_ENV === "development" && (
+      {process.env.APP_ENV === "development" && (
         <button
           type="button"
           onClick={_applyTestData}
