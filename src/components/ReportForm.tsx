@@ -74,6 +74,7 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
     loan_term_years: 35,
     rent_decline_rate: 0.01,
     owner_type: "個人",
+    loan_type: "元利均等",
     ...formValues,
   });
 
