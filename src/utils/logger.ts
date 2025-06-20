@@ -145,7 +145,7 @@ class Logger {
 
   logRequest(req: NextApiRequest, context: LogContext): void {
     const sanitizedBody = this.sanitizeRequestBody(req.body);
-    this.debug("Request details", {
+    this.info("Request details", {
       ...context,
       headers: this.sanitizeHeaders(req.headers),
       query: req.query,
@@ -155,7 +155,7 @@ class Logger {
 
   logResponse(res: NextApiResponse, context: LogContext, data?: unknown): void {
     const responseData = this.sanitizeResponseData(data);
-    this.debug("Response details", {
+    this.info("Response details", {
       ...context,
       statusCode: res.statusCode,
       data: responseData,
