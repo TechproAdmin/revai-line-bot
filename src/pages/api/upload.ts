@@ -164,7 +164,7 @@ export default async function handler(
       filename: uploadedFile.originalFilename,
       data: propertyData,
     };
-    
+
     logger.logResponse(res, logContext, responseData);
     logger.apiEnd("PDF_UPLOAD", logContext, res, startTime);
     res.status(200).json(responseData);

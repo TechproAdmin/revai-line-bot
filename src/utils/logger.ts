@@ -105,7 +105,11 @@ class Logger {
     this.log("error", message, context, error);
   }
 
-  apiStart(action: string, req: NextApiRequest, context?: Omit<LogContext, "action">): LogContext {
+  apiStart(
+    action: string,
+    req: NextApiRequest,
+    context?: Omit<LogContext, "action">,
+  ): LogContext {
     const requestContext: LogContext = {
       ...context,
       action,
@@ -120,7 +124,12 @@ class Logger {
     return requestContext;
   }
 
-  apiEnd(action: string, context: LogContext, res: NextApiResponse, startTime?: number): void {
+  apiEnd(
+    action: string,
+    context: LogContext,
+    res: NextApiResponse,
+    startTime?: number,
+  ): void {
     const endContext = { ...context };
     if (startTime) {
       endContext.duration = Date.now() - startTime;
@@ -156,57 +165,61 @@ class Logger {
   private getClientIP(req: NextApiRequest): string {
     const forwarded = req.headers["x-forwarded-for"];
     const ip = forwarded
-      ? (Array.isArray(forwarded) ? forwarded[0] : forwarded.split(',')[0])
-      : req.socket?.remoteAddress || 'unknown';
+      ? Array.isArray(forwarded)
+        ? forwarded[0]
+        : forwarded.split(",")[0]
+      : req.socket?.remoteAddress || "unknown";
     return ip;
   }
 
-  private sanitizeHeaders(headers: Record<string, string | string[] | undefined>): Record<string, unknown> {
+  private sanitizeHeaders(
+    headers: Record<string, string | string[] | undefined>,
+  ): Record<string, unknown> {
     const sanitized = { ...headers };
-    
+
     // Remove sensitive headers
     delete sanitized.authorization;
     delete sanitized.cookie;
     delete sanitized["x-api-key"];
-    
+
     return sanitized;
   }
 
   private sanitizeRequestBody(body: unknown): unknown {
-    if (!body || typeof body !== 'object') return body;
-    
-    const sanitized = { ...body as Record<string, unknown> };
-    
+    if (!body || typeof body !== "object") return body;
+
+    const sanitized = { ...(body as Record<string, unknown>) };
+
     // Remove sensitive fields
     delete sanitized.password;
     delete sanitized.token;
     delete sanitized.apiKey;
     delete sanitized.secret;
-    
+
     return sanitized;
   }
 
   private sanitizeResponseData(data: unknown): unknown {
-    if (!data || typeof data !== 'object') return data;
-    
-    const sanitized = { ...data as Record<string, unknown> };
-    
+    if (!data || typeof data !== "object") return data;
+
+    const sanitized = { ...(data as Record<string, unknown>) };
+
     // Remove sensitive response fields
     delete sanitized.password;
     delete sanitized.token;
     delete sanitized.apiKey;
     delete sanitized.secret;
-    
+
     // Truncate large data objects for logging
     const stringified = JSON.stringify(sanitized);
     if (stringified.length > 2000) {
-      return { 
-        ...sanitized, 
-        _truncated: true, 
-        _originalSize: stringified.length 
+      return {
+        ...sanitized,
+        _truncated: true,
+        _originalSize: stringified.length,
       };
     }
-    
+
     return sanitized;
   }
 
