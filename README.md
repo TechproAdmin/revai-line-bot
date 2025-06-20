@@ -118,7 +118,7 @@ make status         # サービス状態確認
 
 ### Google Cloud Run 自動デプロイ
 
-1. **APIを有効化**
+1. **APIを有効化 （初回のみ）**
    ```bash
    gcloud services enable run.googleapis.com
    gcloud services enable artifactregistry.googleapis.com
