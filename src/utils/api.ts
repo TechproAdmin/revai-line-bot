@@ -41,7 +41,7 @@ async function analyzePdfWithOpenAI(
         {
           role: "system",
           content:
-            'あなたは不動産資料から情報を抽出する専門家です。画像から以下の情報を抽出してください：\n- 物件価格(総計) → total_price\n- 物件価格(土地) → land_price\n- 物件価格(建物) → building_price\n- 築年数 → building_age\n- 建物構造 → structure\n- 表面利回り → gross_yield\n- 現況利回り → current_yield\n\n見つからない情報はnullとしてください。必ず以下のJSON形式で返答してください：\n{\n  "total_price": (値),\n  "land_price": (値),\n  "building_price": (値),\n  "building_age": (値),\n  "structure": (値),\n  "gross_yield": (値),\n  "current_yield": (値)\n}',
+            'あなたは不動産資料から情報を抽出する専門家です。画像から以下の情報を正確に抽出してください：\n\n**重要な注意事項：**\n- 物件価格(土地)と物件価格(建物)は、物件価格(総計)を土地価格と建物価格に分けたものです\n- 土地価格 + 建物価格 = 総計価格 となるように値を抽出してください\n- 「土地」「建物」という文字と一緒に記載されている金額を優先的に抽出してください\n- 総計価格が記載されているが土地・建物の内訳がない場合は、土地・建物価格はnullとしてください\n\n**抽出する情報：**\n- 物件価格(総計) → total_price：物件の総購入価格\n- 物件価格(土地) → land_price：土地部分のみの価格\n- 物件価格(建物) → building_price：建物部分のみの価格\n- 築年数 → building_age：建築からの経過年数\n- 建物構造 → structure：RC造、木造、鉄骨造など\n- 表面利回り → gross_yield：満室想定時の利回り\n- 現況利回り → current_yield：現在の実際の利回り\n\n見つからない情報はnullとしてください。必ず以下のJSON形式で返答してください：\n{\n  "total_price": (値),\n  "land_price": (値),\n  "building_price": (値),\n  "building_age": (値),\n  "structure": (値),\n  "gross_yield": (値),\n  "current_yield": (値)\n}',
         },
         {
           role: "user",

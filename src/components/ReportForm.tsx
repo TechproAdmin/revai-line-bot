@@ -103,12 +103,13 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
         updatedValues.loan_amount = totalPrice * 0.9;
       }
 
-      // 年間運営経費の自動計算 (物件価格総計 × 表面利回り = 満室時賃料収入)
+      // 年間運営経費の自動計算 (満室時賃料収入の7%)
+      // 満室時賃料収入 = 物件価格総計 × 表面利回り
       if (formData.gross_yield && !formValues.annual_operating_expenses) {
         const grossYield = formData.gross_yield;
         const fullOccupancyRentalIncome = totalPrice * grossYield;
         updatedValues.annual_operating_expenses = Math.round(
-          fullOccupancyRentalIncome,
+          fullOccupancyRentalIncome * 0.07,
         );
       }
     }
@@ -184,12 +185,31 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
     setIsLoading(true);
 
     try {
+      // %項目を小数点形式に変換してから送信
+      const percentageFields = [
+        "gross_yield",
+        "current_yield",
+        "vacancy_rate",
+        "rent_decline_rate",
+        "interest_rate",
+        "expected_rate_of_return",
+      ];
+
+      const convertedFormData = { ...formData };
+      percentageFields.forEach((field) => {
+        const value = convertedFormData[field as keyof FormDataType] as number;
+        if (value !== undefined && value !== null) {
+          (convertedFormData[field as keyof FormDataType] as number) =
+            value / 100;
+        }
+      });
+
       const res = await fetch("/api/report", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(convertedFormData),
       });
 
       const result = await res.json();
