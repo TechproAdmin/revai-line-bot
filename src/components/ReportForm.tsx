@@ -106,7 +106,7 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
       // 年間運営経費の自動計算 (満室時賃料収入の7%)
       // 満室時賃料収入 = 物件価格総計 × 表面利回り
       if (formData.gross_yield && !formValues.annual_operating_expenses) {
-        const grossYield = formData.gross_yield;
+        const grossYield = formData.gross_yield / 100; // パーセントを小数に変換
         const fullOccupancyRentalIncome = totalPrice * grossYield;
         updatedValues.annual_operating_expenses = Math.round(
           fullOccupancyRentalIncome * 0.07,
