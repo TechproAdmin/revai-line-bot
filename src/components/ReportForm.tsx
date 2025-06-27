@@ -248,6 +248,7 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
     required?: boolean;
     step?: string;
     options?: string[];
+    formula?: string;
   }) => {
     // owner_type フィールドの場合はセレクト要素を表示
     if (field.name === "owner_type") {
@@ -382,6 +383,11 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
               placeholder="0"
             />
           </div>
+          {field.formula && (
+            <div className="text-xs text-gray-500 mt-1">
+              計算式: {field.formula}
+            </div>
+          )}
         </div>
       );
     }
@@ -403,6 +409,11 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
           required={field.required}
           step={field.step}
         />
+        {field.formula && (
+          <div className="text-xs text-gray-500 mt-1">
+            式計算: {field.formula}
+          </div>
+        )}
       </div>
     );
   };
@@ -441,6 +452,7 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
           label: "購入諸費用（円）",
           name: "purchase_expenses",
           type: "number",
+          formula: "物件価格 × 8%",
         },
         {
           label: "築年数（年）",
@@ -482,16 +494,19 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
           label: "年間運営経費（円）",
           name: "annual_operating_expenses",
           type: "number",
+          formula: "満室時賃料収入 × 7%",
         },
         {
           label: "自己資金（円）",
           name: "own_capital",
           type: "number",
+          formula: "物件価格 × 10% + 購入諸費用",
         },
         {
           label: "借入金額（円）",
           name: "loan_amount",
           type: "number",
+          formula: "物件価格 × 90%",
         },
         {
           label: "借入期間（年）",
@@ -533,6 +548,7 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
           label: "売却諸費用（円）",
           name: "sale_expenses",
           type: "number",
+          formula: "想定売却価格 × 4%",
         },
         {
           label: "個人／法人",
