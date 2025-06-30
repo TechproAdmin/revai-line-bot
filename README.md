@@ -68,19 +68,69 @@ make docker-up
 
 ```
 src/
-├── components/          # Reactコンポーネント
-│   ├── ReportForm.tsx   # メインフォーム（自動計算機能付き）
-│   ├── PdfUploader.tsx  # PDF処理コンポーネント
-│   ├── Report.tsx       # レポート表示
-│   └── types.ts         # TypeScript型定義
-├── pages/
-│   ├── api/
-│   │   ├── report.ts    # レポート生成API
-│   │   └── upload.ts    # PDFアップロード処理
-│   └── index.tsx        # メインページ
-└── utils/
-    └── api.ts           # API統合ロジック
+├── client/                      # フロントエンド（クライアントサイド）
+│   └── features/                # 機能別モジュール
+│       ├── form/                # フォーム機能
+│       │   ├── components/      # フォーム関連コンポーネント
+│       │   │   ├── ReportForm.tsx     # メインフォーム
+│       │   │   ├── FormField.tsx      # 汎用フィールド
+│       │   │   ├── NumberInput.tsx    # 数値入力
+│       │   │   ├── SelectInput.tsx    # 選択入力
+│       │   │   └── TextInput.tsx      # テキスト入力
+│       │   ├── hooks/           # カスタムフック
+│       │   │   ├── useFormData.ts     # フォーム状態管理
+│       │   │   └── useFormCalculation.ts # 自動計算ロジック
+│       │   └── utils/           # フォーム用ユーティリティ
+│       │       └── formUtils.ts       # データ変換関数
+│       ├── report/              # レポート機能
+│       │   ├── components/      # レポート関連コンポーネント
+│       │   │   ├── Report.tsx         # メインレポート
+│       │   │   ├── AnalysisResultsTable.tsx # 分析結果テーブル
+│       │   │   ├── CashFlowChart.tsx  # キャッシュフローチャート
+│       │   │   ├── DeadCrossChart.tsx # デッドクロスチャート
+│       │   │   └── LoanChart.tsx      # ローンチャート
+│       │   └── utils/           # レポート用ユーティリティ
+│       │       ├── formatters.ts      # 数値・日付フォーマット
+│       │       └── pdfGenerator.ts    # PDF生成ロジック
+│       └── upload/              # アップロード機能
+│           └── components/      # アップロード関連コンポーネント
+│               └── PdfUploader.tsx    # PDF処理コンポーネント
+├── server/                      # バックエンド（サーバーサイド）
+│   ├── api/routes/              # API エンドポイント
+│   │   ├── report.ts            # レポート生成API
+│   │   └── upload.ts            # PDFアップロード処理
+│   ├── infrastructure/          # インフラ層（API連携）
+│   │   ├── api.ts               # 統合API（本番・モック両方）
+│   │   └── config/              # 設定ファイル
+│   │       └── api.ts           # API設定・プロンプト
+│   └── utils/                   # サーバー用ユーティリティ
+│       └── logger.ts            # ログ出力
+├── shared/                      # 共通モジュール
+│   ├── constants/               # 定数定義
+│   │   └── formFields.ts        # フォームフィールド設定
+│   └── types/                   # TypeScript型定義
+│       ├── api.ts               # API関連型
+│       └── form.ts              # フォーム関連型
+├── pages/                       # Next.js ページ
+│   ├── api/                     # API Routes (サーバールートのプロキシ)
+│   │   ├── report.ts            # レポート生成エンドポイント
+│   │   └── upload.ts            # アップロードエンドポイント
+│   └── index.tsx                # メインページ
+└── styles/                      # スタイル
+    └── globals.css              # グローバルCSS
 ```
+
+### 🏗️ アーキテクチャ設計
+
+- **機能別モジュール**: 各機能（form, report, upload）を独立したモジュールとして分離
+- **レイヤー分離**: client（フロントエンド）とserver（バックエンド）の明確な分離
+- **コンポーネント分割**: 大きなコンポーネントを小さく再利用可能な部品に分割
+- **カスタムフック**: 状態管理とビジネスロジックの分離
+- **バレルエクスポート**: index.tsファイルによるクリーンなインポート
+- **型安全性**: 共通型定義による一貫した型チェック
+- **環境別実装**: 
+  - **開発環境**: infrastructure/api.ts のモック関数を使用
+  - **本番環境**: infrastructure/api.ts の実際のAPI連携を使用
 
 ## 🎯 主要機能詳細
 

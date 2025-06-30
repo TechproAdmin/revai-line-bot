@@ -1,13 +1,13 @@
 import type { Liff } from "@line/liff";
 import { Geist, Geist_Mono } from "next/font/google";
 import { useEffect, useState } from "react";
-import { PdfUploader } from "@/components/PdfUploader";
-import { Report } from "@/components/Report";
-import { ReportForm } from "@/components/ReportForm";
+import { ReportForm } from "@/client/features/form/components/ReportForm";
+import { Report } from "@/client/features/report/components/Report";
+import { PdfUploader } from "@/client/features/upload/components/PdfUploader";
 import type {
   PdfExtractionResult,
   RealEstateAnalysisRes,
-} from "@/components/types";
+} from "@/shared/types";
 
 const _geistSans = Geist({
   variable: "--font-geist-sans",

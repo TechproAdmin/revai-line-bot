@@ -1,4 +1,3 @@
-// @/components/types.ts
 export type PdfExtractionResult = {
   total_price: string | null;
   land_price: string | null;

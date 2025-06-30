@@ -1,7 +1,7 @@
 import type { Liff } from "@line/liff";
 import type React from "react";
 import { useId, useRef, useState } from "react";
-import type { PdfExtractionResult } from "@/components/types";
+import type { PdfExtractionResult } from "@/shared/types";
 
 interface PdfUploaderProps {
   liff: Liff;

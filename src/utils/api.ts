@@ -1,6 +1,9 @@
-import { analyzePdfWithOpenAI } from "@/services/openai";
-import { calcReport } from "@/services/realestate";
-import { analyzePdfWithOpenAIMock, calcReportMock } from "@/mocks/api";
+import {
+  analyzePdfWithOpenAI,
+  analyzePdfWithOpenAIMock,
+  calcReport,
+  calcReportMock,
+} from "@/server/infrastructure/api";
 
 const isProduction = process.env.APP_ENV === "production";
 
