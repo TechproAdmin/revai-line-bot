@@ -2,6 +2,7 @@ import { useId, useRef } from "react";
 import type { RealEstateAnalysisRes } from "@/shared/types";
 import { createChartData, formatPercent } from "../utils/formatters";
 import { generatePDF } from "../utils/pdfGenerator";
+import { AnalysisConditionsTable } from "./AnalysisConditionsTable";
 import { AnalysisResultsTable } from "./AnalysisResultsTable";
 import { CashFlowChart } from "./CashFlowChart";
 import { DeadCrossChart } from "./DeadCrossChart";
@@ -89,6 +90,9 @@ export function Report({ data }: ReportProps) {
         >
           PDFをダウンロード
         </button>
+
+        {/* 分析条件セクション */}
+        <AnalysisConditionsTable data={data} />
 
         {/* 分析結果セクション */}
         <div
