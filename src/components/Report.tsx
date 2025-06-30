@@ -62,7 +62,7 @@ export function Report({ data }: ReportProps) {
         width: 1123,
         windowWidth: 1123,
         ignoreElements: (element) => {
-          return element.id === "download-button";
+          return element.id === downloadButtonId;
         },
         onclone: (clonedDoc) => {
           // すべての要素のスタイルを修正
