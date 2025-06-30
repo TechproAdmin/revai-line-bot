@@ -202,13 +202,8 @@ export function Report({ data }: ReportProps) {
   };
 
   // 金額をフォーマットする関数（万円単位）
-  const _formatAmount = (amount: number) => {
-    return `¥${(amount / 10000).toFixed(0)}`;
-  };
-
-  // 金額をフォーマットする関数（百万円単位）
-  const formatAmountM = (amount: number) => {
-    return `¥${(amount / 1000000).toFixed(1)}`;
+  const formatAmount = (amount: number) => {
+    return `${(amount / 10000).toFixed(0)}`;
   };
 
   // パーセントをフォーマットする関数
@@ -219,11 +214,6 @@ export function Report({ data }: ReportProps) {
   // 年数をフォーマットする関数
   const formatYears = (years: number) => {
     return `${years.toFixed(2)}年`;
-  };
-
-  // 金額をフォーマットする関数（円単位）
-  const formatAmount = (amount: number) => {
-    return `¥${amount.toLocaleString()}`;
   };
 
   // 年次データのフォーマット（最初の20年間）
@@ -579,7 +569,7 @@ export function Report({ data }: ReportProps) {
                       new Date(
                         data.conditions.expected_sale_year,
                       ).getFullYear() -
-                        new Date(data.conditions.purchase_date).getFullYear(),
+                      new Date(data.conditions.purchase_date).getFullYear(),
                     )}
                     年
                   </td>
@@ -599,7 +589,7 @@ export function Report({ data }: ReportProps) {
                 marginBottom: "2px",
               }}
             >
-              ■ 分析結果
+              ■ 分析結果（単位：万円）
             </div>
             <table
               style={{
@@ -626,7 +616,7 @@ export function Report({ data }: ReportProps) {
                       textAlign: "right",
                     }}
                   >
-                    {formatAmountM(data.net_operating_income[1])}
+                    {formatAmount(data.net_operating_income[1])}
                   </td>
                   <td
                     style={{
@@ -958,7 +948,7 @@ export function Report({ data }: ReportProps) {
                       textAlign: "right",
                     }}
                   >
-                    {formatAmountM(data.total_pl)}
+                    {formatAmount(data.total_pl)}
                   </td>
                   <td
                     style={{
