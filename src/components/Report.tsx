@@ -338,7 +338,7 @@ export function Report({ data }: ReportProps) {
                 marginBottom: "2px",
               }}
             >
-              ■ 条件
+              ■ 条件（単位：万円）
             </div>
             <table
               style={{
