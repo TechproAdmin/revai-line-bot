@@ -385,7 +385,7 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
           </div>
           {field.formula && (
             <div className="text-xs text-gray-500 mt-1">
-              計算式: {field.formula}
+              初期値: {field.formula}
             </div>
           )}
         </div>
@@ -411,7 +411,7 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
         />
         {field.formula && (
           <div className="text-xs text-gray-500 mt-1">
-            式計算: {field.formula}
+            初期値: {field.formula}
           </div>
         )}
       </div>
