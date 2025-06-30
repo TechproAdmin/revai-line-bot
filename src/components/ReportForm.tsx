@@ -101,7 +101,7 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
         const landPriceValue = updatedValues.land_price || formData.land_price;
         const buildingPriceValue =
           updatedValues.building_price || formData.building_price;
-        const totalFromParts = landPriceValue + buildingPriceValue;
+        const totalFromParts = Number(landPriceValue) + Number(buildingPriceValue);
 
         // 合計が物件価格と一致しない場合、物件価格を更新
         if (
@@ -165,7 +165,26 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
   ]);
 
   useEffect(() => {
-    setFormData((prev) => ({ ...prev, ...formValues }));
+    // formValuesの数値フィールドを適切に変換
+    const convertedFormValues = { ...formValues };
+    
+    // 数値フィールドを変換
+    const numericFields = [
+      'total_price', 'land_price', 'building_price', 'purchase_expenses',
+      'building_age', 'gross_yield', 'current_yield', 'vacancy_rate',
+      'rent_decline_rate', 'annual_operating_expenses', 'own_capital',
+      'loan_amount', 'loan_term_years', 'interest_rate', 'expected_rate_of_return',
+      'expected_sale_price', 'sale_expenses', 'annual_income'
+    ];
+
+    numericFields.forEach(field => {
+      const value = convertedFormValues[field as keyof FormDataType];
+      if (value !== undefined && value !== null && value !== '') {
+        convertedFormValues[field as keyof FormDataType] = Number(value) as any;
+      }
+    });
+
+    setFormData((prev) => ({ ...prev, ...convertedFormValues }));
   }, [formValues]);
 
   const handleChange = (
