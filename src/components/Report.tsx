@@ -569,7 +569,7 @@ export function Report({ data }: ReportProps) {
                       new Date(
                         data.conditions.expected_sale_year,
                       ).getFullYear() -
-                      new Date(data.conditions.purchase_date).getFullYear(),
+                        new Date(data.conditions.purchase_date).getFullYear(),
                     )}
                     年
                   </td>
