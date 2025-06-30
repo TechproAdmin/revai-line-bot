@@ -96,9 +96,6 @@ src/
 │           └── components/      # アップロード関連コンポーネント
 │               └── PdfUploader.tsx    # PDF処理コンポーネント
 ├── server/                      # バックエンド（サーバーサイド）
-│   ├── api/routes/              # API エンドポイント
-│   │   ├── report.ts            # レポート生成API
-│   │   └── upload.ts            # PDFアップロード処理
 │   ├── infrastructure/          # インフラ層（API連携）
 │   │   ├── api.ts               # 統合API（本番・モック両方）
 │   │   └── config/              # 設定ファイル
@@ -112,7 +109,7 @@ src/
 │       ├── api.ts               # API関連型
 │       └── form.ts              # フォーム関連型
 ├── pages/                       # Next.js ページ
-│   ├── api/                     # API Routes (サーバールートのプロキシ)
+│   ├── api/                     # API Routes（Next.js APIエンドポイント）
 │   │   ├── report.ts            # レポート生成エンドポイント
 │   │   └── upload.ts            # アップロードエンドポイント
 │   └── index.tsx                # メインページ
