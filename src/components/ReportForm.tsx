@@ -86,6 +86,23 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
     if (formData.total_price) {
       const totalPrice = formData.total_price;
 
+      // 土地価格と建物価格の自動設定（PDFから取得していない場合）
+      // 土地価格・建物価格が両方とも未入力の場合、物件価格の50%ずつに設定
+      if (!formValues.land_price && !formValues.building_price && !formData.land_price && !formData.building_price) {
+        updatedValues.land_price = totalPrice * 0.5;
+        updatedValues.building_price = totalPrice * 0.5;
+      } else if (formData.land_price && formData.building_price) {
+        // 土地価格と建物価格が両方入力されている場合、合計が物件価格と一致するかチェック
+        const landPriceValue = updatedValues.land_price || formData.land_price;
+        const buildingPriceValue = updatedValues.building_price || formData.building_price;
+        const totalFromParts = landPriceValue + buildingPriceValue;
+        
+        // 合計が物件価格と一致しない場合、物件価格を更新
+        if (totalFromParts !== totalPrice && formValues.land_price && formValues.building_price) {
+          updatedValues.total_price = totalFromParts;
+        }
+      }
+
       // 購入諸費用 (物件価格の8%)
       if (!formValues.purchase_expenses) {
         updatedValues.purchase_expenses = totalPrice * 0.08;
@@ -129,6 +146,8 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
     }
   }, [
     formData.total_price,
+    formData.land_price,
+    formData.building_price,
     formData.expected_sale_price,
     formData.purchase_expenses,
     formData.gross_yield,
