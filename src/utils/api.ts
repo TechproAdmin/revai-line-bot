@@ -5,7 +5,7 @@ import {
   calcReportMock,
 } from "@/server/infrastructure/api";
 
-const isProduction = process.env.APP_ENV === "production";
+const isProduction = process.env.NODE_ENV === "production";
 
 const apiRoot = {
   analyzePdfWithOpenAI: isProduction
