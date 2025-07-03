@@ -9,7 +9,7 @@ interface SelectInputProps {
 export function SelectInput({ field, value, onChange }: SelectInputProps) {
   return (
     <div className="flex flex-col">
-      <label htmlFor={field.name} className="mb-1 font-medium text-gray-700">
+      <label htmlFor={field.name} className="mb-1 font-medium">
         {field.label}
         {field.required && <span className="text-red-500 ml-1">*</span>}
       </label>
