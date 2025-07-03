@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import { ReportForm } from "@/client/features/form/components/ReportForm";
 import { Report } from "@/client/features/report/components/Report";
 import { PdfUploader } from "@/client/features/upload/components/PdfUploader";
+import { ThemeProvider } from "@/contexts/ThemeContext";
+import ThemeToggle from "@/components/ThemeToggle";
 import type {
   PdfExtractionResult,
   RealEstateAnalysisRes,
@@ -66,39 +68,41 @@ export default function Home({ liff, liffError }: HomeProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md bg-white rounded-xl shadow-lg p-6">
-        <h1 className="text-2xl font-bold text-center mb-6">
-          <button
-            type="button"
-            onClick={handleBackToHome}
-            className="text-gray-900 hover:text-gray-700 cursor-pointer"
-          >
-            不動産投資レポート作成
-          </button>
-        </h1>
-        {liffError && (
-          <div className="mb-4 p-3 bg-red-50 text-red-700 rounded-lg">
-            LIFFの初期化に失敗しました: {liffError}
-          </div>
-        )}
-        {message && (
-          <div
-            className={`mb-4 p-3 rounded-lg ${
-              message.includes("成功")
-                ? "bg-green-50 text-green-700"
-                : message.includes("失敗") || message.includes("エラー")
-                  ? "bg-red-50 text-red-700"
-                  : "bg-blue-50 text-blue-700"
-            }`}
-          >
-            {message}
-          </div>
-        )}
+    <ThemeProvider>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col items-center justify-center p-4 transition-colors duration-300">
+        <ThemeToggle />
+        <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 transition-colors duration-300">
+          <h1 className="text-2xl font-bold text-center mb-6">
+            <button
+              type="button"
+              onClick={handleBackToHome}
+              className="text-gray-900 dark:text-gray-100 hover:text-gray-700 dark:hover:text-gray-300 cursor-pointer transition-colors duration-200"
+            >
+              不動産投資レポート作成
+            </button>
+          </h1>
+          {liffError && (
+            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-lg">
+              LIFFの初期化に失敗しました: {liffError}
+            </div>
+          )}
+          {message && (
+            <div
+              className={`mb-4 p-3 rounded-lg ${
+                message.includes("成功")
+                  ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400"
+                  : message.includes("失敗") || message.includes("エラー")
+                    ? "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400"
+                    : "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400"
+              }`}
+            >
+              {message}
+            </div>
+          )}
 
         {reportData ? (
           <div className="mb-4 p-3">
-            <p>
+            <p className="text-gray-700 dark:text-gray-300">
               レポートを作成しました。詳細なレポートを確認したい場合は、「PDFをダウンロード」ボタンを押してダウンロードできるPDFをご確認ください。
             </p>
             <Report data={reportData} />
@@ -106,10 +110,10 @@ export default function Home({ liff, liffError }: HomeProps) {
         ) : (
           <>
             <div>
-              <p>
+              <p className="text-gray-700 dark:text-gray-300">
                 こちらは不動産投資に有用なレポートを作成するアプリです。下記の項目を全て入力し「送信」ボタンを押してください。レポート画面が表示されます。レポートは「ダウンロード」ボタンを押すとダウンロードが可能です。
               </p>
-              <p>
+              <p className="text-gray-700 dark:text-gray-300">
                 また、物件概要書PDFファイルをアップロードするとレポート作成に必要なデータをPDFファイルから抜き出して自動で入力してくれます。
               </p>
             </div>
@@ -122,7 +126,8 @@ export default function Home({ liff, liffError }: HomeProps) {
             />
           </>
         )}
+        </div>
       </div>
-    </div>
+    </ThemeProvider>
   );
 }
