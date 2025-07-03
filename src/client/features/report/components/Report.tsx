@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { useId, useRef } from "react";
 import type { RealEstateAnalysisRes } from "@/shared/types";
 import { createChartData, formatPercent } from "../utils/formatters";
@@ -35,6 +36,7 @@ export function Report({ data }: ReportProps) {
           padding: "15px",
           fontFamily: "Arial, sans-serif",
           fontSize: "11px",
+          borderRadius: "6px",
         }}
       >
         {/* ヘッダー */}
@@ -66,12 +68,12 @@ export function Report({ data }: ReportProps) {
               padding: "10px",
             }}
           >
-            <img
+            <Image
               src="/RevAI.png"
               alt="RevAI Logo"
+              width={60}
+              height={60}
               style={{
-                width: "60px",
-                height: "60px",
                 borderRadius: "50%",
                 objectFit: "cover",
               }}

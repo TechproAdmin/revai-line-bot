@@ -148,7 +148,7 @@ export function PdfUploader({
         </div>
       )}
 
-      <div className="flex flex-col gap-3 mt-6">
+      <div className="flex flex-col gap-3">
         <input
           type="file"
           ref={fileInputRef}

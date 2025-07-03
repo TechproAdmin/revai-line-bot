@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { ReportForm } from "@/client/features/form/components/ReportForm";
 import { Report } from "@/client/features/report/components/Report";
 import { PdfUploader } from "@/client/features/upload/components/PdfUploader";
-import { ThemeProvider } from "@/contexts/ThemeContext";
 import ThemeToggle from "@/components/ThemeToggle";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import type {
   PdfExtractionResult,
   RealEstateAnalysisRes,
@@ -69,63 +69,86 @@ export default function Home({ liff, liffError }: HomeProps) {
 
   return (
     <ThemeProvider>
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex flex-col items-center justify-center p-4 transition-colors duration-300">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
         <ThemeToggle />
-        <div className="w-full max-w-md bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 transition-colors duration-300">
-          <h1 className="text-2xl font-bold text-center mb-6">
-            <button
-              type="button"
-              onClick={handleBackToHome}
-              className="text-gray-900 dark:text-gray-100 hover:text-gray-700 dark:hover:text-gray-300 cursor-pointer transition-colors duration-200"
-            >
-              不動産投資レポート作成
-            </button>
-          </h1>
-          {liffError && (
-            <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-lg">
-              LIFFの初期化に失敗しました: {liffError}
-            </div>
-          )}
-          {message && (
-            <div
-              className={`mb-4 p-3 rounded-lg ${
-                message.includes("成功")
-                  ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400"
-                  : message.includes("失敗") || message.includes("エラー")
-                    ? "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400"
-                    : "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400"
-              }`}
-            >
-              {message}
-            </div>
-          )}
+        <div className="container mx-auto px-4 py-8">
+          <div className="max-w-2xl mx-auto">
+            <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg transition-colors duration-300">
+              <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+                <h1 className="text-2xl font-bold text-center">
+                  <button
+                    type="button"
+                    onClick={handleBackToHome}
+                    className="text-gray-900 dark:text-gray-100 hover:text-gray-700 dark:hover:text-gray-300 cursor-pointer transition-colors duration-200"
+                  >
+                    不動産投資レポート作成
+                  </button>
+                </h1>
+              </div>
+              <div className="p-6 space-y-6">
+                {liffError && (
+                  <div className="p-4 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 rounded-lg border border-red-200 dark:border-red-800">
+                    <strong>エラー:</strong> LIFFの初期化に失敗しました:{" "}
+                    {liffError}
+                  </div>
+                )}
 
-        {reportData ? (
-          <div className="mb-4 p-3">
-            <p className="text-gray-700 dark:text-gray-300">
-              レポートを作成しました。詳細なレポートを確認したい場合は、「PDFをダウンロード」ボタンを押してダウンロードできるPDFをご確認ください。
-            </p>
-            <Report data={reportData} />
-          </div>
-        ) : (
-          <>
-            <div>
-              <p className="text-gray-700 dark:text-gray-300">
-                こちらは不動産投資に有用なレポートを作成するアプリです。下記の項目を全て入力し「送信」ボタンを押してください。レポート画面が表示されます。レポートは「ダウンロード」ボタンを押すとダウンロードが可能です。
-              </p>
-              <p className="text-gray-700 dark:text-gray-300">
-                また、物件概要書PDFファイルをアップロードするとレポート作成に必要なデータをPDFファイルから抜き出して自動で入力してくれます。
-              </p>
+                {message && (
+                  <div
+                    className={`p-4 rounded-lg border ${
+                      message.includes("成功")
+                        ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800"
+                        : message.includes("失敗") || message.includes("エラー")
+                          ? "bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400 border-red-200 dark:border-red-800"
+                          : "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800"
+                    }`}
+                  >
+                    {message}
+                  </div>
+                )}
+
+                {reportData ? (
+                  <div className="space-y-4">
+                    <div className="p-4 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 rounded-lg border border-green-200 dark:border-green-800">
+                      <p>
+                        レポートを作成しました。詳細なレポートを確認したい場合は、「PDFをダウンロード」ボタンを押してダウンロードできるPDFをご確認ください。
+                      </p>
+                    </div>
+                    <Report data={reportData} />
+                  </div>
+                ) : (
+                  <div className="space-y-6">
+                    <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                      <div className="space-y-3 text-gray-700 dark:text-gray-300">
+                        <p>
+                          こちらは不動産投資に有用なレポートを作成するアプリです。下記の項目を全て入力し「送信」ボタンを押してください。レポート画面が表示されます。
+                        </p>
+                        <p>
+                          また、物件概要書PDFファイルをアップロードするとレポート作成に必要なデータをPDFファイルから抜き出して自動で入力してくれます。
+                        </p>
+                      </div>
+                    </div>
+
+                    {isLiffReady && liff && (
+                      <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
+                        <PdfUploader
+                          liff={liff}
+                          onUploadSuccess={handleUploadSuccess}
+                        />
+                      </div>
+                    )}
+
+                    <div className="p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
+                      <ReportForm
+                        formValues={formValues}
+                        onSuccess={handleReportFormSuccess}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
-            {isLiffReady && liff && (
-              <PdfUploader liff={liff} onUploadSuccess={handleUploadSuccess} />
-            )}
-            <ReportForm
-              formValues={formValues}
-              onSuccess={handleReportFormSuccess}
-            />
-          </>
-        )}
+          </div>
         </div>
       </div>
     </ThemeProvider>
