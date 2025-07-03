@@ -71,8 +71,8 @@ export function Report({ data }: ReportProps) {
             <Image
               src="/RevAI.png"
               alt="RevAI Logo"
-              width={60}
-              height={60}
+              width={80}
+              height={80}
               style={{
                 borderRadius: "50%",
                 objectFit: "cover",
