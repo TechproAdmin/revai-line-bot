@@ -60,13 +60,22 @@ export function Report({ data }: ReportProps) {
           </h1>
           <div
             style={{
-              backgroundColor: "#a5b4fc",
-              padding: "5px 15px",
-              color: "#333",
-              fontWeight: "bold",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: "10px",
             }}
           >
-            ロゴ
+            <img
+              src="/RevAI.png"
+              alt="RevAI Logo"
+              style={{
+                width: "60px",
+                height: "60px",
+                borderRadius: "50%",
+                objectFit: "cover",
+              }}
+            />
           </div>
         </div>
 
