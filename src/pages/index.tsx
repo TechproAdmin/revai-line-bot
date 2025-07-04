@@ -1,5 +1,4 @@
 import type { Liff } from "@line/liff";
-import { Geist, Geist_Mono } from "next/font/google";
 import { useEffect, useState } from "react";
 import { ReportForm } from "@/client/features/form/components/ReportForm";
 import { Report } from "@/client/features/report/components/Report";
@@ -10,16 +9,6 @@ import type {
   PdfExtractionResult,
   RealEstateAnalysisRes,
 } from "@/shared/types";
-
-const _geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const _geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 interface HomeProps {
   liff: Liff;
