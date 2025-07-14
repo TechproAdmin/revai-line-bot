@@ -40,7 +40,7 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
     loan_term_years: 35,
     interest_rate: 0.025,
     loan_type: "元利均等",
-    expected_rate_of_return: 0.03,
+    expected_rate_of_return: 0.05,
     expected_sale_year: "2055-01-01",
     expected_sale_price: 60000000,
     sale_expenses: 2400000,

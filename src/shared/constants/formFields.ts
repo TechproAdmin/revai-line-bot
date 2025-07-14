@@ -6,6 +6,7 @@ export interface FormFieldConfig {
   step?: string;
   options?: string[];
   formula?: string;
+  description?: string;
 }
 
 export const FORM_FIELD_CONFIGS: FormFieldConfig[] = [
@@ -127,22 +128,25 @@ export const FORM_FIELD_CONFIGS: FormFieldConfig[] = [
     options: ["元利均等", "元金均等"],
   },
   {
-    label: "期待利回り（％）",
+    label: "期待収益率（％）",
     name: "expected_rate_of_return",
     type: "number",
     required: true,
+    description: "今回の不動産投資においてトータルでどれほどの収益率を期待されているかご入力ください。",
   },
   {
     label: "売却想定時期",
     name: "expected_sale_year",
     type: "date",
     required: true,
+    description: "将来に渡るトータル収益を計算するため、想定の売却時期をご入力ください。",
   },
   {
     label: "売却想定価格（円）",
     name: "expected_sale_price",
     type: "number",
     required: true,
+    description: "将来に渡るトータル収益を計算するため、想定の売却金額をご入力ください。",
   },
   {
     label: "売却諸費用（円）",
@@ -151,14 +155,14 @@ export const FORM_FIELD_CONFIGS: FormFieldConfig[] = [
     formula: "想定売却価格 × 4%",
   },
   {
-    label: "個人／法人",
+    label: "お客様の分類",
     name: "owner_type",
     type: "select",
     required: true,
     options: ["個人", "法人"],
   },
   {
-    label: "年収（円）",
+    label: "お客様の概算年収（円）",
     name: "annual_income",
     type: "number",
     required: true,

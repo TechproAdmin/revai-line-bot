@@ -44,6 +44,11 @@ export function TextInput({
           初期値: {field.formula}
         </div>
       )}
+      {field.description && (
+        <div className="text-xs text-gray-600 mt-1">
+          {field.description}
+        </div>
+      )}
     </div>
   );
 }

@@ -60,6 +60,11 @@ export function useFormCalculation({
         updatedValues.loan_amount = totalPrice * 0.9;
       }
 
+      // 想定売却価格 (物件価格と同額)
+      if (!formValues.expected_sale_price) {
+        updatedValues.expected_sale_price = totalPrice;
+      }
+
       // 年間運営経費の自動計算 (満室時賃料収入の7%)
       if (formData.gross_yield && !formValues.annual_operating_expenses) {
         const grossYield = formData.gross_yield / 100;
