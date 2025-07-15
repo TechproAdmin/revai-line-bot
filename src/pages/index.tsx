@@ -1,5 +1,6 @@
 import type { Liff } from "@line/liff";
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { ReportForm } from "@/client/features/form/components/ReportForm";
 import { Report } from "@/client/features/report/components/Report";
 import { PdfUploader } from "@/client/features/upload/components/PdfUploader";
@@ -104,13 +105,23 @@ export default function Home({ liff, liffError }: HomeProps) {
               ) : (
                 <div className="space-y-6">
                   <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-                    <div className="space-y-3 text-gray-700">
-                      <p>
-                        こちらは不動産投資に有用なレポートを作成するアプリです。下記の項目を全て入力し「送信」ボタンを押してください。レポート画面が表示されます。
-                      </p>
-                      <p>
-                        また、物件概要書PDFファイルをアップロードするとレポート作成に必要なデータをPDFファイルから抜き出して自動で入力してくれます。
-                      </p>
+                    <div className="flex items-start space-x-4">
+                      <Image 
+                        src="/RevAI.png" 
+                        alt="RevAI Logo" 
+                        width={48}
+                        height={48}
+                        className="flex-shrink-0"
+                      />
+                      <div className="space-y-3 text-gray-700">
+                        <h2 className="text-lg font-semibold text-gray-900">
+                          不動産投資の分析を始めましょう！
+                        </h2>
+                        <ul className="space-y-2">
+                          <li>・項目を全て入力し「送信」ボタンを押していただくと、レポートが作成できます。</li>
+                          <li>・物件概要書やマイソクなどのPDFファイルをアップロードすると、レポート作成に必要なデータを自動で入力します。</li>
+                        </ul>
+                      </div>
                     </div>
                   </div>
 
