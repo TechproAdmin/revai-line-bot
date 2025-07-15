@@ -42,7 +42,7 @@ async function convertPdfToImages(pdfPath: string): Promise<string[]> {
 
   const isDevelopment = process.env.NODE_ENV === "development";
   let debugDir: string | undefined;
-  
+
   if (isDevelopment) {
     debugDir = path.join(process.cwd(), "debug", "pdf-images", `${Date.now()}`);
     await fs.mkdir(debugDir, { recursive: true });
@@ -69,13 +69,13 @@ async function convertPdfToImages(pdfPath: string): Promise<string[]> {
       const outputPath = path.join(tempDir, `page-${i + 1}.png`);
       const imageBuffer = Buffer.from(images[i]);
       await fs.writeFile(outputPath, imageBuffer);
-      
+
       // 開発環境でのみデバッグ用に永続保存
       if (isDevelopment && debugDir) {
         const debugPath = path.join(debugDir, `page-${i + 1}.png`);
         await fs.writeFile(debugPath, imageBuffer);
       }
-      
+
       imagePaths.push(outputPath);
     }
 

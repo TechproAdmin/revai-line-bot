@@ -28,9 +28,7 @@ export function SelectInput({ field, value, onChange }: SelectInputProps) {
         ))}
       </select>
       {field.description && (
-        <div className="text-xs text-gray-600 mt-1">
-          {field.description}
-        </div>
+        <div className="text-xs text-gray-600 mt-1">{field.description}</div>
       )}
     </div>
   );

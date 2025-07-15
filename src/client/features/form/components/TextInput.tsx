@@ -45,9 +45,7 @@ export function TextInput({
         </div>
       )}
       {field.description && (
-        <div className="text-xs text-gray-600 mt-1">
-          {field.description}
-        </div>
+        <div className="text-xs text-gray-600 mt-1">{field.description}</div>
       )}
     </div>
   );

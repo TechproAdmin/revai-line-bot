@@ -1,6 +1,6 @@
 import type { FormSection } from "@/shared/constants";
-import type { FormDataType } from "@/shared/types";
 import { LARGE_NUMBER_FIELDS } from "@/shared/constants";
+import type { FormDataType } from "@/shared/types";
 import { FormField } from "./FormField";
 
 interface FormSectionProps {
@@ -26,7 +26,7 @@ export function FormSectionComponent({
           <p className="text-sm text-gray-600">{section.caption}</p>
         )}
       </div>
-      
+
       <div className="space-y-4">
         {section.fields.map((field) => (
           <FormField

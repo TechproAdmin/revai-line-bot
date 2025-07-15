@@ -147,21 +147,24 @@ const SALE_FIELDS: FormFieldConfig[] = [
     name: "expected_rate_of_return",
     type: "number",
     required: true,
-    description: "今回の不動産投資においてトータルでどれほどの収益率を期待されているかご入力ください。",
+    description:
+      "今回の不動産投資においてトータルでどれほどの収益率を期待されているかご入力ください。",
   },
   {
     label: "売却想定時期",
     name: "expected_sale_year",
     type: "date",
     required: true,
-    description: "将来に渡るトータル収益を計算するため、想定の売却時期をご入力ください。",
+    description:
+      "将来に渡るトータル収益を計算するため、想定の売却時期をご入力ください。",
   },
   {
     label: "売却想定価格（円）",
     name: "expected_sale_price",
     type: "number",
     required: true,
-    description: "将来に渡るトータル収益を計算するため、想定の売却金額をご入力ください。",
+    description:
+      "将来に渡るトータル収益を計算するため、想定の売却金額をご入力ください。",
   },
   {
     label: "売却諸費用（円）",
@@ -198,12 +201,14 @@ export const FORM_SECTIONS: FormSection[] = [
   },
   {
     title: "お借り入れについて",
-    caption: "想定ローン条件をご入力いただくことで、キャッシュフローのシミュレーションを作成できます",
+    caption:
+      "想定ローン条件をご入力いただくことで、キャッシュフローのシミュレーションを作成できます",
     fields: LOAN_FIELDS,
   },
   {
     title: "売却時の想定について",
-    caption: "売却時の想定までご入力いただくことで、今回の投資全体のシミュレーションを作成できます。",
+    caption:
+      "売却時の想定までご入力いただくことで、今回の投資全体のシミュレーションを作成できます。",
     fields: SALE_FIELDS,
   },
   {

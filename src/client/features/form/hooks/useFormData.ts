@@ -14,7 +14,9 @@ export function useFormData({ formValues }: UseFormDataProps) {
     owner_type: "個人",
     loan_type: "元利均等",
     expected_rate_of_return: 0.05,
-    expected_sale_year: new Date(new Date().getFullYear() + 30, 0, 1).toISOString().split('T')[0],
+    expected_sale_year: new Date(new Date().getFullYear() + 30, 0, 1)
+      .toISOString()
+      .split("T")[0],
     ...formValues,
   });
 
