@@ -40,6 +40,14 @@ async function convertPdfToImages(pdfPath: string): Promise<string[]> {
   const tempDir = path.join(os.tmpdir(), `pdf-images-${Date.now()}`);
   await fs.mkdir(tempDir, { recursive: true });
 
+  const isDevelopment = process.env.NODE_ENV === "development";
+  let debugDir: string | undefined;
+  
+  if (isDevelopment) {
+    debugDir = path.join(process.cwd(), "debug", "pdf-images", `${Date.now()}`);
+    await fs.mkdir(debugDir, { recursive: true });
+  }
+
   try {
     // SyncでPDFファイルを読み込み、ArrayBufferを取得
     const pdf = fsSync.readFileSync(pdfPath);
@@ -59,15 +67,26 @@ async function convertPdfToImages(pdfPath: string): Promise<string[]> {
     // 各ページの画像をファイルとして保存
     for (let i = 0; i < images.length; i++) {
       const outputPath = path.join(tempDir, `page-${i + 1}.png`);
-      await fs.writeFile(outputPath, Buffer.from(images[i]));
+      const imageBuffer = Buffer.from(images[i]);
+      await fs.writeFile(outputPath, imageBuffer);
+      
+      // 開発環境でのみデバッグ用に永続保存
+      if (isDevelopment && debugDir) {
+        const debugPath = path.join(debugDir, `page-${i + 1}.png`);
+        await fs.writeFile(debugPath, imageBuffer);
+      }
+      
       imagePaths.push(outputPath);
     }
 
-    logger.debug("PDF to images conversion completed", {
+    const logData = {
       pdfPath,
       tempDir,
       pageCount: images.length,
-    });
+      ...(isDevelopment && debugDir ? { debugDir } : {}),
+    };
+
+    logger.debug("PDF to images conversion completed", logData);
     return imagePaths;
   } catch (error) {
     logger.error(
