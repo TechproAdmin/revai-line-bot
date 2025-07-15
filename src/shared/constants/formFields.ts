@@ -9,7 +9,13 @@ export interface FormFieldConfig {
   description?: string;
 }
 
-export const FORM_FIELD_CONFIGS: FormFieldConfig[] = [
+export interface FormSection {
+  title: string;
+  caption?: string;
+  fields: FormFieldConfig[];
+}
+
+const PROPERTY_PURCHASE_FIELDS: FormFieldConfig[] = [
   {
     label: "購入年月",
     name: "purchase_date",
@@ -78,6 +84,9 @@ export const FORM_FIELD_CONFIGS: FormFieldConfig[] = [
     type: "number",
     required: true,
   },
+];
+
+const OPERATION_FIELDS: FormFieldConfig[] = [
   {
     label: "空室率（％）",
     name: "vacancy_rate",
@@ -96,6 +105,9 @@ export const FORM_FIELD_CONFIGS: FormFieldConfig[] = [
     type: "number",
     formula: "満室時賃料収入 × 7%",
   },
+];
+
+const LOAN_FIELDS: FormFieldConfig[] = [
   {
     label: "自己資金（円）",
     name: "own_capital",
@@ -127,6 +139,9 @@ export const FORM_FIELD_CONFIGS: FormFieldConfig[] = [
     required: true,
     options: ["元利均等", "元金均等"],
   },
+];
+
+const SALE_FIELDS: FormFieldConfig[] = [
   {
     label: "期待収益率（％）",
     name: "expected_rate_of_return",
@@ -154,6 +169,9 @@ export const FORM_FIELD_CONFIGS: FormFieldConfig[] = [
     type: "number",
     formula: "想定売却価格 × 4%",
   },
+];
+
+const CUSTOMER_FIELDS: FormFieldConfig[] = [
   {
     label: "お客様の分類",
     name: "owner_type",
@@ -167,6 +185,39 @@ export const FORM_FIELD_CONFIGS: FormFieldConfig[] = [
     type: "number",
     required: true,
   },
+];
+
+export const FORM_SECTIONS: FormSection[] = [
+  {
+    title: "購入物件について",
+    fields: PROPERTY_PURCHASE_FIELDS,
+  },
+  {
+    title: "運営について",
+    fields: OPERATION_FIELDS,
+  },
+  {
+    title: "お借り入れについて",
+    caption: "想定ローン条件をご入力いただくことで、キャッシュフローのシミュレーションを作成できます",
+    fields: LOAN_FIELDS,
+  },
+  {
+    title: "売却時の想定について",
+    caption: "売却時の想定までご入力いただくことで、今回の投資全体のシミュレーションを作成できます。",
+    fields: SALE_FIELDS,
+  },
+  {
+    title: "お客様について",
+    fields: CUSTOMER_FIELDS,
+  },
+];
+
+export const FORM_FIELD_CONFIGS: FormFieldConfig[] = [
+  ...PROPERTY_PURCHASE_FIELDS,
+  ...OPERATION_FIELDS,
+  ...LOAN_FIELDS,
+  ...SALE_FIELDS,
+  ...CUSTOMER_FIELDS,
 ];
 
 export const LARGE_NUMBER_FIELDS = [

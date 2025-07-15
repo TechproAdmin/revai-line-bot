@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { FORM_FIELD_CONFIGS, LARGE_NUMBER_FIELDS } from "@/shared/constants";
+import { FORM_SECTIONS } from "@/shared/constants";
 import type { FormDataType, RealEstateAnalysisRes } from "@/shared/types";
 import { useFormCalculation } from "../hooks/useFormCalculation";
 import { useFormData } from "../hooks/useFormData";
 import { convertPercentagesToDecimals } from "../utils/formUtils";
-import { FormField } from "./FormField";
+import { FormSectionComponent } from "./FormSection";
 
 interface ReportFormProps {
   formValues?: Partial<FormDataType>;
@@ -100,14 +100,13 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
       onSubmit={handleSubmit}
       className="space-y-6 max-w-2xl mx-auto p-6 bg-white shadow-md rounded-lg"
     >
-      {FORM_FIELD_CONFIGS.map((field) => (
-        <FormField
-          key={field.name}
-          field={field}
-          value={formData[field.name as keyof FormDataType]}
+      {FORM_SECTIONS.map((section, index) => (
+        <FormSectionComponent
+          key={index}
+          section={section}
+          formData={formData}
           onChange={handleChange}
           onNumberChange={handleNumberChange}
-          isLargeNumber={LARGE_NUMBER_FIELDS.includes(field.name)}
         />
       ))}
 
