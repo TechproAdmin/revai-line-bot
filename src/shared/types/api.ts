@@ -1,6 +1,5 @@
 export type PdfExtractionResult = {
   total_price: string | null;
-  land_price: string | null;
   building_price: string | null;
   building_age: string | null;
   structure: string | null;

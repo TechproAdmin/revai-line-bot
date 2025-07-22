@@ -29,14 +29,14 @@ const PROPERTY_PURCHASE_FIELDS: FormFieldConfig[] = [
     required: true,
   },
   {
-    label: "物件価格 土地（円）",
-    name: "land_price",
+    label: "物件価格 建物（円）",
+    name: "building_price",
     type: "number",
     required: true,
   },
   {
-    label: "物件価格 建物（円）",
-    name: "building_price",
+    label: "物件価格 土地（円）",
+    name: "land_price",
     type: "number",
     required: true,
   },

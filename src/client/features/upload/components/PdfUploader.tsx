@@ -79,7 +79,6 @@ export function PdfUploader({
       if (result.data) {
         onUploadSuccess({
           total_price: result.data.total_price,
-          land_price: result.data.land_price,
           building_price: result.data.building_price,
           building_age: result.data.building_age,
           structure: result.data.structure,

@@ -36,7 +36,6 @@ async function createImageContents(
 function createDefaultExtractionResult(): PdfExtractionResult {
   return {
     total_price: null,
-    land_price: null,
     building_price: null,
     building_age: null,
     structure: null,
@@ -83,7 +82,6 @@ export async function analyzePdfWithOpenAI(
       const extractedData = JSON.parse(content) as PdfExtractionResult;
       return {
         total_price: extractedData.total_price,
-        land_price: extractedData.land_price,
         building_price: extractedData.building_price,
         building_age: extractedData.building_age,
         structure: extractedData.structure,
@@ -140,8 +138,7 @@ export async function analyzePdfWithOpenAIMock(
 ): Promise<PdfExtractionResult> {
   return {
     total_price: "35000000",
-    land_price: "18000000",
-    building_price: "17000000",
+    building_price: "35000000",
     building_age: "15",
     structure: "鉄筋コンクリート",
     gross_yield: "6.8",

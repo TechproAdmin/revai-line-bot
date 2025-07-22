@@ -35,7 +35,6 @@ export default function Home({ liff, liffError }: HomeProps) {
   const handleUploadSuccess = (data: PdfExtractionResult) => {
     setFormValues({
       total_price: data.total_price || "",
-      land_price: data.land_price || "",
       building_price: data.building_price || "",
       building_age: data.building_age || "",
       structure: data.structure || "",

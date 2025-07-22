@@ -5,42 +5,26 @@ interface UseFormCalculationProps {
   formData: FormDataType;
   formValues: Partial<FormDataType>;
   setFormData: React.Dispatch<React.SetStateAction<FormDataType>>;
-  lastChangedField: string | null;
 }
 
 export function useFormCalculation({
   formData,
   formValues,
   setFormData,
-  lastChangedField,
 }: UseFormCalculationProps) {
   useEffect(() => {
     const updatedValues: Partial<FormDataType> = {};
     if (formData.total_price) {
       const totalPrice = formData.total_price;
 
-      // 土地価格と建物価格の自動設定
-      if (formData.land_price && formData.building_price) {
-        // 両方に値がある場合は最後に変更されたフィールドで判定
-        if (lastChangedField === "land_price") {
-          updatedValues.building_price = totalPrice - formData.land_price;
-        } else if (lastChangedField === "building_price") {
-          updatedValues.land_price = totalPrice - formData.building_price;
-        }
-      } else if (formData.land_price && !formData.building_price) {
-        // 総計と土地価格から建物価格を計算
-        updatedValues.building_price = totalPrice - formData.land_price;
-      } else if (formData.building_price && !formData.land_price) {
-        // 総計と建物価格から土地価格を計算
-        updatedValues.land_price = totalPrice - formData.building_price;
-      } else if (
-        !formValues.land_price &&
-        !formValues.building_price &&
-        !formData.land_price &&
-        !formData.building_price
-      ) {
-        updatedValues.land_price = totalPrice * 0.5;
+      // 建物価格の自動設定と土地価格の差分計算
+      if (!formValues.building_price && !formData.building_price) {
+        // 建物価格がない場合のデフォルト設定
         updatedValues.building_price = totalPrice * 0.5;
+        updatedValues.land_price = totalPrice * 0.5;
+      } else if (formData.building_price) {
+        // 建物価格がある場合、土地価格は差分から計算
+        updatedValues.land_price = totalPrice - formData.building_price;
       }
 
       // 購入諸費用 (物件価格の8%)
@@ -88,13 +72,11 @@ export function useFormCalculation({
     }
   }, [
     formData.total_price,
-    formData.land_price,
     formData.building_price,
     formData.expected_sale_price,
     formData.purchase_expenses,
     formData.gross_yield,
     formValues,
     setFormData,
-    lastChangedField,
   ]);
 }
