@@ -17,14 +17,27 @@ export function useFormCalculation({
     if (formData.total_price) {
       const totalPrice = formData.total_price;
 
-      // 建物価格の自動設定と土地価格の差分計算
-      if (!formValues.building_price && !formData.building_price) {
-        // 建物価格がない場合のデフォルト設定
-        updatedValues.building_price = totalPrice * 0.5;
-        updatedValues.land_price = totalPrice * 0.5;
+      // 総計、土地、建物価格のバリデーションと自動調整
+      const landPrice = formData.land_price || 0;
+      const buildingPrice = formData.building_price || 0;
+
+      // 土地価格と建物価格の両方がある場合のバリデーション
+      if (formData.land_price && formData.building_price) {
+        const sum = landPrice + buildingPrice;
+        if (sum !== totalPrice) {
+          // 合計が総計と一致しない場合、土地価格を差分で調整
+          updatedValues.land_price = totalPrice - buildingPrice;
+        }
       } else if (formData.building_price) {
         // 建物価格がある場合、土地価格は差分から計算
-        updatedValues.land_price = totalPrice - formData.building_price;
+        updatedValues.land_price = totalPrice - buildingPrice;
+      } else if (formData.land_price) {
+        // 土地価格がある場合、建物価格は差分から計算
+        updatedValues.building_price = totalPrice - landPrice;
+      } else if (!formValues.building_price && !formValues.land_price) {
+        // 両方がない場合のデフォルト設定
+        updatedValues.building_price = totalPrice * 0.5;
+        updatedValues.land_price = totalPrice * 0.5;
       }
 
       // 購入諸費用 (物件価格の8%)
@@ -72,6 +85,7 @@ export function useFormCalculation({
     }
   }, [
     formData.total_price,
+    formData.land_price,
     formData.building_price,
     formData.expected_sale_price,
     formData.purchase_expenses,
