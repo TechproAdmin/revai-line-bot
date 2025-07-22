@@ -94,8 +94,7 @@ export function PdfUploader({
     } catch (error: unknown) {
       console.error("アップロード中にエラーが発生しました", error);
       setMessage(
-        `アップロード中にエラーが発生しました: ${
-          error instanceof Error ? error.message : String(error)
+        `アップロード中にエラーが発生しました: ${error instanceof Error ? error.message : String(error)
         }`,
       );
     } finally {
@@ -117,16 +116,15 @@ export function PdfUploader({
     <div className="pdf-uploader">
       {message && (
         <div
-          className={`mb-4 p-3 rounded-lg ${
-            message.includes("成功")
+          className={`mb-4 p-3 rounded-lg ${message.includes("成功")
               ? "bg-green-50 text-green-700"
               : message.includes("失敗") ||
-                  message.includes("エラー") ||
-                  message.includes("制限") ||
-                  message.includes("処理中")
+                message.includes("エラー") ||
+                message.includes("制限") ||
+                message.includes("処理中")
                 ? "bg-red-50 text-red-700"
                 : "bg-blue-50 text-blue-700"
-          }`}
+            }`}
         >
           {message}
         </div>

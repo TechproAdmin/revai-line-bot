@@ -20,12 +20,15 @@ export function useFormData({ formValues }: UseFormDataProps) {
     ...formValues,
   });
 
+  const [lastChangedField, setLastChangedField] = useState<string | null>(null);
+
   useEffect(() => {
     const convertedFormValues = convertFormValuesToNumbers(formValues);
     setFormData((prev) => ({ ...prev, ...convertedFormValues }));
   }, [formValues]);
 
   const handleChange = (name: string, value: string | number | undefined) => {
+    setLastChangedField(name);
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -33,6 +36,7 @@ export function useFormData({ formValues }: UseFormDataProps) {
   };
 
   const handleNumberChange = (name: string, value: number | undefined) => {
+    setLastChangedField(name);
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -44,5 +48,6 @@ export function useFormData({ formValues }: UseFormDataProps) {
     setFormData,
     handleChange,
     handleNumberChange,
+    lastChangedField,
   };
 }

@@ -15,12 +15,17 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { formData, setFormData, handleChange, handleNumberChange } =
-    useFormData({
-      formValues,
-    });
+  const {
+    formData,
+    setFormData,
+    handleChange,
+    handleNumberChange,
+    lastChangedField,
+  } = useFormData({
+    formValues,
+  });
 
-  useFormCalculation({ formData, formValues, setFormData });
+  useFormCalculation({ formData, formValues, setFormData, lastChangedField });
 
   const _dummyData: FormDataType = {
     purchase_date: "2025-01-01",
