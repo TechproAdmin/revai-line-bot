@@ -30,7 +30,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       }
     };
 
-    // initLiff();
+    initLiff();
   }, []);
 
   return (
