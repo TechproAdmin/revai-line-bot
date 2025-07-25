@@ -126,7 +126,10 @@ export function Report({ data }: ReportProps) {
           }}
         >
           <CashFlowChart data={cashFlowData} />
-          <DeadCrossChart data={deadCrossData} />
+          <DeadCrossChart
+            data={deadCrossData}
+            deadCrossYear={data.dead_cross_year}
+          />
           <LoanChart data={loanData} />
         </div>
 

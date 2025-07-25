@@ -1,8 +1,9 @@
 import {
-  Bar,
-  BarChart,
   CartesianGrid,
   Legend,
+  Line,
+  LineChart,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -15,9 +16,10 @@ interface DeadCrossChartProps {
     principal: number;
     depreciation: number;
   }>;
+  deadCrossYear?: number;
 }
 
-export function DeadCrossChart({ data }: DeadCrossChartProps) {
+export function DeadCrossChart({ data, deadCrossYear }: DeadCrossChartProps) {
   return (
     <div style={{ flex: "1 1 300px", minWidth: "300px" }}>
       <h3
@@ -41,7 +43,7 @@ export function DeadCrossChart({ data }: DeadCrossChartProps) {
       </div>
       <div style={{ height: "180px", width: "100%" }}>
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart
+          <LineChart
             data={data}
             margin={{
               top: 5,
@@ -57,9 +59,34 @@ export function DeadCrossChart({ data }: DeadCrossChartProps) {
               formatter={(value) => [`${(value as number).toFixed(0)}万円`]}
             />
             <Legend />
-            <Bar dataKey="principal" fill="#FF8042" name="元本返済額" />
-            <Bar dataKey="depreciation" fill="#82ca9d" name="減価償却費" />
-          </BarChart>
+            <Line
+              type="monotone"
+              dataKey="principal"
+              stroke="#FF8042"
+              strokeWidth={2}
+              name="元本返済額"
+            />
+            <Line
+              type="monotone"
+              dataKey="depreciation"
+              stroke="#82ca9d"
+              strokeWidth={2}
+              name="減価償却費"
+            />
+            {deadCrossYear && deadCrossYear > 0 && (
+              <ReferenceLine
+                x={deadCrossYear}
+                stroke="#ff0000"
+                strokeWidth={2}
+                strokeDasharray="5 5"
+                label={{
+                  value: "デッドクロス",
+                  position: "topRight",
+                  fontSize: 10,
+                }}
+              />
+            )}
+          </LineChart>
         </ResponsiveContainer>
       </div>
     </div>
