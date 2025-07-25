@@ -81,7 +81,6 @@ export function DeadCrossChart({ data, deadCrossYear }: DeadCrossChartProps) {
                 strokeDasharray="5 5"
                 label={{
                   value: "デッドクロス",
-                  position: "topRight",
                   fontSize: 10,
                 }}
               />
