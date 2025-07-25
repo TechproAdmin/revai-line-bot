@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { useId, useRef } from "react";
 import type { RealEstateAnalysisRes } from "@/shared/types";
 import { createChartData, formatPercent } from "../utils/formatters";
@@ -68,7 +67,7 @@ export function Report({ data }: ReportProps) {
               padding: "10px",
             }}
           >
-            <Image
+            <img
               src="/RevAI.png"
               alt="RevAI Logo"
               width={80}
