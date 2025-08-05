@@ -8,6 +8,9 @@ interface FormFieldProps {
   value: string | number | undefined;
   onChange: (name: string, value: string | number | undefined) => void;
   onNumberChange: (name: string, value: number | undefined) => void;
+  onFieldFocus: (fieldName: string) => void;
+  onFieldBlur: () => void;
+  onFieldChange: (fieldName: string) => void;
   isLargeNumber: boolean;
 }
 
@@ -16,6 +19,9 @@ export function FormField({
   value,
   onChange,
   onNumberChange,
+  onFieldFocus,
+  onFieldBlur,
+  onFieldChange,
   isLargeNumber,
 }: FormFieldProps) {
   if (field.type === "select") {
@@ -30,6 +36,9 @@ export function FormField({
         field={field}
         value={value as number}
         onChange={onNumberChange}
+        onFieldFocus={onFieldFocus}
+        onFieldBlur={onFieldBlur}
+        onFieldChange={onFieldChange}
       />
     );
   }
@@ -40,6 +49,9 @@ export function FormField({
       value={value}
       onChange={onChange}
       onNumberChange={onNumberChange}
+      onFieldFocus={onFieldFocus}
+      onFieldBlur={onFieldBlur}
+      onFieldChange={onFieldChange}
     />
   );
 }

@@ -8,6 +8,9 @@ interface FormSectionProps {
   formData: FormDataType;
   onChange: (name: string, value: string | number | undefined) => void;
   onNumberChange: (name: string, value: number | undefined) => void;
+  onFieldFocus: (fieldName: string) => void;
+  onFieldBlur: () => void;
+  onFieldChange: (fieldName: string) => void;
 }
 
 export function FormSectionComponent({
@@ -15,6 +18,9 @@ export function FormSectionComponent({
   formData,
   onChange,
   onNumberChange,
+  onFieldFocus,
+  onFieldBlur,
+  onFieldChange,
 }: FormSectionProps) {
   return (
     <div className="space-y-6">
@@ -35,6 +41,9 @@ export function FormSectionComponent({
             value={formData[field.name as keyof FormDataType]}
             onChange={onChange}
             onNumberChange={onNumberChange}
+            onFieldFocus={onFieldFocus}
+            onFieldBlur={onFieldBlur}
+            onFieldChange={onFieldChange}
             isLargeNumber={LARGE_NUMBER_FIELDS.includes(field.name)}
           />
         ))}

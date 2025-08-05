@@ -20,7 +20,8 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
       formValues,
     });
 
-  useFormCalculation({ formData, formValues, setFormData });
+  const { handleFieldFocus, handleFieldBlur, handleFieldChange } =
+    useFormCalculation({ formData, formValues, setFormData });
 
   const _dummyData: FormDataType = {
     purchase_date: "2025-01-01",
@@ -107,6 +108,9 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
           formData={formData}
           onChange={handleChange}
           onNumberChange={handleNumberChange}
+          onFieldFocus={handleFieldFocus}
+          onFieldBlur={handleFieldBlur}
+          onFieldChange={handleFieldChange}
         />
       ))}
 

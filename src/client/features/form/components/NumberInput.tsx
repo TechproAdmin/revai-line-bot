@@ -5,9 +5,19 @@ interface NumberInputProps {
   field: FormFieldConfig;
   value: number | undefined;
   onChange: (name: string, value: number | undefined) => void;
+  onFieldFocus: (fieldName: string) => void;
+  onFieldBlur: () => void;
+  onFieldChange: (fieldName: string) => void;
 }
 
-export function NumberInput({ field, value, onChange }: NumberInputProps) {
+export function NumberInput({
+  field,
+  value,
+  onChange,
+  onFieldFocus,
+  onFieldBlur,
+  onFieldChange,
+}: NumberInputProps) {
   return (
     <div className="flex flex-col">
       <label htmlFor={field.name} className="mb-1 font-medium text-gray-700">
@@ -23,7 +33,10 @@ export function NumberInput({ field, value, onChange }: NumberInputProps) {
           onChange={(e) => {
             const numericValue = parseNumericInput(e.target.value);
             onChange(field.name, numericValue);
+            onFieldChange(field.name);
           }}
+          onFocus={() => onFieldFocus(field.name)}
+          onBlur={onFieldBlur}
           className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           required={field.required}
           placeholder="0"

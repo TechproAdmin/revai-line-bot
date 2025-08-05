@@ -5,6 +5,9 @@ interface TextInputProps {
   value: string | number | undefined;
   onChange: (name: string, value: string) => void;
   onNumberChange: (name: string, value: number | undefined) => void;
+  onFieldFocus: (fieldName: string) => void;
+  onFieldBlur: () => void;
+  onFieldChange: (fieldName: string) => void;
 }
 
 export function TextInput({
@@ -12,6 +15,9 @@ export function TextInput({
   value,
   onChange,
   onNumberChange,
+  onFieldFocus,
+  onFieldBlur,
+  onFieldChange,
 }: TextInputProps) {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (field.type === "number") {
@@ -21,6 +27,7 @@ export function TextInput({
     } else {
       onChange(field.name, e.target.value);
     }
+    onFieldChange(field.name);
   };
 
   return (
@@ -35,6 +42,8 @@ export function TextInput({
         name={field.name}
         value={value ?? ""}
         onChange={handleChange}
+        onFocus={() => onFieldFocus(field.name)}
+        onBlur={onFieldBlur}
         className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         required={field.required}
         step={field.step}

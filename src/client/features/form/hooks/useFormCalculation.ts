@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import type { FormDataType } from "@/shared/types";
 
 interface UseFormCalculationProps {
@@ -12,7 +12,11 @@ export function useFormCalculation({
   formValues,
   setFormData,
 }: UseFormCalculationProps) {
+  const [lastChanged, setLastChanged] = useState<string>("");
+  const [focusedField, setFocusedField] = useState<string>("");
+
   useEffect(() => {
+    if (focusedField) return;
     const updatedValues: Partial<FormDataType> = {};
     if (formData.total_price) {
       const totalPrice = formData.total_price;
@@ -21,23 +25,38 @@ export function useFormCalculation({
       const landPrice = formData.land_price || 0;
       const buildingPrice = formData.building_price || 0;
 
-      // 土地価格と建物価格の両方がある場合のバリデーション
-      if (formData.land_price && formData.building_price) {
-        const sum = landPrice + buildingPrice;
-        if (sum !== totalPrice) {
-          // 合計が総計と一致しない場合、土地価格を差分で調整
-          updatedValues.land_price = totalPrice - buildingPrice;
+      if (lastChanged === "building_price" || lastChanged === "land_price") {
+        // 建物または土地が変更された場合、総計を更新
+        const newTotal = buildingPrice + landPrice;
+        if (newTotal !== totalPrice) {
+          updatedValues.total_price = newTotal;
         }
-      } else if (formData.building_price) {
-        // 建物価格がある場合、土地価格は差分から計算
-        updatedValues.land_price = totalPrice - buildingPrice;
-      } else if (formData.land_price) {
-        // 土地価格がある場合、建物価格は差分から計算
-        updatedValues.building_price = totalPrice - landPrice;
-      } else if (!formValues.building_price && !formValues.land_price) {
-        // 両方がない場合のデフォルト設定
-        updatedValues.building_price = totalPrice * 0.5;
-        updatedValues.land_price = totalPrice * 0.5;
+      } else if (lastChanged === "total_price") {
+        // 総計が変更された場合の処理
+        if (formData.building_price) {
+          updatedValues.land_price = totalPrice - buildingPrice;
+        } else if (formData.land_price) {
+          updatedValues.building_price = totalPrice - landPrice;
+        } else if (!formData.building_price && !formData.land_price) {
+          // 総計のみが入力されている場合、50%ずつに分割
+          updatedValues.building_price = totalPrice * 0.5;
+          updatedValues.land_price = totalPrice * 0.5;
+        }
+      } else {
+        // 従来のロジック（初期設定時など）
+        if (formData.land_price && formData.building_price) {
+          const sum = landPrice + buildingPrice;
+          if (sum !== totalPrice) {
+            updatedValues.land_price = totalPrice - buildingPrice;
+          }
+        } else if (formData.building_price) {
+          updatedValues.land_price = totalPrice - buildingPrice;
+        } else if (formData.land_price) {
+          updatedValues.building_price = totalPrice - landPrice;
+        } else if (!formData.building_price && !formData.land_price) {
+          updatedValues.building_price = totalPrice * 0.5;
+          updatedValues.land_price = totalPrice * 0.5;
+        }
       }
 
       // 購入諸費用 (物件価格の8%)
@@ -92,5 +111,25 @@ export function useFormCalculation({
     formData.gross_yield,
     formValues,
     setFormData,
+    lastChanged,
+    focusedField,
   ]);
+
+  const handleFieldFocus = (fieldName: string) => {
+    setFocusedField(fieldName);
+  };
+
+  const handleFieldBlur = () => {
+    setFocusedField("");
+  };
+
+  const handleFieldChange = (fieldName: string) => {
+    setLastChanged(fieldName);
+  };
+
+  return {
+    handleFieldFocus,
+    handleFieldBlur,
+    handleFieldChange,
+  };
 }
