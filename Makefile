@@ -87,6 +87,8 @@ define deploy-to-cloudrun
 	@echo "📝 Loading environment variables from .env.production..."
 	$(eval LIFF_ID := $(shell grep NEXT_PUBLIC_LIFF_ID .env.production | cut -d '=' -f2))
 	$(eval OPENAI_KEY := $(shell grep NEXT_PUBLIC_OPENAI_API_KEY .env.production | cut -d '=' -f2))
+	$(eval LINE_ACCESS_TOKEN := $(shell grep LINE_CHANNEL_ACCESS_TOKEN .env.production | cut -d '=' -f2))
+	$(eval LINE_SECRET := $(shell grep LINE_CHANNEL_SECRET .env.production | cut -d '=' -f2))
 	gcloud run deploy realestate-linebot \
 		--image=$(1) \
 		--region=$(REGION) \
@@ -99,7 +101,7 @@ define deploy-to-cloudrun
 		--min-instances=0 \
 		--concurrency=80 \
 		--timeout=300 \
-		--set-env-vars="NODE_ENV=production,NEXT_PUBLIC_LIFF_ID=$(LIFF_ID),NEXT_PUBLIC_OPENAI_API_KEY=$(OPENAI_KEY)" \
+		--set-env-vars="NODE_ENV=production,NEXT_PUBLIC_LIFF_ID=$(LIFF_ID),NEXT_PUBLIC_OPENAI_API_KEY=$(OPENAI_KEY),LINE_CHANNEL_ACCESS_TOKEN=$(LINE_ACCESS_TOKEN),LINE_CHANNEL_SECRET=$(LINE_SECRET)" \
 		--quiet
 	@echo "✅ Deployment completed successfully!"
 endef
