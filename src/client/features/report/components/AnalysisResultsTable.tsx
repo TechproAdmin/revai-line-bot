@@ -17,7 +17,7 @@ export function AnalysisResultsTable({ data }: AnalysisResultsTableProps) {
           marginBottom: "2px",
         }}
       >
-        ■ 分析結果（単位：万円）
+        ■ 分析結果
       </div>
       <table
         style={{
@@ -44,7 +44,7 @@ export function AnalysisResultsTable({ data }: AnalysisResultsTableProps) {
                 textAlign: "right",
               }}
             >
-              {formatAmount(data.net_operating_income[1])}
+              {formatAmount(data.net_operating_income[1])}万円
             </td>
             <td
               style={{
@@ -284,7 +284,7 @@ export function AnalysisResultsTable({ data }: AnalysisResultsTableProps) {
                 textAlign: "right",
               }}
             >
-              {data.debt_service_coverage_ratio.toFixed(2)}
+              {data.debt_service_coverage_ratio.toFixed(2)}倍
             </td>
             <td
               style={{
@@ -376,7 +376,7 @@ export function AnalysisResultsTable({ data }: AnalysisResultsTableProps) {
                 textAlign: "right",
               }}
             >
-              {formatAmount(data.total_pl)}
+              {formatAmount(data.total_pl)}万円
             </td>
             <td
               style={{

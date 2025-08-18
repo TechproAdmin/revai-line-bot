@@ -52,9 +52,15 @@ export function CashFlowChart({ data }: CashFlowChartProps) {
             }}
           >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="year" tick={{ fontSize: 10 }} />
+            <XAxis
+              dataKey="year"
+              tick={{ fontSize: 10 }}
+              tickFormatter={(value) => `${value}年`}
+              interval={0}
+            />
             <YAxis tick={{ fontSize: 10 }} />
             <Tooltip
+              labelFormatter={(value) => `${value}年`}
               formatter={(value) => [`${(value as number).toFixed(0)}万円`]}
             />
             <Legend />

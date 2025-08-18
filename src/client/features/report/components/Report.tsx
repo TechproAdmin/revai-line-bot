@@ -196,23 +196,6 @@ export function Report({ data }: ReportProps) {
           <AnalysisResultsTable data={data} />
         </div>
 
-        {/* チャートセクション */}
-        <div
-          style={{
-            display: "flex",
-            flexWrap: "wrap",
-            gap: "15px",
-            marginTop: "20px",
-          }}
-        >
-          <CashFlowChart data={cashFlowData} />
-          <DeadCrossChart
-            data={deadCrossData}
-            deadCrossYear={data.dead_cross_year}
-          />
-          <LoanChart data={loanData} />
-        </div>
-
         {/* 収益指標サマリー */}
         <div
           style={{
@@ -242,6 +225,23 @@ export function Report({ data }: ReportProps) {
           >
             {formatPercent(data.internal_rate_of_return)}
           </div>
+        </div>
+
+        {/* チャートセクション */}
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "15px",
+            marginTop: "20px",
+          }}
+        >
+          <CashFlowChart data={cashFlowData} />
+          <DeadCrossChart
+            data={deadCrossData}
+            deadCrossYear={data.dead_cross_year}
+          />
+          <LoanChart data={loanData} />
         </div>
       </div>
     </div>
