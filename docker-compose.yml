@@ -12,6 +12,8 @@ services:
     command: npm run dev
     environment:
       - NEXT_PUBLIC_LIFF_ID=${NEXT_PUBLIC_LIFF_ID}
+      - LINE_CHANNEL_ACCESS_TOKEN=${LINE_CHANNEL_ACCESS_TOKEN}
+      - LINE_CHANNEL_SECRET=${LINE_CHANNEL_SECRET}
       - NODE_ENV=${NODE_ENV:-development}
     networks:
       - liff-network

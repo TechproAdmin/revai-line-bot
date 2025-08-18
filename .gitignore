@@ -137,3 +137,6 @@ dist
 
 CLAUDE.md
 debug/
+
+# Temporary files
+temp/

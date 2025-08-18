@@ -96,7 +96,7 @@ export default function Home({ liff, liffError }: HomeProps) {
                 <div className="space-y-4">
                   <div className="p-4 bg-green-50 text-green-700 rounded-lg border border-green-200">
                     <p>
-                      レポートを作成しました。詳細なレポートを確認したい場合は、「PDFをダウンロード」ボタンを押してダウンロードできるPDFをご確認ください。
+                      レポートを作成しました。詳細なPDFレポートをLINEで受け取りたい場合は、「PDFをLINEに送信」ボタンを押してください。
                     </p>
                   </div>
                   <Report data={reportData} />
