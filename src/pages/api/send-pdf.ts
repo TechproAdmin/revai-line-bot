@@ -60,12 +60,15 @@ export default async function handler(
     const channelAccessToken = process.env.LINE_CHANNEL_ACCESS_TOKEN;
 
     if (!channelAccessToken) {
+      logger.error("LINE_CHANNEL_ACCESS_TOKEN is missing", { ...logContext });
       throw new Error("LINE_CHANNEL_ACCESS_TOKEN is required");
     }
 
     const client = new Client({
       channelAccessToken,
     });
+
+    logger.info("Initialized LINE Bot client", { ...logContext });
 
     // PDFファイルを一時ディレクトリに保存
     const filename = `report_${userId}_${Date.now()}.pdf`;
@@ -84,10 +87,28 @@ export default async function handler(
     const downloadUrl = `${req.headers.origin || process.env.NEXTAUTH_URL || "http://localhost:3000"}/api/download-pdf?file=${filename}`;
 
     // LINEメッセージを送信
-    await client.pushMessage(userId, {
-      type: "text",
-      text: `収益性分析レポートが完成しました！\n\n📊 ファイル名: 収益性分析レポート.pdf \n📁 サイズ: ${(buffer.length / 1024).toFixed(1)}KB\n\n⬇️ PDFをダウンロード:\n${downloadUrl}\n\n※このリンクは24時間有効です。`,
+    logger.info("Sending message to LINE user", { 
+      ...logContext, 
+      userId,
+      messageLength: downloadUrl.length 
     });
+
+    try {
+      await client.pushMessage(userId, {
+        type: "text",
+        text: `収益性分析レポートが完成しました！\n\n📊 ファイル名: 収益性分析レポート.pdf \n📁 サイズ: ${(buffer.length / 1024).toFixed(1)}KB\n\n⬇️ PDFをダウンロード:\n${downloadUrl}\n\n※このリンクは24時間有効です。`,
+      });
+
+      logger.info("Successfully sent LINE message", { ...logContext, userId });
+    } catch (lineError) {
+      logger.error("Failed to send LINE message", {
+        ...logContext,
+        userId,
+        error: lineError instanceof Error ? lineError.message : String(lineError),
+        errorStack: lineError instanceof Error ? lineError.stack : undefined,
+      });
+      throw lineError;
+    }
 
     const responseData: SuccessResponse = {
       success: true,
