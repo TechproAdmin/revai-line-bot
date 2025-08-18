@@ -229,13 +229,30 @@ export function Report({ data }: ReportProps) {
 
         {/* チャートセクション */}
         <div
+          className="chart-container"
           style={{
             display: "flex",
-            flexWrap: "wrap",
-            gap: "15px",
+            flexDirection: "column",
+            gap: "20px",
             marginTop: "20px",
           }}
         >
+          <style jsx>{`
+            @media (min-width: 1024px) {
+              .chart-container {
+                flex-direction: row !important;
+                flex-wrap: wrap;
+                gap: 15px !important;
+              }
+            }
+            @media print {
+              .chart-container {
+                flex-direction: row !important;
+                flex-wrap: wrap;
+                gap: 15px !important;
+              }
+            }
+          `}</style>
           <CashFlowChart data={cashFlowData} />
           <DeadCrossChart
             data={deadCrossData}

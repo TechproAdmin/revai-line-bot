@@ -21,7 +21,7 @@ interface DeadCrossChartProps {
 
 export function DeadCrossChart({ data, deadCrossYear }: DeadCrossChartProps) {
   return (
-    <div style={{ flex: "1 1 300px", minWidth: "300px" }}>
+    <div style={{ width: "100%", minWidth: "280px", flex: "1 1 300px" }}>
       <h3
         style={{
           fontSize: "14px",
@@ -41,7 +41,7 @@ export function DeadCrossChart({ data, deadCrossYear }: DeadCrossChartProps) {
       >
         元本返済額と減価償却費
       </div>
-      <div style={{ height: "180px", width: "100%" }}>
+      <div style={{ height: "240px", width: "100%" }}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={data}
@@ -57,7 +57,8 @@ export function DeadCrossChart({ data, deadCrossYear }: DeadCrossChartProps) {
               dataKey="year"
               tick={{ fontSize: 10 }}
               tickFormatter={(value) => `${value}年`}
-              interval={0}
+              interval="preserveStartEnd"
+              minTickGap={15}
             />
             <YAxis tick={{ fontSize: 10 }} />
             <Tooltip

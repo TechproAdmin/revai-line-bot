@@ -20,7 +20,7 @@ interface CashFlowChartProps {
 
 export function CashFlowChart({ data }: CashFlowChartProps) {
   return (
-    <div style={{ flex: "1 1 300px", minWidth: "300px" }}>
+    <div style={{ width: "100%", minWidth: "280px", flex: "1 1 300px" }}>
       <h3
         style={{
           fontSize: "14px",
@@ -40,7 +40,7 @@ export function CashFlowChart({ data }: CashFlowChartProps) {
       >
         税引き前CF（青線）、税引き後CF（赤線）、CF累積
       </div>
-      <div style={{ height: "180px", width: "100%" }}>
+      <div style={{ height: "240px", width: "100%" }}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={data}
@@ -56,7 +56,8 @@ export function CashFlowChart({ data }: CashFlowChartProps) {
               dataKey="year"
               tick={{ fontSize: 10 }}
               tickFormatter={(value) => `${value}年`}
-              interval={0}
+              interval="preserveStartEnd"
+              minTickGap={15}
             />
             <YAxis tick={{ fontSize: 10 }} />
             <Tooltip
