@@ -87,10 +87,10 @@ export default async function handler(
     const downloadUrl = `${req.headers.origin || process.env.NEXTAUTH_URL || "http://localhost:3000"}/api/download-pdf?file=${filename}`;
 
     // LINEメッセージを送信
-    logger.info("Sending message to LINE user", { 
-      ...logContext, 
+    logger.info("Sending message to LINE user", {
+      ...logContext,
       userId,
-      messageLength: downloadUrl.length 
+      messageLength: downloadUrl.length,
     });
 
     try {
@@ -104,7 +104,8 @@ export default async function handler(
       logger.error("Failed to send LINE message", {
         ...logContext,
         userId,
-        error: lineError instanceof Error ? lineError.message : String(lineError),
+        error:
+          lineError instanceof Error ? lineError.message : String(lineError),
         errorStack: lineError instanceof Error ? lineError.stack : undefined,
       });
       throw lineError;
