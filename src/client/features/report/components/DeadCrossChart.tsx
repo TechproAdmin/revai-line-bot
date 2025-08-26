@@ -41,12 +41,12 @@ export function DeadCrossChart({ data, deadCrossYear }: DeadCrossChartProps) {
       >
         元本返済額と減価償却費
       </div>
-      <div 
-        style={{ 
-          height: "300px", 
-          width: "100%", 
+      <div
+        style={{
+          height: "300px",
+          width: "100%",
           aspectRatio: "16 / 9",
-          minHeight: "240px" 
+          minHeight: "240px",
         }}
       >
         <ResponsiveContainer width="100%" height="100%">

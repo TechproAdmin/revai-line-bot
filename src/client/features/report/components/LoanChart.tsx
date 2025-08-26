@@ -40,12 +40,12 @@ export function LoanChart({ data }: LoanChartProps) {
       >
         元金残高（青線）、元利合計（赤線）、ローン残高
       </div>
-      <div 
-        style={{ 
-          height: "300px", 
-          width: "100%", 
+      <div
+        style={{
+          height: "300px",
+          width: "100%",
           aspectRatio: "16 / 9",
-          minHeight: "240px" 
+          minHeight: "240px",
         }}
       >
         <ResponsiveContainer width="100%" height="100%">
