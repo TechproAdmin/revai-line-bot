@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from "react";
+import { useId, useRef } from "react";
 import type { RealEstateAnalysisRes } from "@/shared/types";
 import { createChartData, formatPercent } from "../utils/formatters";
 import { generatePDF } from "../utils/pdfGenerator";
@@ -8,12 +8,6 @@ import { CashFlowChart } from "./CashFlowChart";
 import { DeadCrossChart } from "./DeadCrossChart";
 import { LoanChart } from "./LoanChart";
 
-declare global {
-  interface Window {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    liff: any;
-  }
-}
 
 export interface ReportProps {
   data: RealEstateAnalysisRes;
@@ -22,82 +16,12 @@ export interface ReportProps {
 export function Report({ data }: ReportProps) {
   const downloadButtonId = useId();
   const reportRef = useRef<HTMLDivElement>(null);
-  const [userId, setUserId] = useState<string | null>(null);
 
-  useEffect(() => {
-    // LIFFからユーザーIDを取得
-    if (typeof window !== "undefined" && window.liff) {
-      window.liff
-        .getProfile()
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .then((profile: any) => {
-          setUserId(profile.userId);
-        })
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        .catch((error: any) => {
-          console.error("LIFFプロファイル取得エラー:", error);
-          // 開発環境では仮のユーザーIDを使用
-          if (process.env.NODE_ENV === "development") {
-            setUserId("dev_user_id");
-          }
-        });
-    } else if (process.env.NODE_ENV === "development") {
-      // 開発環境では仮のユーザーIDを使用
-      setUserId("dev_user_id");
-    }
-  }, []);
-
-  const handleSendPDF = async () => {
+  const handleDownloadPDF = async () => {
     if (!reportRef.current) return;
-
-    if (!userId) {
-      alert(
-        "ユーザー情報を取得できませんでした。しばらく待ってから再試行してください。",
-      );
-      return;
-    }
-
-    try {
-      // PDFバッファを生成
-      const pdfBuffer = await generatePDF(
-        reportRef.current,
-        downloadButtonId,
-        true,
-      );
-
-      // Base64エンコード（大きなバッファを安全に処理）
-      let binaryString = "";
-      for (let i = 0; i < pdfBuffer.length; i++) {
-        binaryString += String.fromCharCode(pdfBuffer[i]);
-      }
-      const base64Buffer = btoa(binaryString);
-
-      // バックエンドに送信
-      const response = await fetch("/api/send-pdf", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          pdfBuffer: base64Buffer,
-          userId: userId,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("PDF送信に失敗しました");
-      }
-
-      const result = await response.json();
-      console.log("PDF送信成功:", result);
-
-      // 成功メッセージを表示
-      alert("PDFをLINEに送信しました");
-    } catch (error) {
-      console.error("PDF送信エラー:", error);
-      alert("PDF送信中にエラーが発生しました");
-    }
+    await generatePDF(reportRef.current, downloadButtonId);
   };
+
 
   const { cashFlowData, deadCrossData, loanData } = createChartData(data);
 
@@ -158,29 +82,26 @@ export function Report({ data }: ReportProps) {
           </div>
         </div>
 
-        <div style={{ marginBottom: "15px" }}>
-          <button
-            type="button"
-            id={downloadButtonId}
-            onClick={handleSendPDF}
-            disabled={!userId}
-            style={{
-              backgroundColor: userId ? "#10b981" : "#9ca3af",
-              color: "#ffffff",
-              padding: "8px 16px",
-              borderRadius: "6px",
-              fontWeight: "500",
-              display: "inline-flex",
-              alignItems: "center",
-              border: "none",
-              cursor: userId ? "pointer" : "not-allowed",
-              transition: "background-color 0.2s ease",
-              opacity: userId ? 1 : 0.6,
-            }}
-          >
-            {userId ? "PDFをLINEに送信" : "ユーザー情報取得中..."}
-          </button>
-        </div>
+        <button
+          type="button"
+          id={downloadButtonId}
+          onClick={handleDownloadPDF}
+          style={{
+            backgroundColor: "#3b82f6",
+            color: "#ffffff",
+            padding: "8px 16px",
+            borderRadius: "6px",
+            fontWeight: "500",
+            display: "inline-flex",
+            alignItems: "center",
+            border: "none",
+            cursor: "pointer",
+            marginBottom: "15px",
+            transition: "background-color 0.2s ease",
+          }}
+        >
+          PDFをダウンロード
+        </button>
 
         {/* 分析条件セクション */}
         <AnalysisConditionsTable data={data} />
