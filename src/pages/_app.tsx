@@ -22,12 +22,12 @@ function MyApp({ Component, pageProps }: AppProps) {
           withLoginOnExternalBrowser: true,
         });
         setLiffObject(liff);
-        
+
         // LINE内部ブラウザの場合、外部ブラウザで開く
         if (liff.isInClient()) {
           liff.openWindow({
             url: window.location.href,
-            external: true
+            external: true,
           });
         }
       } catch (error: unknown) {

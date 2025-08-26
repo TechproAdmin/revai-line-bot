@@ -8,7 +8,6 @@ import { CashFlowChart } from "./CashFlowChart";
 import { DeadCrossChart } from "./DeadCrossChart";
 import { LoanChart } from "./LoanChart";
 
-
 export interface ReportProps {
   data: RealEstateAnalysisRes;
 }
@@ -21,7 +20,6 @@ export function Report({ data }: ReportProps) {
     if (!reportRef.current) return;
     await generatePDF(reportRef.current, downloadButtonId);
   };
-
 
   const { cashFlowData, deadCrossData, loanData } = createChartData(data);
 
