@@ -22,6 +22,14 @@ function MyApp({ Component, pageProps }: AppProps) {
           withLoginOnExternalBrowser: true,
         });
         setLiffObject(liff);
+        
+        // LINE内部ブラウザの場合、外部ブラウザで開く
+        if (liff.isInClient()) {
+          liff.openWindow({
+            url: window.location.href,
+            external: true
+          });
+        }
       } catch (error: unknown) {
         if (error instanceof Error) {
           console.error("LIFF initialization failed:", error);
