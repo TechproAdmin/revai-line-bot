@@ -20,7 +20,7 @@ interface LoanChartProps {
 
 export function LoanChart({ data }: LoanChartProps) {
   return (
-    <div style={{ width: "100%", minWidth: "280px", flex: "1 1 300px" }}>
+    <div style={{ width: "100%", minWidth: "300px" }}>
       <h3
         style={{
           fontSize: "14px",
@@ -40,7 +40,14 @@ export function LoanChart({ data }: LoanChartProps) {
       >
         元金残高（青線）、元利合計（赤線）、ローン残高
       </div>
-      <div style={{ height: "240px", width: "100%" }}>
+      <div 
+        style={{ 
+          height: "300px", 
+          width: "100%", 
+          aspectRatio: "16 / 9",
+          minHeight: "240px" 
+        }}
+      >
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
             data={data}
@@ -56,8 +63,8 @@ export function LoanChart({ data }: LoanChartProps) {
               dataKey="year"
               tick={{ fontSize: 10 }}
               tickFormatter={(value) => `${value}年`}
-              interval="preserveStartEnd"
-              minTickGap={15}
+              interval={1}
+              minTickGap={5}
             />
             <YAxis tick={{ fontSize: 10 }} />
             <Tooltip
