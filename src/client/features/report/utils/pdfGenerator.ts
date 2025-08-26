@@ -4,22 +4,10 @@ import jsPDF from "jspdf";
 export async function generatePDF(
   reportElement: HTMLElement,
   downloadButtonId: string,
-): Promise<undefined>;
-export async function generatePDF(
-  reportElement: HTMLElement,
-  downloadButtonId: string,
-  returnBuffer: true,
-): Promise<Uint8Array>;
-export async function generatePDF(
-  reportElement: HTMLElement,
-  downloadButtonId: string,
-  returnBuffer?: boolean,
-): Promise<undefined | Uint8Array> {
+): Promise<void> {
   // ローディング状態を表示
   const button = document.getElementById(downloadButtonId);
-  let originalButtonText = "";
   if (button) {
-    originalButtonText = button.textContent || "";
     button.textContent = "PDFを準備中...";
     button.setAttribute("disabled", "true");
   }
@@ -52,13 +40,7 @@ export async function generatePDF(
         return element.id === downloadButtonId;
       },
       onclone: (clonedDoc) => {
-        // スタイルシートを削除してシンプルな見た目にする
-        const styleElements = clonedDoc.querySelectorAll("style");
-        for (const el of styleElements) {
-          el.remove();
-        }
-
-        // 基本的なスタイルのみ適用
+        // すべての要素のスタイルを修正
         const allElements = clonedDoc.querySelectorAll("*");
         allElements.forEach((el) => {
           if (el instanceof HTMLElement) {
@@ -67,16 +49,65 @@ export async function generatePDF(
               el.removeAttribute("hidden");
             }
 
-            // 基本的な色設定のみ
-            el.style.setProperty("color", "#000000", "important");
-            el.style.setProperty(
+            const computedStyle = window.getComputedStyle(el);
+
+            [
+              "color",
               "background-color",
-              "transparent",
-              "important",
-            );
-            el.style.setProperty("border-color", "#e5e7eb", "important");
+              "border-color",
+              "outline-color",
+              "text-decoration-color",
+            ].forEach((prop) => {
+              const value = computedStyle.getPropertyValue(prop);
+              if (
+                value &&
+                !value.includes("oklch") &&
+                !value.includes("lab") &&
+                !value.includes("lch")
+              ) {
+                el.style.setProperty(prop, value, "important");
+              } else if (
+                value &&
+                (value.includes("oklch") ||
+                  value.includes("lab") ||
+                  value.includes("lch"))
+              ) {
+                switch (prop) {
+                  case "color":
+                    el.style.setProperty(prop, "#000000", "important");
+                    break;
+                  case "background-color":
+                    el.style.setProperty(prop, "transparent", "important");
+                    break;
+                  case "border-color":
+                    el.style.setProperty(prop, "#e5e7eb", "important");
+                    break;
+                  default:
+                    el.style.setProperty(prop, "#000000", "important");
+                }
+              }
+            });
+
+            if (el.classList) {
+              const classesToRemove: string[] = [];
+              el.classList.forEach((className) => {
+                if (
+                  className.includes("text-") ||
+                  className.includes("bg-") ||
+                  className.includes("border-")
+                ) {
+                  classesToRemove.push(className);
+                }
+              });
+              classesToRemove.forEach((className) =>
+                el.classList.remove(className),
+              );
+            }
           }
         });
+
+        const styleElements = clonedDoc.querySelectorAll("style");
+        styleElements.forEach((el) => el.remove());
       },
     });
 
@@ -124,33 +155,20 @@ export async function generatePDF(
       scaledHeight,
     );
 
-    if (returnBuffer) {
-      // PDFバッファを返す
-      const pdfBuffer = pdf.output("arraybuffer");
+    // PDFを保存
+    pdf.save("収益性分析レポート.pdf");
 
-      // ボタンの状態をリセット
-      if (button) {
-        button.textContent = originalButtonText;
-        button.removeAttribute("disabled");
-      }
-
-      return new Uint8Array(pdfBuffer);
-    } else {
-      // PDFを保存
-      pdf.save("収益性分析レポート.pdf");
-
-      // ボタンの状態をリセット
-      if (button) {
-        button.textContent = originalButtonText;
-        button.removeAttribute("disabled");
-      }
+    // ボタンの状態をリセット
+    if (button) {
+      button.textContent = "PDFをダウンロード";
+      button.removeAttribute("disabled");
     }
   } catch (error) {
     console.error("PDF生成エラー:", error);
 
     // ボタンの状態をリセット
     if (button) {
-      button.textContent = originalButtonText;
+      button.textContent = "PDFをダウンロード";
       button.removeAttribute("disabled");
     }
 
