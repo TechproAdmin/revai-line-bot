@@ -99,15 +99,17 @@ export async function generatePDF(
                   classesToRemove.push(className);
                 }
               });
-              classesToRemove.forEach((className) =>
-                el.classList.remove(className),
-              );
+              for (const className of classesToRemove) {
+                el.classList.remove(className);
+              }
             }
           }
         });
 
         const styleElements = clonedDoc.querySelectorAll("style");
-        styleElements.forEach((el) => el.remove());
+        for (const el of styleElements) {
+          el.remove();
+        }
       },
     });
 
