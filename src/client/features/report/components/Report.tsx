@@ -29,7 +29,7 @@ export function Report({ data }: ReportProps) {
         ref={reportRef}
         style={{
           width: "100%",
-          maxWidth: "1100px",
+          maxWidth: "1300px",
           margin: "0 auto",
           backgroundColor: "#ffffff",
           padding: "15px",
@@ -151,33 +151,25 @@ export function Report({ data }: ReportProps) {
           className="chart-container"
           style={{
             display: "flex",
-            flexDirection: "column",
-            gap: "20px",
+            flexDirection: "row",
+            flexWrap: "wrap",
+            gap: "15px",
             marginTop: "20px",
+            justifyContent: "space-between",
           }}
         >
-          <style jsx>{`
-            @media (min-width: 1024px) {
-              .chart-container {
-                flex-direction: row !important;
-                flex-wrap: wrap;
-                gap: 15px !important;
-              }
-            }
-            @media print {
-              .chart-container {
-                flex-direction: row !important;
-                flex-wrap: wrap;
-                gap: 15px !important;
-              }
-            }
-          `}</style>
-          <CashFlowChart data={cashFlowData} />
-          <DeadCrossChart
-            data={deadCrossData}
-            deadCrossYear={data.dead_cross_year}
-          />
-          <LoanChart data={loanData} />
+          <div style={{ flex: "1 1 calc(33.333% - 10px)", minWidth: "300px" }}>
+            <CashFlowChart data={cashFlowData} />
+          </div>
+          <div style={{ flex: "1 1 calc(33.333% - 10px)", minWidth: "300px" }}>
+            <DeadCrossChart
+              data={deadCrossData}
+              deadCrossYear={data.dead_cross_year}
+            />
+          </div>
+          <div style={{ flex: "1 1 calc(33.333% - 10px)", minWidth: "300px" }}>
+            <LoanChart data={loanData} />
+          </div>
         </div>
       </div>
     </div>

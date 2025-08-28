@@ -23,7 +23,7 @@ export async function generatePDF(
     // クローンを一時的にドキュメントに追加（レンダリングのため）
     clonedReport.style.position = "absolute";
     clonedReport.style.left = "-9999px";
-    clonedReport.style.width = "1123px"; // A4横の幅（297mm ≈ 1123px）
+    clonedReport.style.width = "1400px"; // 3列チャート用により広い幅
 
     document.body.appendChild(clonedReport);
 
@@ -34,12 +34,45 @@ export async function generatePDF(
       logging: false,
       allowTaint: true,
       backgroundColor: "#ffffff",
-      width: 1123,
-      windowWidth: 1123,
+      width: 1400,
+      windowWidth: 1400,
       ignoreElements: (element) => {
         return element.id === downloadButtonId;
       },
       onclone: (clonedDoc) => {
+        // チャートコンテナの強制横並び設定
+        const chartContainer = clonedDoc.querySelector(
+          ".chart-container",
+        ) as HTMLElement;
+        if (chartContainer) {
+          chartContainer.style.setProperty("display", "flex", "important");
+          chartContainer.style.setProperty(
+            "flex-direction",
+            "row",
+            "important",
+          );
+          chartContainer.style.setProperty("flex-wrap", "wrap", "important");
+          chartContainer.style.setProperty("gap", "15px", "important");
+          chartContainer.style.setProperty(
+            "justify-content",
+            "space-between",
+            "important",
+          );
+
+          // 各チャートのサイズ調整
+          const chartWrappers = chartContainer.children;
+          Array.from(chartWrappers).forEach((wrapper, index) => {
+            const wrapperElement = wrapper as HTMLElement;
+            wrapperElement.style.setProperty(
+              "flex",
+              "1 1 calc(33.333% - 10px)",
+              "important",
+            );
+            wrapperElement.style.setProperty("min-width", "350px", "important");
+            wrapperElement.style.setProperty("max-width", "450px", "important");
+          });
+        }
+
         // すべての要素のスタイルを修正
         const allElements = clonedDoc.querySelectorAll("*");
         allElements.forEach((el) => {
