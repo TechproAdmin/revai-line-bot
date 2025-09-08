@@ -57,7 +57,7 @@ export function Report({ data }: ReportProps) {
               margin: 0,
             }}
           >
-            収益性分析レポート
+            RevAI｜収益性レポート
           </h1>
           <div
             style={{
@@ -169,6 +169,51 @@ export function Report({ data }: ReportProps) {
           </div>
           <div style={{ flex: "1 1 calc(33.333% - 10px)", minWidth: "300px" }}>
             <LoanChart data={loanData} />
+          </div>
+        </div>
+
+        {/* Footer content for PDF */}
+        <div
+          style={{
+            marginTop: "30px",
+            paddingTop: "20px",
+            borderTop: "1px solid #dee2e6",
+            textAlign: "center",
+            display: "none",
+          }}
+          className="pdf-footer"
+        >
+          <div
+            style={{
+              fontSize: "9px",
+              color: "#666",
+              lineHeight: "1.4",
+              marginBottom: "10px",
+            }}
+          >
+            本サービスは入力された値に基づき計算を行い、レポートを作成するものです。
+            <br />
+            実際の収益性を担保するものではございません。
+          </div>
+          <div
+            style={{
+              fontSize: "10px",
+              color: "#666",
+            }}
+          >
+            © 2025 RevAI. Operated by{" "}
+            <a
+              href="https://www.techpro-j.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                color: "#666",
+                textDecoration: "underline",
+                textDecorationSkipInk: "none",
+              }}
+            >
+              Tech Property Japan Co.,Ltd.
+            </a>
           </div>
         </div>
       </div>

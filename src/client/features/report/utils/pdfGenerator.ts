@@ -73,6 +73,12 @@ export async function generatePDF(
           });
         }
 
+        // PDF用フッターを表示
+        const pdfFooter = clonedDoc.querySelector(".pdf-footer") as HTMLElement;
+        if (pdfFooter) {
+          pdfFooter.style.setProperty("display", "block", "important");
+        }
+
         // すべての要素のスタイルを修正
         const allElements = clonedDoc.querySelectorAll("*");
         allElements.forEach((el) => {

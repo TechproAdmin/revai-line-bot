@@ -19,6 +19,10 @@ interface CashFlowChartProps {
 }
 
 export function CashFlowChart({ data }: CashFlowChartProps) {
+  const formatNumber = (value: number) => {
+    return Math.round(value).toLocaleString("ja-JP");
+  };
+
   return (
     <div style={{ width: "100%", minWidth: "300px" }}>
       <h3
@@ -66,10 +70,13 @@ export function CashFlowChart({ data }: CashFlowChartProps) {
               interval={1}
               minTickGap={5}
             />
-            <YAxis tick={{ fontSize: 10 }} />
+            <YAxis
+              tick={{ fontSize: 10 }}
+              tickFormatter={(value) => formatNumber(value)}
+            />
             <Tooltip
               labelFormatter={(value) => `${value}年`}
-              formatter={(value) => [`${(value as number).toFixed(0)}万円`]}
+              formatter={(value) => [`${formatNumber(value as number)}万円`]}
             />
             <Legend />
             <Line

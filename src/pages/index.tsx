@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ReportForm } from "@/client/features/form/components/ReportForm";
 import { Report } from "@/client/features/report/components/Report";
 import { PdfUploader } from "@/client/features/upload/components/PdfUploader";
+import { Footer } from "@/components/Footer";
 import type {
   PdfExtractionResult,
   RealEstateAnalysisRes,
@@ -145,6 +146,7 @@ export default function Home({ liff, liffError }: HomeProps) {
                   </div>
                 </div>
               )}
+              <Footer />
             </div>
           </div>
         </div>

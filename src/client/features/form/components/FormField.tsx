@@ -1,4 +1,5 @@
 import type { FormFieldConfig } from "@/shared/constants";
+import { DateInput } from "./DateInput";
 import { NumberInput } from "./NumberInput";
 import { SelectInput } from "./SelectInput";
 import { TextInput } from "./TextInput";
@@ -27,6 +28,19 @@ export function FormField({
   if (field.type === "select") {
     return (
       <SelectInput field={field} value={value as string} onChange={onChange} />
+    );
+  }
+
+  if (field.type === "date") {
+    return (
+      <DateInput
+        field={field}
+        value={value}
+        onChange={onChange}
+        onFieldFocus={onFieldFocus}
+        onFieldBlur={onFieldBlur}
+        onFieldChange={onFieldChange}
+      />
     );
   }
 

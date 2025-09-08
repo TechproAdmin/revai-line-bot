@@ -12,6 +12,8 @@
     "@line/bot-sdk": "^10.1.2",
     "@line/liff": "2.25.1",
     "@pdfme/converter": "^5.3.16",
+    "@types/react-datepicker": "^6.2.0",
+    "date-fns": "^4.1.0",
     "formidable": "^3.5.2",
     "html2canvas": "^1.4.1",
     "html2pdf.js": "^0.10.3",
@@ -21,6 +23,7 @@
     "pdf-lib": "^1.17.1",
     "pdf-to-img": "^4.4.0",
     "react": "^19.0.0",
+    "react-datepicker": "^8.7.0",
     "react-dom": "^19.0.0",
     "recharts": "^2.15.3"
   },
