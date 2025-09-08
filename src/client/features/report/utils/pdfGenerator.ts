@@ -74,10 +74,15 @@ export async function generatePDF(
         }
 
         // PDF用フッターを表示
-        const pdfFooter = clonedDoc.querySelector(".pdf-footer") as HTMLElement;
-        if (pdfFooter) {
-          pdfFooter.style.setProperty("display", "block", "important");
-        }
+        const pdfFooters = clonedDoc.querySelectorAll(".pdf-footer");
+        pdfFooters.forEach((footer) => {
+          const footerElement = footer as HTMLElement;
+          footerElement.style.setProperty("display", "block", "important");
+          footerElement.style.setProperty("visibility", "visible", "important");
+          footerElement.style.setProperty("opacity", "1", "important");
+          footerElement.style.setProperty("height", "auto", "important");
+          footerElement.style.setProperty("overflow", "visible", "important");
+        });
 
         // すべての要素のスタイルを修正
         const allElements = clonedDoc.querySelectorAll("*");
