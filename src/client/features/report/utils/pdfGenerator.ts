@@ -23,7 +23,7 @@ export async function generatePDF(
     // クローンを一時的にドキュメントに追加（レンダリングのため）
     clonedReport.style.position = "absolute";
     clonedReport.style.left = "-9999px";
-    clonedReport.style.width = "1400px"; // 3列チャート用により広い幅
+    clonedReport.style.width = "1000px"; // A4最大サイズ
 
     document.body.appendChild(clonedReport);
 
@@ -34,8 +34,8 @@ export async function generatePDF(
       logging: false,
       allowTaint: true,
       backgroundColor: "#ffffff",
-      width: 1400,
-      windowWidth: 1400,
+      width: 1000,
+      windowWidth: 1000,
       ignoreElements: (element) => {
         return element.id === downloadButtonId;
       },
@@ -160,26 +160,23 @@ export async function generatePDF(
     // クローンを削除
     document.body.removeChild(clonedReport);
 
-    // PDF生成 - コンテンツサイズに合わせたカスタムサイズ
-    const customWidth = canvas.width / 2 + 30; // キャンバス幅の半分 + 余白
-    const customHeight = canvas.height / 2 + 30; // キャンバス高さの半分 + 余白
-
+    // PDF生成 - A4サイズ
     const pdf = new jsPDF({
-      orientation: customWidth > customHeight ? "landscape" : "portrait",
+      orientation: "portrait",
       unit: "pt",
-      format: [customWidth, customHeight], // カスタムサイズ
+      format: "a4",
     });
 
-    // カスタムサイズなので余白を最小限に
+    // A4サイズの寸法を取得
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
-    const margin = 15;
+    const margin = 10;
 
-    // コンテンツをほぼページサイズいっぱいに表示
+    // コンテンツエリアの計算
     const contentWidth = pageWidth - margin * 2;
     const contentHeight = pageHeight - margin * 2;
 
-    // カスタムサイズなのでスケールは1:1に近く
+    // 縦横両方を考慮してコンテンツ全体が収まるようスケール
     const scaleX = contentWidth / canvas.width;
     const scaleY = contentHeight / canvas.height;
     const scale = Math.min(scaleX, scaleY);
@@ -187,7 +184,7 @@ export async function generatePDF(
     const scaledWidth = canvas.width * scale;
     const scaledHeight = canvas.height * scale;
 
-    // 中央に配置
+    // 余白を最小限に調整
     const x = margin + (contentWidth - scaledWidth) / 2;
     const y = margin + (contentHeight - scaledHeight) / 2;
 
