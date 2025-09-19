@@ -199,7 +199,7 @@ export async function generatePDF(
     );
 
     // PDFを保存
-    pdf.save("収益性分析レポート.pdf");
+    pdf.save("RevAI｜収益性レポート.pdf");
 
     // ボタンの状態をリセット
     if (button) {
