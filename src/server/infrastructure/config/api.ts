@@ -1,6 +1,6 @@
 export const API_CONFIG = {
   REALESTATE_API_URL:
-    "https://realestate-valuation-api-a6mebisk7q-an.a.run.app/analyze",
+    "https://realestate-valuator-611705670252.asia-northeast1.run.app/api/revai/analysis",
   OPENAI_MODEL: "gpt-4o-mini",
 } as const;
 
