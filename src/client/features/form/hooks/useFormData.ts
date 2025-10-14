@@ -8,12 +8,12 @@ interface UseFormDataProps {
 
 export function useFormData({ formValues }: UseFormDataProps) {
   const [formData, setFormData] = useState<FormDataType>({
-    vacancy_rate: 0.05,
+    vacancy_rate: 5,
     loan_term_years: 35,
-    rent_decline_rate: 0.01,
+    rent_decline_rate: 1,
     owner_type: "個人",
     loan_type: "元利均等",
-    expected_rate_of_return: 0.05,
+    expected_rate_of_return: 5,
     expected_sale_year: new Date(new Date().getFullYear() + 30, 0, 1)
       .toISOString()
       .split("T")[0],
