@@ -1,7 +1,7 @@
 import type { RealEstateAnalysisRes } from "@/shared/types";
 
 export function formatAmount(amount: number): string {
-  return `${(amount / 10000).toFixed(0)}`;
+  return (amount / 10000).toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
 export function formatPercent(percent: number): string {
