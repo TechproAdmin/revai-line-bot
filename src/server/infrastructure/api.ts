@@ -102,20 +102,20 @@ export async function calcReport(
   data: RealEstateAnalysisReq,
 ): Promise<RealEstateAnalysisRes> {
   try {
-    const response = await axios.post<ExternalApiResponse>(
-      API_CONFIG.REALESTATE_API_URL,
-      data,
-      {
-        headers: {
-          "Content-Type": "application/json",
-        },
-        timeout: 30000, // 30秒のタイムアウト
+    const response = await axios.post<{
+      data: ExternalApiResponse;
+      status: number;
+      message: string;
+    }>(API_CONFIG.REALESTATE_API_URL, data, {
+      headers: {
+        "Content-Type": "application/json",
       },
-    );
+      timeout: 30000, // 30秒のタイムアウト
+    });
 
     return {
       conditions: data,
-      ...response.data,
+      ...response.data.data,
     };
   } catch (error) {
     console.error("Error calling real estate analysis API:", error);
