@@ -36,7 +36,7 @@ export const OPENAI_PROMPTS = {
   "total_price": (円単位の数値 or null),
   "building_price": (円単位の数値 or null),
   "building_age": (年数 or null),
-  "structure": (文字列 or null),
+  "building_structure": (文字列 or null),
   "gross_yield": (％数値 or null),
   "current_yield": (％数値 or null)
 }`,

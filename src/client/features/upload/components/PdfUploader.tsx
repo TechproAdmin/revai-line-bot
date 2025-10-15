@@ -81,7 +81,7 @@ export function PdfUploader({
           total_price: result.data.total_price,
           building_price: result.data.building_price,
           building_age: result.data.building_age,
-          structure: result.data.structure,
+          building_structure: result.data.building_structure,
           gross_yield: result.data.gross_yield,
           current_yield: result.data.current_yield,
         });

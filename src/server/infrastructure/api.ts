@@ -38,7 +38,7 @@ function createDefaultExtractionResult(): PdfExtractionResult {
     total_price: null,
     building_price: null,
     building_age: null,
-    structure: null,
+    building_structure: null,
     gross_yield: null,
     current_yield: null,
   };
@@ -84,7 +84,7 @@ export async function analyzePdfWithOpenAI(
         total_price: extractedData.total_price,
         building_price: extractedData.building_price,
         building_age: extractedData.building_age,
-        structure: extractedData.structure,
+        building_structure: extractedData.building_structure,
         gross_yield: extractedData.gross_yield,
         current_yield: extractedData.current_yield,
       };
@@ -140,7 +140,7 @@ export async function analyzePdfWithOpenAIMock(
     total_price: "35000000",
     building_price: "35000000",
     building_age: "15",
-    structure: "鉄筋コンクリート",
+    building_structure: "鉄筋コンクリート",
     gross_yield: "6.8",
     current_yield: "5.9",
   };

@@ -30,7 +30,7 @@ export function ReportForm({ formValues = {}, onSuccess }: ReportFormProps) {
     building_price: 60000000,
     purchase_expenses: 8000000,
     building_age: 10,
-    structure: "重量鉄骨造(S)",
+    building_structure: "重量鉄骨造(S)",
     gross_yield: 8,
     current_yield: 8,
     vacancy_rate: 5,

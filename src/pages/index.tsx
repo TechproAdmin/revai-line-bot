@@ -38,7 +38,7 @@ export default function Home({ liff, liffError }: HomeProps) {
       total_price: data.total_price || "",
       building_price: data.building_price || "",
       building_age: data.building_age || "",
-      structure: data.structure || "",
+      building_structure: data.building_structure || "",
       gross_yield: data.gross_yield || "",
       current_yield: data.current_yield || "",
     });

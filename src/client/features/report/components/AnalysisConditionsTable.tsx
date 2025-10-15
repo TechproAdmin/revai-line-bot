@@ -20,7 +20,7 @@ export function AnalysisConditionsTable({
       value: `¥${conditions.purchase_expenses.toLocaleString()}`,
     },
     { label: "建物築年数", value: `${conditions.building_age}年` },
-    { label: "建物構造", value: conditions.structure },
+    { label: "建物構造", value: conditions.building_structure },
     {
       label: "空室率",
       value: `${(conditions.vacancy_rate * 100).toFixed(2)}%`,

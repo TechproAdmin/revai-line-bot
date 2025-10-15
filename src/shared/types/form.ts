@@ -5,7 +5,7 @@ export type FormDataType = {
   building_price?: number;
   purchase_expenses?: number;
   building_age?: number;
-  structure?: string;
+  building_structure?: string;
   gross_yield?: number;
   current_yield?: number;
   full_occupancy_rental_income?: number;

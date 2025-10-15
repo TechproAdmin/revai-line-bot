@@ -54,7 +54,7 @@ const PROPERTY_PURCHASE_FIELDS: FormFieldConfig[] = [
   },
   {
     label: "建物構造",
-    name: "structure",
+    name: "building_structure",
     type: "select",
     required: true,
     options: [

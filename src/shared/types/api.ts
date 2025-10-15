@@ -2,7 +2,7 @@ export type PdfExtractionResult = {
   total_price: string | null;
   building_price: string | null;
   building_age: string | null;
-  structure: string | null;
+  building_structure: string | null;
   gross_yield: string | null;
   current_yield: string | null;
 };
@@ -14,7 +14,7 @@ export type RealEstateAnalysisReq = {
   building_price: number;
   purchase_expenses: number;
   building_age: number;
-  structure: string;
+  building_structure: string;
   gross_yield: number;
   current_yield: number;
   vacancy_rate: number;
