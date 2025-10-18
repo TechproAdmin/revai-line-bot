@@ -14,6 +14,9 @@ export function useFormCalculation({
 }: UseFormCalculationProps) {
   const [lastChanged, setLastChanged] = useState<string>("");
   const [focusedField, setFocusedField] = useState<string>("");
+  const [manuallyEditedFields, setManuallyEditedFields] = useState<Set<string>>(
+    new Set(),
+  );
 
   useEffect(() => {
     if (focusedField) return;
@@ -60,29 +63,32 @@ export function useFormCalculation({
       }
 
       // 購入諸費用 (物件価格の8%)
-      if (!formValues.purchase_expenses) {
+      if (!manuallyEditedFields.has("purchase_expenses")) {
         updatedValues.purchase_expenses = totalPrice * 0.08;
       }
 
       // 自己資金 (物件価格の10% + 購入諸費用)
-      if (!formValues.own_capital) {
+      if (!manuallyEditedFields.has("own_capital")) {
         const purchaseExpenses =
           updatedValues.purchase_expenses || formData.purchase_expenses || 0;
         updatedValues.own_capital = totalPrice * 0.1 + purchaseExpenses;
       }
 
       // 借入金額 (物件価格の90%)
-      if (!formValues.loan_amount) {
+      if (!manuallyEditedFields.has("loan_amount")) {
         updatedValues.loan_amount = totalPrice * 0.9;
       }
 
       // 想定売却価格 (物件価格と同額)
-      if (!formValues.expected_sale_price) {
+      if (!manuallyEditedFields.has("expected_sale_price")) {
         updatedValues.expected_sale_price = totalPrice;
       }
 
       // 年間運営経費の自動計算 (満室時賃料収入の7%)
-      if (formData.gross_yield && !formValues.annual_operating_expenses) {
+      if (
+        formData.gross_yield &&
+        !manuallyEditedFields.has("annual_operating_expenses")
+      ) {
         const grossYield = formData.gross_yield / 100;
         const fullOccupancyRentalIncome = totalPrice * grossYield;
         updatedValues.annual_operating_expenses = Math.round(
@@ -93,7 +99,7 @@ export function useFormCalculation({
 
     // 想定売却価格がある場合
     if (formData.expected_sale_price) {
-      if (!formValues.sale_expenses) {
+      if (!manuallyEditedFields.has("sale_expenses")) {
         const expectedSalePrice = formData.expected_sale_price;
         updatedValues.sale_expenses = expectedSalePrice * 0.04;
       }
@@ -109,10 +115,10 @@ export function useFormCalculation({
     formData.expected_sale_price,
     formData.purchase_expenses,
     formData.gross_yield,
-    formValues,
     setFormData,
     lastChanged,
     focusedField,
+    manuallyEditedFields,
   ]);
 
   const handleFieldFocus = (fieldName: string) => {
@@ -125,6 +131,18 @@ export function useFormCalculation({
 
   const handleFieldChange = (fieldName: string) => {
     setLastChanged(fieldName);
+    // 自動計算対象のフィールドが手動編集された場合、記録する
+    const autoCalculatedFields = [
+      "purchase_expenses",
+      "own_capital",
+      "loan_amount",
+      "expected_sale_price",
+      "annual_operating_expenses",
+      "sale_expenses",
+    ];
+    if (autoCalculatedFields.includes(fieldName)) {
+      setManuallyEditedFields((prev) => new Set(prev).add(fieldName));
+    }
   };
 
   return {
