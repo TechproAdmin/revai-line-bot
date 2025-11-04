@@ -27,6 +27,92 @@ export async function generatePDF(
 
     document.body.appendChild(clonedReport);
 
+    // 条件と結果の表を縦並びで大きく表示
+    const container = clonedReport.querySelector(
+      ".conditions-results-container",
+    ) as HTMLElement;
+    if (container) {
+      container.style.setProperty("display", "flex", "important");
+      container.style.setProperty("flex-direction", "column", "important");
+      container.style.setProperty("gap", "30px", "important");
+      container.style.setProperty("margin-bottom", "40px", "important");
+
+      const conditionsSection = container.querySelector(
+        ".conditions-section",
+      ) as HTMLElement;
+      const resultsSection = container.querySelector(
+        ".results-section",
+      ) as HTMLElement;
+
+      if (conditionsSection) {
+        conditionsSection.style.setProperty("width", "100%", "important");
+        conditionsSection.style.setProperty("font-size", "14px", "important");
+      }
+      if (resultsSection) {
+        resultsSection.style.setProperty("width", "100%", "important");
+        resultsSection.style.setProperty("font-size", "14px", "important");
+      }
+
+      // 表の後に改ページを挿入
+      const pageBreak = document.createElement("div");
+      pageBreak.style.setProperty("page-break-after", "always", "important");
+      pageBreak.style.setProperty("break-after", "page", "important");
+      pageBreak.style.setProperty("height", "1px", "important");
+      container.after(pageBreak);
+    }
+
+    // チャートを縦並びにする（html2canvas前に設定）
+    const chartContainer = clonedReport.querySelector(
+      ".chart-container",
+    ) as HTMLElement;
+    if (chartContainer) {
+      // チャートコンテナの前に余白を追加して新しいページから開始（値を小さく調整）
+      chartContainer.style.setProperty("margin-top", "350px", "important");
+      chartContainer.style.setProperty("display", "flex", "important");
+      chartContainer.style.setProperty("flex-direction", "column", "important");
+      chartContainer.style.setProperty("gap", "10px", "important");
+      chartContainer.style.setProperty("margin-bottom", "0", "important");
+      chartContainer.style.setProperty("padding", "0", "important");
+
+      const chartWrappers = chartContainer.querySelectorAll(":scope > div");
+      chartWrappers.forEach((wrapper) => {
+        const wrapperElement = wrapper as HTMLElement;
+        wrapperElement.style.setProperty("width", "100%", "important");
+        wrapperElement.style.setProperty("height", "auto", "important");
+        wrapperElement.style.setProperty("margin", "0", "important");
+        wrapperElement.style.setProperty("margin-left", "25px", "important");
+        wrapperElement.style.setProperty("margin-bottom", "85px", "important");
+        wrapperElement.style.setProperty("padding", "0", "important");
+        wrapperElement.style.setProperty("min-height", "0", "important");
+        wrapperElement.style.setProperty("max-height", "none", "important");
+        // チャート全体を拡大
+        wrapperElement.style.setProperty(
+          "transform",
+          "scale(1.3)",
+          "important",
+        );
+        wrapperElement.style.setProperty(
+          "transform-origin",
+          "top left",
+          "important",
+        );
+
+        // グラフ内のdivの高さを変更
+        const allDivs = wrapperElement.querySelectorAll("div");
+        allDivs.forEach((div) => {
+          const divElement = div as HTMLElement;
+          // 余計なマージン・パディングを削除
+          divElement.style.setProperty("margin-top", "0", "important");
+          divElement.style.setProperty("margin-bottom", "0", "important");
+          divElement.style.setProperty("padding-top", "0", "important");
+          divElement.style.setProperty("padding-bottom", "0", "important");
+        });
+      });
+    }
+
+    // レンダリングを待つ
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+
     // コンテンツをキャンバスとして取得
     const canvas = await html2canvas(clonedReport, {
       scale: 2,
@@ -40,38 +126,7 @@ export async function generatePDF(
         return element.id === downloadButtonId;
       },
       onclone: (clonedDoc) => {
-        // チャートコンテナの強制横並び設定
-        const chartContainer = clonedDoc.querySelector(
-          ".chart-container",
-        ) as HTMLElement;
-        if (chartContainer) {
-          chartContainer.style.setProperty("display", "flex", "important");
-          chartContainer.style.setProperty(
-            "flex-direction",
-            "row",
-            "important",
-          );
-          chartContainer.style.setProperty("flex-wrap", "wrap", "important");
-          chartContainer.style.setProperty("gap", "15px", "important");
-          chartContainer.style.setProperty(
-            "justify-content",
-            "space-between",
-            "important",
-          );
-
-          // 各チャートのサイズ調整
-          const chartWrappers = chartContainer.children;
-          Array.from(chartWrappers).forEach((wrapper, index) => {
-            const wrapperElement = wrapper as HTMLElement;
-            wrapperElement.style.setProperty(
-              "flex",
-              "1 1 calc(33.333% - 10px)",
-              "important",
-            );
-            wrapperElement.style.setProperty("min-width", "350px", "important");
-            wrapperElement.style.setProperty("max-width", "450px", "important");
-          });
-        }
+        // onclone内では特別な処理なし（既にclonedReportで設定済み）
 
         // PDF用フッターを表示
         const pdfFooters = clonedDoc.querySelectorAll(".pdf-footer");
@@ -170,33 +225,68 @@ export async function generatePDF(
     // A4サイズの寸法を取得
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
-    const margin = 10;
+    const margin = 20;
 
     // コンテンツエリアの計算
     const contentWidth = pageWidth - margin * 2;
     const contentHeight = pageHeight - margin * 2;
 
-    // 縦横両方を考慮してコンテンツ全体が収まるようスケール
-    const scaleX = contentWidth / canvas.width;
-    const scaleY = contentHeight / canvas.height;
-    const scale = Math.min(scaleX, scaleY);
-
-    const scaledWidth = canvas.width * scale;
+    // 幅を基準にスケーリング
+    const scale = contentWidth / canvas.width;
+    const scaledWidth = contentWidth;
     const scaledHeight = canvas.height * scale;
 
-    // 余白を最小限に調整
-    const x = margin + (contentWidth - scaledWidth) / 2;
-    const y = margin + (contentHeight - scaledHeight) / 2;
+    // 必要なページ数を計算
+    const totalPages = Math.ceil(scaledHeight / contentHeight);
 
-    // PDFに画像を追加
-    pdf.addImage(
-      canvas.toDataURL("image/png"),
-      "PNG",
-      x,
-      y,
-      scaledWidth,
-      scaledHeight,
-    );
+    // 各ページに分割して配置
+    for (let page = 0; page < totalPages; page++) {
+      if (page > 0) {
+        pdf.addPage();
+      }
+
+      // 現在のページで表示する canvas の Y 位置とサイズを計算
+      const sourceY = (page * contentHeight) / scale;
+      const sourceHeight = Math.min(
+        contentHeight / scale,
+        canvas.height - sourceY,
+      );
+
+      // canvas から該当部分を切り出して新しい canvas を作成
+      const pageCanvas = document.createElement("canvas");
+      pageCanvas.width = canvas.width;
+      pageCanvas.height = sourceHeight;
+
+      const pageCtx = pageCanvas.getContext("2d");
+      if (pageCtx) {
+        // 元の canvas から該当部分をコピー
+        pageCtx.drawImage(
+          canvas,
+          0,
+          sourceY,
+          canvas.width,
+          sourceHeight,
+          0,
+          0,
+          canvas.width,
+          sourceHeight,
+        );
+
+        // このページ用の画像データを取得
+        const pageImgData = pageCanvas.toDataURL("image/png");
+
+        // PDFに画像を追加
+        const destHeight = sourceHeight * scale;
+        pdf.addImage(
+          pageImgData,
+          "PNG",
+          margin,
+          margin,
+          scaledWidth,
+          destHeight,
+        );
+      }
+    }
 
     // PDFを保存
     pdf.save("RevAI｜収益性レポート.pdf");

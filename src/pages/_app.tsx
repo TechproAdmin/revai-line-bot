@@ -44,7 +44,8 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <Head>
-        <title>不動産 chatbot</title>
+        <title>不動産ChatBot｜RevAI</title>
+        <link rel="icon" type="image/png" href="/RevAI.png" />
       </Head>
       <Component {...pageProps} liff={liffObject} liffError={liffError} />
     </>

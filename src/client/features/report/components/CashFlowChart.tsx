@@ -48,7 +48,6 @@ export function CashFlowChart({ data }: CashFlowChartProps) {
         style={{
           height: "300px",
           width: "100%",
-          aspectRatio: "16 / 9",
           minHeight: "240px",
         }}
       >
@@ -57,8 +56,8 @@ export function CashFlowChart({ data }: CashFlowChartProps) {
             data={data}
             margin={{
               top: 5,
-              right: 30,
-              left: 20,
+              right: 5,
+              left: 5,
               bottom: 5,
             }}
           >
@@ -78,7 +77,12 @@ export function CashFlowChart({ data }: CashFlowChartProps) {
               labelFormatter={(value) => `${value}年`}
               formatter={(value) => [`${formatNumber(value as number)}万円`]}
             />
-            <Legend />
+            <Legend
+              wrapperStyle={{ fontSize: "10px" }}
+              iconSize={10}
+              verticalAlign="bottom"
+              align="center"
+            />
             <Line
               type="monotone"
               dataKey="btcf"

@@ -101,18 +101,15 @@ export function Report({ data }: ReportProps) {
           PDFをダウンロード
         </button>
 
-        {/* 分析条件セクション */}
-        <AnalysisConditionsTable data={data} />
+        {/* 分析条件と結果のコンテナ */}
+        <div className="conditions-results-container">
+          <div className="conditions-section">
+            <AnalysisConditionsTable data={data} />
+          </div>
 
-        {/* 分析結果セクション */}
-        <div
-          style={{
-            display: "flex",
-            gap: "15px",
-            marginBottom: "20px",
-          }}
-        >
-          <AnalysisResultsTable data={data} />
+          <div className="results-section">
+            <AnalysisResultsTable data={data} />
+          </div>
         </div>
 
         {/* 収益指標サマリー */}
