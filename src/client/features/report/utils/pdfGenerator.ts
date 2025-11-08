@@ -46,11 +46,29 @@ export async function generatePDF(
 
       if (conditionsSection) {
         conditionsSection.style.setProperty("width", "100%", "important");
-        conditionsSection.style.setProperty("font-size", "14px", "important");
+        conditionsSection.style.setProperty("font-size", "18px", "important");
+        // テーブル内のすべての要素に文字サイズを適用
+        const allElements = conditionsSection.querySelectorAll("*");
+        allElements.forEach((el) => {
+          (el as HTMLElement).style.setProperty(
+            "font-size",
+            "18px",
+            "important",
+          );
+        });
       }
       if (resultsSection) {
         resultsSection.style.setProperty("width", "100%", "important");
-        resultsSection.style.setProperty("font-size", "14px", "important");
+        resultsSection.style.setProperty("font-size", "18px", "important");
+        // テーブル内のすべての要素に文字サイズを適用
+        const allElements = resultsSection.querySelectorAll("*");
+        allElements.forEach((el) => {
+          (el as HTMLElement).style.setProperty(
+            "font-size",
+            "18px",
+            "important",
+          );
+        });
       }
 
       // 表の後に改ページを挿入
@@ -67,7 +85,7 @@ export async function generatePDF(
     ) as HTMLElement;
     if (chartContainer) {
       // チャートコンテナの前に余白を追加して新しいページから開始（値を小さく調整）
-      chartContainer.style.setProperty("margin-top", "350px", "important");
+      chartContainer.style.setProperty("margin-top", "90px", "important");
       chartContainer.style.setProperty("display", "flex", "important");
       chartContainer.style.setProperty("flex-direction", "column", "important");
       chartContainer.style.setProperty("gap", "10px", "important");
