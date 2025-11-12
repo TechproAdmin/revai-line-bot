@@ -57,11 +57,11 @@ export function createChartData(data: RealEstateAnalysisRes) {
     }));
 
   // ローン残高チャート用データ
-  const loanData = data.loan_balance.slice(0, 21).map((value, index) => ({
-    year: index,
+  const loanData = data.loan_balance.slice(1, 21).map((value, index) => ({
+    year: index + 1,
     balance: value / 10000,
-    principal: index > 0 ? data.annual_principal_payment[index] / 10000 : 0,
-    interest: index > 0 ? data.annual_interest_payment[index] / 10000 : 0,
+    principal: data.annual_principal_payment[index + 1] / 10000,
+    interest: data.annual_interest_payment[index + 1] / 10000,
   }));
 
   return {

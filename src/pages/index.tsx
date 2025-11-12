@@ -124,6 +124,10 @@ export default function Home({ liff, liffError }: HomeProps) {
                           <li>
                             ・物件概要書やマイソクなどのPDFファイルをアップロードすると、レポート作成に必要なデータを自動で入力します。
                           </li>
+                          <li>
+                            ※
+                            AIによる読み取りは正確でない場合があります。入力内容は送信前に必ずご確認のうえ、誤りがあれば修正してご利用ください。
+                          </li>
                         </ul>
                       </div>
                     </div>

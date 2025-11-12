@@ -155,7 +155,7 @@ export function AnalysisResultsTable({ data }: AnalysisResultsTableProps) {
                 border: "1px solid #ccc",
               }}
             >
-              全期間利回り(内部収益率、IRR)
+              全期間利回り（内部収益率、IRR）
             </td>
             <td
               style={{

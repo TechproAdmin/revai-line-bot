@@ -98,7 +98,7 @@ export async function generatePDF(
         wrapperElement.style.setProperty("width", "100%", "important");
         wrapperElement.style.setProperty("height", "auto", "important");
         wrapperElement.style.setProperty("margin", "0", "important");
-        wrapperElement.style.setProperty("margin-left", "25px", "important");
+        wrapperElement.style.setProperty("margin-left", "90px", "important");
         wrapperElement.style.setProperty("margin-bottom", "85px", "important");
         wrapperElement.style.setProperty("padding", "0", "important");
         wrapperElement.style.setProperty("min-height", "0", "important");
